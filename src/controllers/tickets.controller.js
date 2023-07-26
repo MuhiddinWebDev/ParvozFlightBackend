@@ -151,15 +151,6 @@ class TicketsController extends BaseController {
                     order = true;
                 }
             }
-            // const transportModel = await TransportModel.findOne({ 
-            //     where: { id: element.transport.id}, 
-            //     attributes: [
-            //         'id', 'icon', 'link',
-            //         [ sequelize.literal(`name_${lang}`), 'name' ]
-            //     ]});
-            // console.log('transport = ', transportModel.id);
-            // console.log('transport = ', transportModel.dataValues.name);
-            // console.log('transport = ', transportModel.icon);
             
             query_data.id = element.id;
             query_data.date = element.date;

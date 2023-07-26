@@ -33,7 +33,11 @@ class ServicesController extends BaseController {
 
         let lang = req.get('Accept-Language');
         lang = lang? lang: 'uz';
-
+        let query = {};
+        query.status = "empty";
+        if(req.query.address_id > 0){
+            query.address_id = req.query.address_id;
+        }
         const modelList = await RoomModel.findOne({
             where: { id: req.params.id},
             attributes: [
@@ -43,7 +47,7 @@ class ServicesController extends BaseController {
             include: [
                 {
                     model: RoomTableModel,
-                    where: { status: "empty"},
+                    where: query,
                     as: 'room_table',
                     required: false,
                     attributes: [

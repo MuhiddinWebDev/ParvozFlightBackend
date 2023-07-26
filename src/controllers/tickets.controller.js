@@ -18,8 +18,17 @@ class TicketsController extends BaseController {
         let lang = req.get('Accept-Language');
         lang = lang? lang: 'uz';
 
-        
+        const order = req.get('order')?req.get('order'):"false";        
+        let query = {};
+        query.client_id = 0;
+        if(order == "true"){
+            query.client_id =  {
+                [Op.gt]: 0
+            };
+        }
+
         let modelList = await TicketsModel.findAll({
+            where: query,
             attributes: ['id', 'client_id','date', 'end_date', 'comment', 'operator_comment', 'status','price','baggage','company_name','rushnoy', 'image', 'currency'],
             include: [
                 {

@@ -45,7 +45,7 @@ let upload = multer({
 }).single('image');
 
 
-router.get('/', auth(Role.Admin), awaitHandlerFactory(ticketsController.getAll));
+router.get('/', awaitHandlerFactory(ticketsController.getAll));
 router.get('/all', clientAuth(), awaitHandlerFactory(ticketsController.getAllMobil));
 router.get('/by-client', clientAuth(), awaitHandlerFactory(ticketsController.getAllByClient));
 router.get('/by-agent', agentAuth(), awaitHandlerFactory(ticketsController.getAllByAgent));

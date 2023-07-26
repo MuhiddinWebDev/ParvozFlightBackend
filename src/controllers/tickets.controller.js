@@ -172,9 +172,9 @@ class TicketsController extends BaseController {
             query_data.company_name = element.company_name;
             query_data.currency = element.currency;    
             query_data.order = order;  
-            query_data.transport = { "icon": element.transport.dataValues.icon, "name": element.transport.dataValues.name };
-            query_data.from = {"name": element.from.dataValues.name};
-            query_data.to = {"name": element.to.dataValues.name};
+            query_data.transport = { "icon": element.transport.icon, "name": element.transport.name };
+            query_data.from = {"name": element.from.name};
+            query_data.to = {"name": element.to.name};
             // query_data.client = element.client?element.client.dataValues:null;
             await data.push(query_data);
             query_data = {};

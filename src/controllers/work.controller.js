@@ -121,12 +121,22 @@ class WorkController extends BaseController {
         lang = lang? lang: 'uz';
 
         const work_table = await WorkTableModel.findAll({
-            // where: {status: "active"},
+            where: {status: "active"},
             attributes: [
                 'id', 'image','from_price', 'to_price', 'phone',
                 [ sequelize.literal(`title_${lang}`), 'title' ],
                 [ sequelize.literal(`comment_${lang}`), 'comment' ],
-            ]
+            ],
+            include: [
+                {
+                    model: AddressModel, 
+                    attributes: [
+                        [ sequelize.literal(`\`work_table->address\`.name_${lang}`), 'name' ]
+                    ],
+                    as: 'address',
+                    required: false
+                }
+            ],
         });
 
         if (!work_table) {

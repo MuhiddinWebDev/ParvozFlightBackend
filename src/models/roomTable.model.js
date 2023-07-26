@@ -2,6 +2,7 @@ const { DataTypes, Model } = require('sequelize');
 const sequelize = require('../db/db-sequelize');
 const RoomImageModel = require('./roomImage.model');
 const RoomModel = require('./room.model');
+const AddressModel = require('./address.model');
 class RoomTableModel extends Model {}
 
 RoomTableModel.init({
@@ -15,17 +16,10 @@ RoomTableModel.init({
         type: DataTypes.INTEGER,
         allowNull: false
     },
-    address_uz: {
-      type: DataTypes.STRING(256),
-      allowNull: true,
-    },
-    address_ru: {
-      type: DataTypes.STRING(256),
-      allowNull: true,
-    },
-    address_ka: {
-      type: DataTypes.STRING(256),
-      allowNull: true,
+    address_id: {
+      type: DataTypes.INTEGER,
+      allowNull: false,
+      defaultValue: 1
     },
     price: {
         type: DataTypes.INTEGER,
@@ -77,6 +71,7 @@ RoomTableModel.init({
 
 
 RoomTableModel.hasMany(RoomImageModel , { as: 'images', foreignKey: 'parent_id' });
+RoomTableModel.belongsTo(AddressModel, { as: 'address', foreignKey: 'address_id' });
 // RoomTableModel.hasOne(RoomModel , { as: 'room', foreignKey: 'parent_id' });
 
 module.exports = RoomTableModel;

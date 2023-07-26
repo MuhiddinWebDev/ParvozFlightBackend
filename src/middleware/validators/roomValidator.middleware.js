@@ -13,9 +13,7 @@ exports.roomSchemas = {
 
   roomTable: Joi.object({
     parent_id: Joi.number().required(),
-    address_uz: Joi.string().max(256).required(),
-    address_ru: Joi.string().max(256).required(),
-    address_ka: Joi.string().max(256).required(),
+    address_id: Joi.number().required(),
     price: Joi.number().required(),
     phone_number: Joi.string().max(16).required(),
     comment_uz: Joi.string().required(),

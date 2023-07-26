@@ -151,6 +151,16 @@ class TicketsController extends BaseController {
                     order = true;
                 }
             }
+            // const transportModel = await TransportModel.findOne({ 
+            //     where: { id: element.transport.id}, 
+            //     attributes: [
+            //         'id', 'icon', 'link',
+            //         [ sequelize.literal(`name_${lang}`), 'name' ]
+            //     ]});
+            // console.log('transport = ', transportModel.id);
+            // console.log('transport = ', transportModel.dataValues.name);
+            // console.log('transport = ', transportModel.icon);
+            
             query_data.id = element.id;
             query_data.date = element.date;
             query_data.price = element.price;
@@ -161,10 +171,10 @@ class TicketsController extends BaseController {
             query_data.image = element.image;
             query_data.company_name = element.company_name;
             query_data.currency = element.currency;    
-            query_data.order = order;        
-            query_data.transport = element.transport.dataValues;
-            query_data.from = element.from.dataValues;
-            query_data.to = element.to.dataValues;
+            query_data.order = order;  
+            query_data.transport = { "icon": element.transport.dataValues.icon, "name": element.transport.dataValues.name };
+            query_data.from = {"name": element.from.dataValues.name};
+            query_data.to = {"name": element.to.dataValues.name};
             // query_data.client = element.client?element.client.dataValues:null;
             await data.push(query_data);
             query_data = {};

@@ -1,6 +1,7 @@
 const RoomModel = require('../models/room.model');
 const RoomTableModel = require('../models/roomTable.model');
 const RoomImageModel = require('../models/roomImage.model');
+const AddressModel = require('../models/address.model');
 const HttpException = require('../utils/HttpException.utils');
 const BaseController = require('./BaseController');
 const sequelize = require('../db/db-sequelize');
@@ -33,24 +34,33 @@ class ServicesController extends BaseController {
         let lang = req.get('Accept-Language');
         lang = lang? lang: 'uz';
 
-        const service = await RoomModel.findOne({
+        const modelList = await RoomModel.findOne({
             where: { id: req.params.id},
             attributes: [
                 'id',
-                [ sequelize.literal(`name_${lang}`), 'name' ]
+                [ sequelize.literal(`RoomModel.name_${lang}`), 'name' ]
             ],
             include: [
                 {
                     model: RoomTableModel,
-                    where: { status: "active"},
+                    where: { status: "empty"},
                     as: 'room_table',
                     required: false,
                     attributes: [
                         'id', 'parent_id', 'price', 'phone_number', 'area', 'status', 'lat', 'long',
-                        [ sequelize.literal(`address_${lang}`), 'address' ],
-                        [ sequelize.literal(`comment_${lang}`), 'comment' ]
+                        [ sequelize.literal(`comment_${lang}`), 'comment' ],
+                        [ sequelize.literal(`address.name_${lang}`), 'address' ]
+                        // [ sequelize.literal(`\`room_table->address\`.name_${lang}`), 'address' ]
                     ],
                     include: [
+                        {
+                            model: AddressModel, 
+                            attributes: [
+                                // [ sequelize.literal(`\`room_table->address\`.name_${lang}`), 'address' ]
+                            ],
+                            as: 'address',
+                            required: false
+                        },
                         {
                             model: RoomImageModel,
                             as: 'images',
@@ -59,15 +69,15 @@ class ServicesController extends BaseController {
                         }
                     ],
 
-                }
+                },
             ],
         });
 
-        if (!service) {
+        if (!modelList) {
             throw new HttpException(404, req.mf('data not found'));
         }
 
-        res.send(service);
+        res.send(modelList);
     };
 
 
@@ -280,9 +290,7 @@ class ServicesController extends BaseController {
             
             const model_table = await RoomTableModel.create({
                 parent_id: room_table.parent_id,
-                address_uz: room_table.address_uz,
-                address_ru: room_table.address_ru,
-                address_ka: room_table.address_ka,
+                address_id: room_table.address_id,
                 price: room_table.price,
                 phone_number: room_table.phone_number,
                 comment_uz: room_table.comment_uz,
@@ -350,9 +358,7 @@ class ServicesController extends BaseController {
             
             const model_table = await RoomTableModel.create({
                 parent_id: room_table.parent_id,
-                address_uz: room_table.address_uz,
-                address_ru: room_table.address_ru,
-                address_ka: room_table.address_ka,
+                address_id: room_table.address_id,
                 price: room_table.price,
                 phone_number: room_table.phone_number,
                 comment_uz: room_table.comment_uz,
@@ -407,7 +413,6 @@ class ServicesController extends BaseController {
         let { images, ...room_table} = req.body;
 
         // let images = room_table.images;
-        console.log("test = ", req.body.parent_id);
         let t = await sequelize.transaction()
 
         try {
@@ -425,6 +430,7 @@ class ServicesController extends BaseController {
             }
             
             model_table.parent_id = room_table.parent_id;
+            model_table.address_id = room_table.address_id,
             model_table.address_uz = room_table.address_uz;
             model_table.address_ru = room_table.address_ru;
             model_table.address_ka = room_table.address_ka;

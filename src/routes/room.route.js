@@ -46,7 +46,7 @@ router.get('/', clientAuth(), awaitHandlerFactory(roomController.getAll));
 router.get('/all', auth(), awaitHandlerFactory(roomController.getAll));
 router.get('/table', auth(), awaitHandlerFactory(roomController.getAllWebTable));
 router.get('/table/id/:id', auth(), awaitHandlerFactory(roomController.getByIdTable));
-router.get('/deteil/id/:id', clientAuth(), awaitHandlerFactory(roomController.getDetail));
+router.get('/deteil/id/:id', awaitHandlerFactory(roomController.getDetail));
 router.get('/id/:id', auth(), awaitHandlerFactory(roomController.getById));
 router.post('/', auth(Role.Admin), upload, joiMiddleware(roomSchemas.room), awaitHandlerFactory(roomController.create));
 router.patch('/id/:id', upload, auth(Role.Admin), joiMiddleware(roomSchemas.room), awaitHandlerFactory(roomController.update));

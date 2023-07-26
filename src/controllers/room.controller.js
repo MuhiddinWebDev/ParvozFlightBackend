@@ -49,14 +49,14 @@ class ServicesController extends BaseController {
                     attributes: [
                         'id', 'parent_id', 'price', 'phone_number', 'area', 'status', 'lat', 'long',
                         [ sequelize.literal(`comment_${lang}`), 'comment' ],
-                        [ sequelize.literal(`address.name_${lang}`), 'address' ]
+                        // [ sequelize.literal(`AddressModel.name_${lang}`), 'address' ]
                         // [ sequelize.literal(`\`room_table->address\`.name_${lang}`), 'address' ]
                     ],
                     include: [
                         {
                             model: AddressModel, 
                             attributes: [
-                                // [ sequelize.literal(`\`room_table->address\`.name_${lang}`), 'address' ]
+                                [ sequelize.literal(`\`room_table->address\`.name_${lang}`), 'name' ]
                             ],
                             as: 'address',
                             required: false

@@ -42,7 +42,7 @@ class ServicesController extends BaseController {
             include: [
                 {
                     model: RoomTableModel,
-                    // where: { status: "empty"},
+                    where: { status: "active"},
                     as: 'room_table',
                     required: false,
                     attributes: [

@@ -86,7 +86,7 @@ class WorkController extends BaseController {
                         [ sequelize.literal(`work_table.comment_${lang}`), 'comment' ],
                     ],
                     as: 'work_table',
-                    // where: {status: "active"},
+                    where: {status: "active"},
                     required: false,
                 }
             ],

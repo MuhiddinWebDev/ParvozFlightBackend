@@ -1,5 +1,6 @@
 const { DataTypes, Model } = require('sequelize');
 const sequelize = require('../db/db-sequelize');
+const AddressModel = require('./address.model');
 class WorkTableModel extends Model {}
 
 WorkTableModel.init({
@@ -104,5 +105,6 @@ WorkTableModel.init({
 });
 
   // price type lar { oylik, kunlik, kelishiladi} degan statuslar uchun
+  WorkTableModel.belongsTo(AddressModel, { as: 'address', foreignKey: 'address_id' });
 
 module.exports = WorkTableModel;

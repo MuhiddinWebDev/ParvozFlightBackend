@@ -1,5 +1,6 @@
 const WorkModel = require('../models/work.model');
 const WorkTableModel = require('../models/workTable.model');
+const AddressModel = require('../models/address.model');
 const HttpException = require('../utils/HttpException.utils');
 const BaseController = require('./BaseController');
 const sequelize = require('../db/db-sequelize');
@@ -70,6 +71,11 @@ class WorkController extends BaseController {
     getOne = async (req, res, next) => {
         let lang = req.get('Accept-Language');
         lang = lang? lang: 'uz';
+        let query = {};
+        query.status = "active";
+        if(req.query.address_id > 0){
+            query.address_id = req.query.address_id;
+        }
 
         const work = await WorkModel.findOne({
             attributes: [
@@ -86,8 +92,18 @@ class WorkController extends BaseController {
                         [ sequelize.literal(`work_table.comment_${lang}`), 'comment' ],
                     ],
                     as: 'work_table',
-                    where: {status: "active"},
+                    where: query,
                     required: false,
+                    include: [
+                        {
+                            model: AddressModel, 
+                            attributes: [
+                                [ sequelize.literal(`\`work_table->address\`.name_${lang}`), 'name' ]
+                            ],
+                            as: 'address',
+                            required: false
+                        }
+                    ],
                 }
             ],
         });

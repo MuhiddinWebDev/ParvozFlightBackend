@@ -6,6 +6,7 @@ let JSMTRand = require('js_mt_rand');
 const UniqueStringGenerator = require('unique-string-generator');
 const { text } = require('express');
 
+var axios = require('axios');
 let mt = new JSMTRand();
 /******************************************************************************
  *                              User Controller
@@ -107,11 +108,6 @@ class ClientController extends BaseController {
         const phone2 = '74445555666';
         let phone = req.body.phone;
 
-        let text = phone;
-        let result = text.indexOf("7");
-        if(result != 0){
-            throw new HttpException(404, req.mf('phone error'));
-        }
         
         let model = await ClientModel.findOne({where:{ phone: phone}});
         if(phone == phone1 || phone == phone2){
@@ -139,17 +135,54 @@ class ClientController extends BaseController {
                 model.code = code;
                 await model.save();
             }
+            let text_phone = phone;
+            let result = text_phone.indexOf("7");
+            if(result != 0){
+                const urls = 'https://send.smsxabar.uz/broker-api/send'
+                const username = 'parvozfly'
+                const password = 'A9ws0#L#[{j9'
+                const encodedCredentials = btoa(username + ':' + password);
+                await axios.default.post(urls, {
+                "messages":
+                    [
+                    {
+                        "recipient": phone,
+                        "message-id": "abc000000001",
 
-            const text = "Ваш смс-код: " + code;
-            var data = JSON.stringify({
-                "numbers": [
-                    phone
-                ],
-                "sign": "SMS Aero",
-                "text": text
-            });
-    
-            await this.sendSmsToLogin(data);
+                        "sms": {
+
+                        "originator": "3700",
+                        "content": {
+                            "text": "Ваш смс-код: " + code
+                        }
+                        }
+                    }
+                    ]
+                }, {
+                headers: {
+                    'Authorization': 'Basic ' + encodedCredentials
+                }
+                }).then(response => {
+                if (response.data == 'Request is received') {
+                    res.send(data);
+                } else {
+                    data.title = 'Sms kod yuborishda xatolik'
+                    data.data = {}
+                    res.send(data);
+                }
+                })
+            }else if(result == 0){
+                const text = "Ваш смс-код: " + code;
+                var data = JSON.stringify({
+                    "numbers": [
+                        phone
+                    ],
+                    "sign": "SMS Aero",
+                    "text": text
+                });
+        
+                await this.sendSmsToLogin(data);
+            }
         }
         
         

@@ -411,6 +411,7 @@ class WorkController extends BaseController {
                     from_price: element.from_price,
                     to_price: element.to_price,
                     phone: element.phone,
+                    address_id: element.address_id
                 }, { transaction: t });
             }
 
@@ -450,6 +451,7 @@ class WorkController extends BaseController {
         let t = await sequelize.transaction()
         try {
 
+            model.address_id = work_table.address_id;
             model.parent_id = work_table.parent_id;
             model.title_uz = work_table.title_uz;
             model.title_ru = work_table.title_ru;

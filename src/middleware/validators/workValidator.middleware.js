@@ -23,7 +23,7 @@ exports.workSchemas = {
           create_at: Joi.string().required().max(16),
           long: Joi.number().precision(2).empty(''),
           lat: Joi.number().precision(2).empty(''),
-          address_id: Joi.number()
+          address_id: Joi.number().required()
         })
     ).required()
   }),
@@ -51,7 +51,7 @@ exports.workSchemas = {
           long: Joi.number().precision(2).empty(''),
           lat: Joi.number().precision(2).empty(''),
           status: Joi.string().valid('new', 'active', 'rejected').required(),
-          address_id: Joi.number()
+          address_id: Joi.number().required()
         })
     ).required()
   }),
@@ -85,7 +85,7 @@ exports.workSchemas = {
           long: Joi.number().precision(2).empty(''),
           lat: Joi.number().precision(2).empty(''),
           status: Joi.string().valid('new', 'active', 'rejected').required(),
-          address_id: Joi.number()
+          address_id: Joi.number().required()
         })
     ).required()
   }),
@@ -111,7 +111,7 @@ exports.workSchemas = {
     long: Joi.number().precision(2).empty(''),
     lat: Joi.number().precision(2).empty(''),
     status: Joi.string().valid('new', 'active', 'rejected').required(),
-    address_id: Joi.number()
+    address_id: Joi.number().required()
   }),
 
 
@@ -133,7 +133,7 @@ exports.workSchemas = {
     create_at: Joi.string().required().max(16),
     long: Joi.number().precision(2).empty(''),
     lat: Joi.number().precision(2).empty(''),
-    address_id: Joi.number(),
+    address_id: Joi.number().required(),
     parent_id: Joi.number()
   }),
 };

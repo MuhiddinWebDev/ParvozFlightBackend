@@ -14,6 +14,7 @@ const agentRouter = require('../routes/agent.route');
 const reviewsRouter = require('../routes/reviews.route');
 const workRouter = require('../routes/work.route');
 const addressRouter = require('../routes/address.route');
+const addressBiletRouter = require('../routes/addressBilet.route');
 const ticketsRouter = require('../routes/tickets.route');
 const transportRouter = require('../routes/transport.route');
 const roomRouter = require('../routes/room.route');
@@ -103,6 +104,7 @@ module.exports = async function(app){
         app.use(`/api/v1/agent`, agentRouter);
         app.use(`/api/v1/work`, workRouter);
         app.use(`/api/v1/address`, addressRouter);
+        app.use(`/api/v1/address-bilet`, addressBiletRouter);
         app.use(`/api/v1/tickets`, ticketsRouter);
         app.use(`/api/v1/transport`, transportRouter);
         app.use(`/api/v1/room`, roomRouter);

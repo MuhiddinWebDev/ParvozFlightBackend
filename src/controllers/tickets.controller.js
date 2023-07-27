@@ -6,7 +6,7 @@ const { Op } = require('sequelize');
 const moment = require('moment');
 const fs = require('fs')
 const sequelize = require('../db/db-sequelize');
-const AddressModel = require('../models/address.model');
+const AddressBiletModel = require('../models/addressBilet.model');
 const ClientModel = require('../models/client.model');
 /******************************************************************************
  *                              User Controller
@@ -40,7 +40,7 @@ class TicketsController extends BaseController {
                     required: false
                 },
                 {
-                    model: AddressModel,
+                    model: AddressBiletModel,
                     attributes: [
                         [ sequelize.literal(`from.name_${lang}`), 'name' ]
                     ],
@@ -48,7 +48,7 @@ class TicketsController extends BaseController {
                     required: false
                 },
                 {
-                    model: AddressModel,
+                    model: AddressBiletModel,
                     attributes: [
                         [ sequelize.literal(`to.name_${lang}`), 'name' ]
                     ],
@@ -106,7 +106,7 @@ class TicketsController extends BaseController {
                     required: false
                 },
                 {
-                    model: AddressModel,
+                    model: AddressBiletModel,
                     attributes: [
                         [ sequelize.literal(`from.name_${lang}`), 'name' ]
                     ],
@@ -114,7 +114,7 @@ class TicketsController extends BaseController {
                     required: false
                 },
                 {
-                    model: AddressModel,
+                    model: AddressBiletModel,
                     attributes: [
                         [ sequelize.literal(`to.name_${lang}`), 'name' ]
                     ],
@@ -196,7 +196,7 @@ class TicketsController extends BaseController {
                     required: false
                 },
                 {
-                    model: AddressModel,
+                    model: AddressBiletModel,
                     attributes: [
                         [ sequelize.literal(`from.name_${lang}`), 'name' ]
                     ],
@@ -204,7 +204,7 @@ class TicketsController extends BaseController {
                     required: false
                 },
                 {
-                    model: AddressModel,
+                    model: AddressBiletModel,
                     attributes: [
                         [ sequelize.literal(`to.name_${lang}`), 'name' ]
                     ],
@@ -241,7 +241,7 @@ class TicketsController extends BaseController {
                     required: false
                 },
                 {
-                    model: AddressModel,
+                    model: AddressBiletModel,
                     attributes: [
                         [ sequelize.literal(`from.name_${lang}`), 'name' ]
                     ],
@@ -249,7 +249,7 @@ class TicketsController extends BaseController {
                     required: false
                 },
                 {
-                    model: AddressModel,
+                    model: AddressBiletModel,
                     attributes: [
                         [ sequelize.literal(`to.name_${lang}`), 'name' ]
                     ],

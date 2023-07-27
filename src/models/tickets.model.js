@@ -1,7 +1,7 @@
 const { DataTypes, Model } = require('sequelize');
 const sequelize = require('../db/db-sequelize');
 const TransportModel = require('./transport.model');
-const AddressModel = require('./address.model');
+const AddressBiletModel = require('./addressBilet.model');
 const ClientModel = require('./client.model');
 const AgentModel = require('./agent.model');
 const UserModel = require('./user.model');
@@ -110,8 +110,8 @@ TicketsModel.init({
 
 
 TicketsModel.belongsTo(TransportModel, { as: 'transport', foreignKey: 'transport_id' });
-TicketsModel.belongsTo(AddressModel , { as: 'from', foreignKey: 'from_id' });
-TicketsModel.belongsTo(AddressModel , { as: 'to', foreignKey: 'to_id' });
+TicketsModel.belongsTo(AddressBiletModel , { as: 'from', foreignKey: 'from_id' });
+TicketsModel.belongsTo(AddressBiletModel , { as: 'to', foreignKey: 'to_id' });
 TicketsModel.belongsTo(ClientModel , { as: 'client', foreignKey: 'client_id' });
 TicketsModel.belongsTo(AgentModel , { as: 'agent', foreignKey: 'creator_id' });
 TicketsModel.belongsTo(UserModel , { as: 'user', foreignKey: 'creator_id' });

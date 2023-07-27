@@ -131,7 +131,7 @@ class WorkController extends BaseController {
                 {
                     model: AddressModel, 
                     attributes: [
-                        [ sequelize.literal(`\`work_table->address\`.name_${lang}`), 'name' ]
+                        [ sequelize.literal(`address.name_${lang}`), 'name' ]
                     ],
                     as: 'address',
                     required: false

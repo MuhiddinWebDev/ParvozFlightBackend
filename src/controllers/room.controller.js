@@ -114,8 +114,16 @@ class ServicesController extends BaseController {
 
     getAllWebTable = async (req, res, next) => {
 
-        let sql = ` SELECT rt.id, rt.parent_id, r.name_uz AS name_uz, r.name_ru AS name_ru, r.name_ka AS name_ka, rt.address_uz, rt.address_ru, rt.address_ka, rt.price, rt.phone_number, rt.comment_uz, rt.comment_ru, rt.comment_ka, rt.area, rt.status FROM room_table rt 
+        let sql = ` SELECT 
+            rt.id, rt.parent_id, 
+            r.name_uz AS name_uz, r.name_ru AS name_ru, r.name_ka AS name_ka,
+            rt.price, rt.phone_number, 
+            rt.comment_uz, rt.comment_ru, 
+            rt.comment_ka, rt.area, rt.status, 
+            ad.name_uz AS address_uz
+        FROM room_table rt 
         LEFT JOIN room r ON rt.parent_id = r.id
+        LEFT JOIN address ad ON rt.address_id = ad.id
         ORDER BY rt.id DESC `;
 
         let result = await sequelize.query(sql, {
@@ -143,7 +151,13 @@ class ServicesController extends BaseController {
     getByIdTable = async (req, res, next) => {
         let room_id = req.params.id;
         
-        let sql = ` SELECT rt.id, rt.parent_id, r.name_uz AS name_uz, r.name_ru AS name_ru, r.name_ka AS name_ka, rt.address_uz, rt.address_ru, rt.address_ka, rt.price, rt.phone_number, rt.comment_uz, rt.comment_ru, rt.comment_ka, rt.area, rt.status, rt.lat, rt.long FROM room_table rt 
+        let sql = ` SELECT 
+            rt.id, rt.parent_id, 
+            r.name_uz AS name_uz, r.name_ru AS name_ru, r.name_ka AS name_ka,
+            rt.price, rt.phone_number, 
+            rt.comment_uz, rt.comment_ru, rt.comment_ka, 
+            rt.area, rt.status, rt.lat, rt.long, rt.address_id 
+        FROM room_table rt 
         LEFT JOIN room r ON rt.parent_id = r.id WHERE rt.id = :room_id
         ORDER BY rt.id DESC `;
         

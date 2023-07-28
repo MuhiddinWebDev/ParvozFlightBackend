@@ -136,8 +136,9 @@ class ClientController extends BaseController {
                 await model.save();
             }
             let text_phone = phone;
-            let result = text_phone.indexOf("7");
-            if(result != 0){
+            let result_ru = text_phone.indexOf("7");
+            let result_uz = text_phone.indexOf("9");
+            if(result_uz == 0){
                 const urls = 'https://send.smsxabar.uz/broker-api/send'
                 const username = 'parvozfly'
                 const password = 'A9ws0#L#[{j9'
@@ -164,14 +165,14 @@ class ClientController extends BaseController {
                 }
                 }).then(response => {
                 if (response.data == 'Request is received') {
-                    res.send(data);
+                    res.send(response.data);
                 } else {
                     data.title = 'Sms kod yuborishda xatolik'
                     data.data = {}
                     res.send(data);
                 }
                 })
-            }else if(result == 0){
+            }else if(result_ru == 0){
                 const text = "Ваш смс-код: " + code;
                 var data = JSON.stringify({
                     "numbers": [

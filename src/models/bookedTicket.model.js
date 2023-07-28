@@ -1,7 +1,7 @@
 const { DataTypes, Model } = require('sequelize');
 const sequelize = require('../db/db-sequelize');
 const ClientModel = require('./client.model');
-const AddressModel = require('./address.model');
+const AddressBiletModel = require('./addressBilet.model');
 class BookedTicketModel extends Model {}
 
 BookedTicketModel.init({
@@ -49,7 +49,7 @@ BookedTicketModel.init({
 });
 
 BookedTicketModel.belongsTo(ClientModel, { as: 'client', foreignKey: 'client_id' });
-BookedTicketModel.belongsTo(AddressModel, { as: 'from_where', foreignKey: 'from_where_id' });
-BookedTicketModel.belongsTo(AddressModel, { as: 'to_where', foreignKey: 'to_where_id' });
+BookedTicketModel.belongsTo(AddressBiletModel, { as: 'from_where', foreignKey: 'from_where_id' });
+BookedTicketModel.belongsTo(AddressBiletModel, { as: 'to_where', foreignKey: 'to_where_id' });
 
 module.exports = BookedTicketModel;

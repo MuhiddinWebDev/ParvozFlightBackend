@@ -1,6 +1,6 @@
 const BookedTicketModel = require('../models/bookedTicket.model');
 const ClientModel = require('../models/client.model');
-const AddressModel = require('../models/address.model');
+const AddressBiletModel = require('../models/addressBilet.model');
 const HttpException = require('../utils/HttpException.utils');
 const BaseController = require('./BaseController');
 const sequelize = require('../db/db-sequelize');
@@ -22,12 +22,12 @@ class BookedTicketController extends BaseController {
                     required: false
                 },
                 {
-                    model: AddressModel,
+                    model: AddressBiletModel,
                     as: 'from_where',
                     required: false
                 },
                 {
-                    model: AddressModel,
+                    model: AddressBiletModel,
                     as: 'to_where',
                     required: false
                 }
@@ -50,12 +50,12 @@ class BookedTicketController extends BaseController {
                     required: false
                 },
                 {
-                    model: AddressModel,
+                    model: AddressBiletModel,
                     as: 'from_where',
                     required: false
                 },
                 {
-                    model: AddressModel,
+                    model: AddressBiletModel,
                     as: 'to_where',
                     required: false
                 }

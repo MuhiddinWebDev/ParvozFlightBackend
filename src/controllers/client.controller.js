@@ -165,7 +165,7 @@ class ClientController extends BaseController {
                 }
                 }).then(response => {
                 if (response.data == 'Request is received') {
-                    res.send(response.data);
+                    // res.send(data);
                 } else {
                     data.title = 'Sms kod yuborishda xatolik'
                     data.data = {}

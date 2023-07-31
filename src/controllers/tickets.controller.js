@@ -162,6 +162,8 @@ class TicketsController extends BaseController {
             query_data.image = element.image;
             query_data.company_name = element.company_name;
             query_data.currency = element.currency;    
+            query_data.phone = element.phone;    
+            query_data.whatsapp = element.whatsapp;    
             query_data.order = order;  
             query_data.transport = { "icon": element.transport.dataValues.icon, "name": element.transport.dataValues.name };
             query_data.from = {"name": element.from.dataValues.name};

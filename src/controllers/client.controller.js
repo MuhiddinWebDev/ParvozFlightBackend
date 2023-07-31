@@ -15,8 +15,7 @@ class ClientController extends BaseController {
     getAll = async (req, res, next) => {
         let modelList = await ClientModel.findAll({
             order: [
-                // ['fullname', 'ASC'],
-                ['id', 'ASC']
+                ['id', 'DESC']
             ]
         });
         res.send(modelList);

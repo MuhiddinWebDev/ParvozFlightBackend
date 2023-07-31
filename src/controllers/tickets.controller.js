@@ -337,7 +337,9 @@ class TicketsController extends BaseController {
             rushnoy,
             baggage,
             client_id,
-            currency
+            currency,
+            phone,
+            whatsapp
         } = req.body;
 
         const creator_id = req.currentUser.id;
@@ -357,7 +359,9 @@ class TicketsController extends BaseController {
             creator_id,
             client_id: client_id?client_id:0,
             is_user: true,
-            currency
+            currency,
+            phone: phone?phone:"",
+            whatsapp: whatsapp?whatsapp:""
         });
 
         if (!model) {
@@ -402,7 +406,9 @@ class TicketsController extends BaseController {
             image,
             rushnoy,
             baggage,
-            currency
+            currency,
+            phone,
+            whatsapp
         } = req.body;
 
         const creator_id = req.currentAgent.id;
@@ -420,7 +426,9 @@ class TicketsController extends BaseController {
             rushnoy,
             baggage,
             creator_id,
-            currency
+            currency,
+            phone: phone?phone:"",
+            whatsapp: whatsapp?whatsapp:""
         });
 
         if (!model) {
@@ -461,6 +469,8 @@ class TicketsController extends BaseController {
         model.from_id = from_id;
         model.to_id = to_id;
         model.date = date ? date: "";
+        model.phonw = phonw ? phonw: "";
+        model.whatsapp = whatsapp ? whatsapp: "";
         model.end_date = end_date ? end_date : "";
         model.comment = comment ? comment : "";
         model.operator_comment = operator_comment ? operator_comment : "";

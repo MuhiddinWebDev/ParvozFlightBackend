@@ -17,6 +17,8 @@ exports.ticketsSchemas = {
     rushnoy: Joi.string().required(),
     baggage: Joi.boolean().required(),
     comment: Joi.string().empty(''),
+    phone: Joi.string().empty(''),
+    whatsapp: Joi.string().empty(''),
     currency: Joi.string().valid('USD','RUB','UZS').required()
   }),
   
@@ -33,6 +35,8 @@ exports.ticketsSchemas = {
     rushnoy: Joi.string().empty(''),
     baggage: Joi.boolean().required(),
     comment: Joi.string().empty(''),
+    phone: Joi.string().empty(''),
+    whatsapp: Joi.string().empty(''),
     currency: Joi.string().valid('USD','RUB','UZS').required()
   }),
   
@@ -50,6 +54,8 @@ exports.ticketsSchemas = {
     rushnoy: Joi.string().required(),
     baggage: Joi.boolean().required(),
     comment: Joi.string().empty(''),
+    phone: Joi.string().empty(''),
+    whatsapp: Joi.string().empty(''),
     status: Joi.string().valid('waiting', 'rejected', 'done').required(),
     currency: Joi.string().valid('USD','RUB','UZS').required()
   }),

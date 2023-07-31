@@ -99,6 +99,16 @@ TicketsModel.init({
     creator_id: {
       type: DataTypes.INTEGER,
       allowNull: false
+    },
+    phone: {
+      type: DataTypes.STRING(64),
+      allowNull: false,
+      defaultValue: ""
+    },
+    whatsapp: {
+      type: DataTypes.STRING(64),
+      allowNull: false,
+      defaultValue: ""
     }
 }, {
   sequelize,

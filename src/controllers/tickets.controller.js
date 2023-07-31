@@ -29,7 +29,7 @@ class TicketsController extends BaseController {
 
         let modelList = await TicketsModel.findAll({
             where: query,
-            attributes: ['id', 'client_id','date', 'end_date', 'comment', 'operator_comment', 'status','price','baggage','company_name','rushnoy', 'image', 'currency'],
+            attributes: ['id', 'client_id','date', 'end_date', 'comment', 'operator_comment', 'status','price','baggage','company_name','rushnoy', 'image', 'currency', 'phone', 'whatsapp'],
             include: [
                 {
                     model: TransportModel,
@@ -95,7 +95,7 @@ class TicketsController extends BaseController {
         
         let modelList = await TicketsModel.findAll({
             where: query,
-            attributes: ['id', 'date', 'price', 'end_date', 'comment', 'operator_comment', 'status', 'image', 'company_name', 'currency'],
+            attributes: ['id', 'date', 'price', 'end_date', 'comment', 'operator_comment', 'status', 'image', 'company_name', 'currency', 'phone', 'whatsapp'],
             include: [
                 {
                     model: TransportModel,
@@ -185,7 +185,7 @@ class TicketsController extends BaseController {
         
         let modelList = await TicketsModel.findAll({
             where: { client_id: client_id },
-            attributes: ['id', 'date', 'end_date', 'comment', 'operator_comment', 'status', 'currency'],
+            attributes: ['id', 'date', 'end_date', 'comment', 'operator_comment', 'status', 'currency', 'phone', 'whatsapp'],
             include: [
                 {
                     model: TransportModel,
@@ -230,7 +230,7 @@ class TicketsController extends BaseController {
         
         let modelList = await TicketsModel.findAll({
             where: { creator_id: creator_id, is_user: false, client_id: 0 },
-            attributes: ['id', 'date', 'end_date', 'comment', 'operator_comment', 'status','price','baggage','company_name','rushnoy', 'image', 'currency'],
+            attributes: ['id', 'date', 'end_date', 'comment', 'operator_comment', 'status','price','baggage','company_name','rushnoy', 'image', 'currency', 'phone', 'whatsapp'],
             include: [
                 {
                     model: TransportModel,

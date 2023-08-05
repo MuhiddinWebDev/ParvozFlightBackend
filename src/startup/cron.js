@@ -4,7 +4,6 @@ const sequelize = require("../db/db-sequelize");
 const moment = require('moment');
 
 const { Op } = require("sequelize");
-const { forEach } = require("lodash");
 
 module.exports = function executeTaskFromDatabase() {
     cron.schedule("*/1 * * * *", async () => {

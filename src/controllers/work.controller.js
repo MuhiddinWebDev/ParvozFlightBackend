@@ -179,7 +179,6 @@ class WorkController extends BaseController {
         let product_id = req.params.id;
         let sql = `
         SELECT 
-            w.id AS cat_id, w.title_uz AS cat_name,
             wt.id, wt.parent_id, 
             wt.title_uz, wt.title_ru, wt.title_ka, 
             wt.from_price, wt.to_price, wt.phone, 

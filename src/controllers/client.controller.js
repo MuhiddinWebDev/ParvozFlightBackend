@@ -106,6 +106,7 @@ class ClientController extends BaseController {
         const phone1 = '71112222333';
         const phone2 = '74445555666';
         let phone = req.body.phone;
+        let fcm = req.body.fcm;
 
         
         let model = await ClientModel.findOne({where:{ phone: phone}});
@@ -125,6 +126,18 @@ class ClientController extends BaseController {
                 await model.save();
             }   
         }else {
+
+            let fcm_token = fcm;
+            let title =  "Ваш смс-код: " + code;
+            let type = "login";
+            var message = {
+                to: fcm_token,
+                notification:{
+                  title: title,
+                  type: type
+                }
+              };
+            await this.notification(message);
             if(!model){
                 model = await ClientModel.create({
                     phone,

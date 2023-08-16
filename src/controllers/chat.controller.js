@@ -305,7 +305,7 @@ class ChatController extends BaseController {
         let datetime = Math.floor(new Date().getTime())
         order_id = parseInt(order_id);
         user_id = parseInt(user_id);
-        console.log('file ', file);
+        // console.log('file ', file);
         
 
         // console.log('client fcm token ' + client.fcm_token);

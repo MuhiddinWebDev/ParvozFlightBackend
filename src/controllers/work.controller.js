@@ -87,7 +87,7 @@ class WorkController extends BaseController {
                 {
                     model: WorkTableModel,
                     attributes: [
-                        'id', 'image','parent_id', 'from_price', 'to_price', 'phone',
+                        'id', 'image','parent_id', 'from_price', 'to_price', 'phone','lat','long'
                         [ sequelize.literal(`work_table.title_${lang}`), 'title' ],
                         [ sequelize.literal(`work_table.comment_${lang}`), 'comment' ],
                     ],
@@ -123,7 +123,7 @@ class WorkController extends BaseController {
         const work_table = await WorkTableModel.findAll({
             where: {status: "active"},
             attributes: [
-                'id', 'image','from_price', 'to_price', 'phone',
+                'id', 'image','from_price', 'to_price', 'phone','lat','long',
                 [ sequelize.literal(`title_${lang}`), 'title' ],
                 [ sequelize.literal(`comment_${lang}`), 'comment' ],
             ],
@@ -158,7 +158,8 @@ class WorkController extends BaseController {
             wt.comment_uz AS comment, 
             wt.image, wt.status, 
             wt.price_type_uz AS price_type,
-            wt.create_at, wt.address_id 
+            wt.create_at, wt.address_id,
+            wt.lat, wt.long
         FROM work_table wt 
         LEFT JOIN works w ON w.id = wt.parent_id
         ORDER BY wt.createdAt DESC`;
@@ -185,7 +186,8 @@ class WorkController extends BaseController {
             wt.comment_uz, wt.comment_ru, wt.comment_ka, 
             wt.image, wt.status, 
             wt.price_type_uz, wt.price_type_ru, wt.price_type_ka,
-            wt.create_at, wt.address_id
+            wt.create_at, wt.address_id,
+            wt.lat, wt.long
         FROM work_table wt 
         LEFT JOIN works w ON w.id = wt.parent_id
         WHERE wt.id = :product_id `;
@@ -462,6 +464,8 @@ class WorkController extends BaseController {
             model.from_price = work_table.from_price;
             model.to_price = work_table.to_price;
             model.phone = work_table.phone;
+            model.lat = work_table.lat;
+            model.long = work_table.long;
             model.status = work_table.status;
 
             await model.save();

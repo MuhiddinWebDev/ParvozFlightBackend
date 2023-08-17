@@ -48,7 +48,7 @@ router.get('/all', auth(), awaitHandlerFactory(workController.getAllWeb));
 router.get('/all/product', auth(), awaitHandlerFactory(workController.getAllWebProduct));
 router.get('/all-product', clientAuth(), awaitHandlerFactory(workController.getAllProduct));
 router.get('/id/:id', auth(), awaitHandlerFactory(workController.getById));
-router.get('/one/id/:id', awaitHandlerFactory(workController.getOne));
+router.get('/one/id/:id', clientAuth(), awaitHandlerFactory(workController.getOne));
 router.get('/product/id/:id', auth(), awaitHandlerFactory(workController.getByIdProduct));
 router.post('/', auth(Role.Admin), joiMiddleware(workSchemas.createAdmin), awaitHandlerFactory(workController.create));
 router.post('/create', clientAuth(), joiMiddleware(workSchemas.createProduct), awaitHandlerFactory(workController.createWork));

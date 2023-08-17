@@ -87,7 +87,7 @@ class WorkController extends BaseController {
                 {
                     model: WorkTableModel,
                     attributes: [
-                        'id', 'image','parent_id', 'from_price', 'to_price', 'phone','lat','long'
+                        'id', 'image','parent_id', 'from_price', 'to_price', 'phone','lat','long',
                         [ sequelize.literal(`work_table.title_${lang}`), 'title' ],
                         [ sequelize.literal(`work_table.comment_${lang}`), 'comment' ],
                     ],

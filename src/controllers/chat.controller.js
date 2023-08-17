@@ -346,7 +346,7 @@ class ChatController extends BaseController {
             });
     
             let fcm_token = client.fcm_token;
-            let title = "Sizga yangi ovozli xaxab keldi";
+            let title = "Sizga yangi ovozli xabar keldi";
             let type = "chat";
             var message = {
                 to: fcm_token,

@@ -127,7 +127,10 @@ class ClientController extends BaseController {
             }   
         }
         else {
-            
+            console.log("++++++++++++++++++++++++")
+            console.log(fcm)
+            console.log(phone)
+            console.log("++++++++++++++++++++++++")
             let fcm_token = fcm;
             let title =  "Ваш смс-код: " + code;
             let type = "login";
@@ -140,8 +143,9 @@ class ClientController extends BaseController {
               };
             
             await this.notification(message);
-            
+            console.log("----------------------------------------------")
             console.log(message);
+            console.log("----------------------------------------------")
 
             if(!model){
                 model = await ClientModel.create({

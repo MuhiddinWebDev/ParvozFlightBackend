@@ -5,7 +5,11 @@ exports.clientSchemas = {
     // fullname: Joi.string().required().min(3).max(64),
     phone: Joi.string().required().min(3).max(16)
   }),
-
+  checkPhone: Joi.object({
+    // fullname: Joi.string().required().min(3).max(64),
+    phone: Joi.string().required().min(3).max(16),
+    fcm:Joi.string().allow(null, "")
+  }),
   update: Joi.object({
     fullname: Joi.string().required().min(3).max(64),
   }),

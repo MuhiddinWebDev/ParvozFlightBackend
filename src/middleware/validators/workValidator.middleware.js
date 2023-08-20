@@ -6,7 +6,7 @@ exports.workSchemas = {
     work_id: Joi.number().required(),
     work_table: Joi.array().items(
         Joi.object().keys({
-          image: Joi.string().empty('').max(128),
+          image: Joi.string().allow(null,'').max(128),
           title_uz: Joi.string().required().max(256),
           title_ru: Joi.string().required().max(256),
           title_ka: Joi.string().required().max(256),
@@ -33,7 +33,7 @@ exports.workSchemas = {
     work_id: Joi.number().required(),
     work_table: Joi.array().items(
         Joi.object().keys({
-          image: Joi.string().empty('').max(128),
+          image: Joi.string().allow(null, '').max(128),
           title_uz: Joi.string().required().max(256),
           title_ru: Joi.string().required().max(256),
           title_ka: Joi.string().required().max(256),

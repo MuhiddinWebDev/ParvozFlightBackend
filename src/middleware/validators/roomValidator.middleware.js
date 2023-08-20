@@ -16,16 +16,16 @@ exports.roomSchemas = {
     address_id: Joi.number().required(),
     price: Joi.number().required(),
     phone_number: Joi.string().max(16).required(),
-    comment_uz: Joi.string().required(),
-    comment_ru: Joi.string().required(),
-    comment_ka: Joi.string().required(),
+    comment_uz: Joi.string().allow(null, '').required(),
+    comment_ru: Joi.string().allow(null, '').required(),
+    comment_ka: Joi.string().allow(null, '').required(),
     area: Joi.string().max(64).empty(''),
     status: Joi.string().valid('empty', 'busy').required(),
     images: Joi.array().items(
         Joi.object().keys({
           image: Joi.string().max(256).required()
         })
-    ).required(),
+    ).allow('', null).required(),
     long: Joi.number().precision(2).empty(''),
     lat: Joi.number().precision(2).empty('')    
   }),

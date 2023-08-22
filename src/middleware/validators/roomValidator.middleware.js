@@ -16,9 +16,9 @@ exports.roomSchemas = {
     address_id: Joi.number().required(),
     price: Joi.number().required(),
     phone_number: Joi.string().max(16).required(),
-    comment_uz: Joi.string().allow(null, '').required(),
-    comment_ru: Joi.string().allow(null, '').required(),
-    comment_ka: Joi.string().allow(null, '').required(),
+    comment_uz: Joi.string().allow(null, ''),
+    comment_ru: Joi.string().allow(null, ''),
+    comment_ka: Joi.string().allow(null, ''),
     area: Joi.string().max(64).empty(''),
     status: Joi.string().valid('empty', 'busy').required(),
     images: Joi.array().items(

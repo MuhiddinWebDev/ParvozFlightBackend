@@ -34,12 +34,16 @@ class ServicesController extends BaseController {
         let lang = req.get('Accept-Language');
         lang = lang? lang: 'uz';
         let query = {};
+        let query_params = {};
         query.status = "empty";
         if(req.query.address_id > 0){
             query.address_id = req.query.address_id;
         }
+        if(req.params.id > 0){
+            query_params.id = req.params.id;
+        }
         const modelList = await RoomModel.findOne({
-            where: { id: req.params.id},
+            where: query_params,
             attributes: [
                 'id',
                 [ sequelize.literal(`RoomModel.name_${lang}`), 'name' ]

@@ -19,7 +19,7 @@ exports.roomSchemas = {
     comment_uz: Joi.string().allow(null, ''),
     comment_ru: Joi.string().allow(null, ''),
     comment_ka: Joi.string().allow(null, ''),
-    area: Joi.string().max(64).empty(''),
+    area: Joi.string().max(64).allow(null, ''),
     status: Joi.string().valid('empty', 'busy').required(),
     images: Joi.array().items(
         Joi.object().keys({

@@ -14,12 +14,12 @@ class WorkController extends BaseController {
     getAll = async (req, res, next) => {
 
         let lang = req.get('Accept-Language');
-        lang = lang? lang: 'uz';
+        lang = lang ? lang : 'uz';
 
         let modelList = await WorkModel.findAll({
             attributes: [
                 'id',
-                [ sequelize.literal(`title_${lang}`), 'title' ]
+                [sequelize.literal(`title_${lang}`), 'title']
             ],
             order: [
                 ['id', 'ASC']
@@ -68,48 +68,93 @@ class WorkController extends BaseController {
     };
 
 
-    getOne = async (req, res, next) => {
+    getAllByIds = async (req, res, next) => {
         let lang = req.get('Accept-Language');
-        lang = lang? lang: 'uz';
+        lang = lang ? lang : 'uz';
         let query = {};
+        let body = req.body;
         query.status = "active";
-        if(req.query.address_id > 0){
+
+        if (req.query.address_id > 0) {
             query.address_id = req.query.address_id;
         }
+        if (body.address_id) {
+            query.address_id = body.address_id;
+        }
 
-        const work = await WorkModel.findOne({
+        if (body.parent_id) {
+            query.parent_id = body.parent_id;
+        }
+
+        // const work = await WorkModel.findOne({
+        //     attributes: [
+        //         'id',
+        //         [ sequelize.literal(`WorkModel.title_${lang}`), 'title' ]
+        //     ],
+        //     where: { id: req.params.id },
+        //     include: [
+        //         {
+        //             model: WorkTableModel,
+        //             attributes: [
+        //                 'id', 'image','parent_id', 'from_price', 'to_price', 'phone','lat','long',
+        //                 [ sequelize.literal(`work_table.title_${lang}`), 'title' ],
+        //                 [ sequelize.literal(`work_table.comment_${lang}`), 'comment' ],
+        //             ],
+        //             as: 'work_table',
+        //             where: query,
+        //             required: false,
+        //             include: [
+        //                 {
+        //                     model: AddressModel, 
+        //                     attributes: [
+        //                         [ sequelize.literal(`\`work_table->address\`.name_${lang}`), 'name' ]
+        //                     ],
+        //                     as: 'address',
+        //                     required: false
+        //                 }
+        //             ],
+        //         }
+        //     ],
+        // });
+        const work = await WorkTableModel.findAll({
             attributes: [
-                'id',
-                [ sequelize.literal(`WorkModel.title_${lang}`), 'title' ]
+                'id', 'image', 'parent_id', 'from_price', 'to_price', 'phone', 'lat', 'long',
+                [sequelize.literal(`title_${lang}`), 'title'],
+                [sequelize.literal(`comment_${lang}`), 'comment'],
             ],
-            where: { id: req.params.id },
             include: [
                 {
-                    model: WorkTableModel,
+                    model: AddressModel,
                     attributes: [
-                        'id', 'image','parent_id', 'from_price', 'to_price', 'phone','lat','long',
-                        [ sequelize.literal(`work_table.title_${lang}`), 'title' ],
-                        [ sequelize.literal(`work_table.comment_${lang}`), 'comment' ],
+                        'id',
+                        [sequelize.literal(`name_${lang}`), 'name']
                     ],
-                    as: 'work_table',
-                    where: query,
-                    required: false,
-                    include: [
-                        {
-                            model: AddressModel, 
-                            attributes: [
-                                [ sequelize.literal(`\`work_table->address\`.name_${lang}`), 'name' ]
-                            ],
-                            as: 'address',
-                            required: false
-                        }
-                    ],
+                    as: 'address',
+                    required: false
                 }
             ],
-        });
+            where: query,
+            required: false,
+        })
+
 
         if (!work) {
             throw new HttpException(404, req.mf('data not found'));
+        }
+
+        for (let i = 0; i < work.length; i++) {
+            let element = work[i];
+            let workParent = await WorkModel.findOne({
+                attributes: ['id',
+                    [sequelize.literal(`title_${lang}`), 'title']
+                ],
+                where: { id: element.parent_id },
+            })
+
+            element.dataValues.work_type = {
+                id: workParent.dataValues.id,
+                name: workParent.dataValues.title,
+            }
         }
 
         res.send(work);
@@ -118,20 +163,20 @@ class WorkController extends BaseController {
 
     getAllProduct = async (req, res, next) => {
         let lang = req.get('Accept-Language');
-        lang = lang? lang: 'uz';
+        lang = lang ? lang : 'uz';
 
         const work_table = await WorkTableModel.findAll({
-            where: {status: "active"},
+            where: { status: "active" },
             attributes: [
-                'id', 'image','from_price', 'to_price', 'phone','lat','long',
-                [ sequelize.literal(`title_${lang}`), 'title' ],
-                [ sequelize.literal(`comment_${lang}`), 'comment' ],
+                'id', 'image', 'from_price', 'to_price', 'phone', 'lat', 'long',
+                [sequelize.literal(`title_${lang}`), 'title'],
+                [sequelize.literal(`comment_${lang}`), 'comment'],
             ],
             include: [
                 {
-                    model: AddressModel, 
+                    model: AddressModel,
                     attributes: [
-                        [ sequelize.literal(`address.name_${lang}`), 'name' ]
+                        [sequelize.literal(`address.name_${lang}`), 'name']
                     ],
                     as: 'address',
                     required: false
@@ -245,16 +290,16 @@ class WorkController extends BaseController {
             throw new HttpException(500, error.message);
         }
     };
-    
+
 
     create = async (req, res, next) => {
 
         let { work_table, work_id } = req.body;
-        
+
         let t = await sequelize.transaction()
 
         try {
-            
+
             const work = await WorkModel.findOne({
                 where: { id: work_id }
             });
@@ -262,7 +307,7 @@ class WorkController extends BaseController {
             if (!work) {
                 throw new HttpException(404, req.mf('data not found'));
             }
-            
+
             for (let i = 0; i < work_table.length; i++) {
                 const element = work_table[i];
 
@@ -311,11 +356,11 @@ class WorkController extends BaseController {
     createWork = async (req, res, next) => {
 
         let { ...work_table } = req.body;
-        
+
         let t = await sequelize.transaction()
 
         try {
-            
+
 
             const model = await WorkTableModel.create({
                 parent_id: work_table.parent_id,
@@ -352,12 +397,12 @@ class WorkController extends BaseController {
 
         let { title_uz, title_ru, title_ka } = req.body;
         // console.log('title ', title_uz);
-        
+
         let t = await sequelize.transaction()
-        
+
         try {
-            
-        
+
+
             const model = await WorkModel.create({
                 title_uz: title_uz,
                 title_ru: title_ru,
@@ -381,13 +426,13 @@ class WorkController extends BaseController {
 
         let { work_table } = req.body;
 
-        const model = await WorkModel.findOne({ where: { id: req.params.id }} );
+        const model = await WorkModel.findOne({ where: { id: req.params.id } });
 
         if (!model) {
             throw new HttpException(404, req.mf('data not found'));
         }
 
-    
+
         let t = await sequelize.transaction()
         try {
 
@@ -395,7 +440,7 @@ class WorkController extends BaseController {
 
             await this.#deleteRelated(model.id);
 
-    
+
             for (let i = 0; i < work_table.length; i++) {
                 const element = work_table[i];
 
@@ -435,7 +480,7 @@ class WorkController extends BaseController {
             await t.rollback();
             throw new HttpException(500, error.message)
         }
-    
+
     };
 
 
@@ -443,7 +488,7 @@ class WorkController extends BaseController {
 
         let { ...work_table } = req.body;
 
-        let model = await WorkTableModel.findOne({ where: { id: req.params.id }} );
+        let model = await WorkTableModel.findOne({ where: { id: req.params.id } });
 
         if (!model) {
             throw new HttpException(404, req.mf('data not found'));
@@ -482,7 +527,7 @@ class WorkController extends BaseController {
             await t.rollback();
             throw new HttpException(500, error.message)
         }
-    
+
     };
 
 
@@ -490,12 +535,12 @@ class WorkController extends BaseController {
 
         let { ...works } = req.body;
 
-        const model = await WorkModel.findOne({ where: { id: req.params.id }} );
+        const model = await WorkModel.findOne({ where: { id: req.params.id } });
 
         if (!model) {
             throw new HttpException(404, req.mf('data not found'));
         }
-    
+
         let t = await sequelize.transaction()
         try {
 
@@ -516,17 +561,17 @@ class WorkController extends BaseController {
             await t.rollback();
             throw new HttpException(500, error.message)
         }
-    
+
     };
 
 
     delete = async (req, res, next) => {
-        const model = await WorkModel.findOne({ where : { id: req.params.id } })
-        
+        const model = await WorkModel.findOne({ where: { id: req.params.id } })
+
         if (!model) {
             throw new HttpException(404, req.mf('data not found'));
         }
-        
+
         try {
             await this.#deleteRelated(model.id);
             await model.destroy({ force: true });
@@ -540,12 +585,12 @@ class WorkController extends BaseController {
 
 
     deleteProduct = async (req, res, next) => {
-        const model = await WorkTableModel.findOne({ where : { id: req.params.id } })
-        
+        const model = await WorkTableModel.findOne({ where: { id: req.params.id } })
+
         if (!model) {
             throw new HttpException(404, req.mf('data not found'));
         }
-        
+
         try {
             await model.destroy({ force: true });
         } catch (error) {
@@ -569,12 +614,12 @@ class WorkController extends BaseController {
     #deleteRelated = async (parent_id) => {
         let work_table = WorkTableModel.findAll({ where: { parent_id: parent_id } });
 
-        if(work_table){
+        if (work_table) {
             await WorkTableModel.destroy({
                 where: { parent_id: parent_id },
                 force: true
             }, { transaction: t });
-        }else{
+        } else {
             await WorkTableModel.destroy({
                 where: { parent_id: parent_id },
                 force: true

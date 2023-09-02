@@ -108,8 +108,7 @@ class ServicesController extends BaseController {
             ],
         })
         for(let i = 0; i < modelList.length; i++){
-            let data = modelList[i];
-            let element = modelList[i].toJSON();
+            let element = modelList[i];
            
             let room =  await RoomModel.findOne({
                 attributes:['id', 
@@ -118,7 +117,7 @@ class ServicesController extends BaseController {
                 where: { id: element.parent_id},
             })
            
-            data.dataValues.room_type = {
+            element.dataValues.room_type = {
                 id: room.dataValues.id,
                 name: room.dataValues.name
             }

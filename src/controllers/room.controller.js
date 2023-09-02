@@ -107,9 +107,13 @@ class ServicesController extends BaseController {
                 }
             ],
         })
+        
+        if (!modelList) {
+            throw new HttpException(404, req.mf('data not found'));
+        }
+
         for(let i = 0; i < modelList.length; i++){
             let element = modelList[i];
-           
             let room =  await RoomModel.findOne({
                 attributes:['id', 
                 [ sequelize.literal(`name_${lang}`), 'name' ]
@@ -122,10 +126,6 @@ class ServicesController extends BaseController {
                 name: room.dataValues.name
             }
         } 
-        console.log(modelList);
-        if (!modelList) {
-            throw new HttpException(404, req.mf('data not found'));
-        }
 
         res.send(modelList);
     };

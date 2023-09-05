@@ -120,11 +120,12 @@ class ServicesController extends BaseController {
             ],
                 where: { id: element.parent_id},
             })
-           
-            element.dataValues.room_type = {
-                id: room.dataValues.id,
-                name: room.dataValues.name
-            }
+           if(room){
+               element.dataValues.room_type = {
+                   id: room.dataValues.id,
+                   name: room.dataValues.name
+               }
+           }
         } 
 
         res.send(modelList);

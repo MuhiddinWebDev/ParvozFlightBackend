@@ -75,9 +75,7 @@ class WorkController extends BaseController {
         let body = req.body;
         query.status = "active";
 
-        if (req.query.address_id > 0) {
-            query.address_id = req.query.address_id;
-        }
+       
         if (body.address_id) {
             query.address_id = body.address_id;
         }

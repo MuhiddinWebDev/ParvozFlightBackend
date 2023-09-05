@@ -148,10 +148,12 @@ class WorkController extends BaseController {
                 ],
                 where: { id: element.parent_id },
             })
-            console.log(workParent)
-            element.dataValues.work_type = {
-                id: workParent.dataValues.id,
-                name: workParent.dataValues.title,
+            console.log()
+            if(workParent){
+                element.dataValues.work_type = {
+                    id: workParent.dataValues.id,
+                    name: workParent.dataValues.title,
+                }
             }
         }
 

@@ -140,8 +140,6 @@ class WorkController extends BaseController {
         if (!work) {
             throw new HttpException(404, req.mf('data not found'));
         }
-        console.log(work);
-        console.log("++++++ test work");
         for (let i = 0; i < work.length; i++) {
             let element = work[i];
             let workParent = await WorkModel.findOne({
@@ -150,7 +148,7 @@ class WorkController extends BaseController {
                 ],
                 where: { id: element.parent_id },
             })
-
+            console.log(workParent)
             element.dataValues.work_type = {
                 id: workParent.dataValues.id,
                 name: workParent.dataValues.title,

@@ -6,7 +6,7 @@ const moment = require('moment');
 const { Op } = require("sequelize");
 
 module.exports = function executeTaskFromDatabase() {
-    cron.schedule("*/20 * * * *", async () => {
+    cron.schedule("*/1 * * * *", async () => {
         try {
             const result = await checkTicket(); // Await the async function and get the result
             console.log(result); // Log the result
@@ -26,10 +26,6 @@ module.exports = function executeTaskFromDatabase() {
                 date: { [Op.lte]: moment().format('YYYY-MM-DD HH:mm') }
             }
         });
-        
-        if (models.length === 0) {
-            throw new HttpException(404, 'Data not found');
-        }
 
         try {
             for (const element of models) {

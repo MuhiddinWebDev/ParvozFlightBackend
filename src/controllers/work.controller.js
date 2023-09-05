@@ -114,6 +114,7 @@ class WorkController extends BaseController {
         //         }
         //     ],
         // });
+
         const work = await WorkTableModel.findAll({
             attributes: [
                 'id', 'image', 'parent_id', 'from_price', 'to_price', 'phone', 'lat', 'long',
@@ -139,7 +140,8 @@ class WorkController extends BaseController {
         if (!work) {
             throw new HttpException(404, req.mf('data not found'));
         }
-
+        console.log(work);
+        console.log("++++++ test work");
         for (let i = 0; i < work.length; i++) {
             let element = work[i];
             let workParent = await WorkModel.findOne({

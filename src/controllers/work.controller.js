@@ -22,7 +22,7 @@ class WorkController extends BaseController {
                 [sequelize.literal(`title_${lang}`), 'title']
             ],
             order: [
-                ['id', 'ASC']
+                ['id', 'DESC']
             ]
         });
         res.send(modelList);
@@ -38,6 +38,9 @@ class WorkController extends BaseController {
                     required: false
                 }
             ],
+            order: [
+                ['id', 'DESC']
+            ]
         });
 
         if (!work) {
@@ -133,6 +136,9 @@ class WorkController extends BaseController {
                 }
             ],
             where: query,
+            order: [
+                ['id', 'DESC']
+            ],
             required: false,
         })
 

@@ -22,7 +22,7 @@ class ServicesController extends BaseController {
                 [ sequelize.literal(`name_${lang}`), 'name' ]
             ],
             order: [
-                ['id', 'ASC']
+                ['id', 'DESC']
             ]
         });
         res.send(modelList);
@@ -106,6 +106,7 @@ class ServicesController extends BaseController {
 
                 }
             ],
+            order:[['id', 'DESC']]
         })
         
         if (!modelList) {

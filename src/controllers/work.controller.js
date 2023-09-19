@@ -188,6 +188,9 @@ class WorkController extends BaseController {
                     required: false
                 }
             ],
+            order: [
+                ['id', 'DESC']
+            ]
         });
 
         if (!work_table) {
@@ -241,7 +244,8 @@ class WorkController extends BaseController {
             wt.lat, wt.long
         FROM work_table wt 
         LEFT JOIN works w ON w.id = wt.parent_id
-        WHERE wt.id = :product_id `;
+        WHERE wt.id = :product_id
+        ORDER BY wt.id `;
         let result = await sequelize.query(sql, {
             replacements: {
                 product_id,

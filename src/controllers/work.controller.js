@@ -4,6 +4,7 @@ const AddressModel = require('../models/address.model');
 const HttpException = require('../utils/HttpException.utils');
 const BaseController = require('./BaseController');
 const sequelize = require('../db/db-sequelize');
+const { Op } = require('sequelize')
 const moment = require('moment');
 const fs = require('fs')
 /******************************************************************************
@@ -78,7 +79,7 @@ class WorkController extends BaseController {
         let body = req.body;
         query.status = "active";
 
-       
+
         if (body.address_id) {
             query.address_id = body.address_id;
         }
@@ -86,6 +87,8 @@ class WorkController extends BaseController {
         if (body.parent_id) {
             query.parent_id = body.parent_id;
         }
+
+
 
         // const work = await WorkModel.findOne({
         //     attributes: [
@@ -122,6 +125,7 @@ class WorkController extends BaseController {
             attributes: [
                 'id', 'image', 'parent_id', 'from_price', 'to_price', 'phone', 'lat', 'long',
                 [sequelize.literal(`title_${lang}`), 'title'],
+                [sequelize.literal(`price_type_${lang}`), 'price_type'],
                 [sequelize.literal(`comment_${lang}`), 'comment'],
             ],
             include: [
@@ -155,7 +159,7 @@ class WorkController extends BaseController {
                 where: { id: element.parent_id },
             })
             console.log()
-            if(workParent){
+            if (workParent) {
                 element.dataValues.work_type = {
                     id: workParent.dataValues.id,
                     name: workParent.dataValues.title,
@@ -515,6 +519,9 @@ class WorkController extends BaseController {
             model.comment_uz = work_table.comment_uz;
             model.comment_ru = work_table.comment_ru;
             model.comment_ka = work_table.comment_ka;
+            model.price_type_uz = work_table.price_type_uz;
+            model.price_type_ru = work_table.price_type_ru;
+            model.price_type_ka = work_table.price_type_ka;
             model.image = work_table.image;
             model.from_price = work_table.from_price;
             model.to_price = work_table.to_price;

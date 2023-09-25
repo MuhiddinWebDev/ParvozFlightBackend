@@ -180,6 +180,7 @@ class WorkController extends BaseController {
             attributes: [
                 'id', 'image', 'from_price', 'to_price', 'phone', 'lat', 'long',
                 [sequelize.literal(`title_${lang}`), 'title'],
+                [sequelize.literal(`price_type_${lang}`,'price_type')],
                 [sequelize.literal(`comment_${lang}`), 'comment'],
             ],
             include: [

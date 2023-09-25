@@ -107,10 +107,7 @@ class ClientController extends BaseController {
         const phone2 = '74445555666';
         let phone = req.body.phone;
         let fcm = req.body.fcm;
-        console.log('-------------------------test----------------------------')
-        console.log(phone)
-        console.log(fcm)
-        console.log('-------------------------test----------------------------')
+      
         let model = await ClientModel.findOne({where:{ phone: phone}});
         if(phone == phone1 || phone == phone2){
             if(phone == phone1){

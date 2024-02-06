@@ -122,13 +122,13 @@ class AgentController extends BaseController {
         });
         
         if (!agent) {
-            throw new HttpException(401, req.mf('Incorrect login or password!'));
+            throw new HttpException(401, req.mf('Foydalnuvchi nomi yoki parol xato !!!'));
         }
         
         const isMatch = await bcrypt.compare(pass, agent.password);
 
         if (!isMatch) {
-            throw new HttpException(401, req.mf('Incorrect login or password!'));
+            throw new HttpException(401, req.mf('Foydalnuvchi nomi yoki parol xato !!!'));
         }
 
         // agent matched!

@@ -1,7 +1,6 @@
 const { DataTypes, Model } = require('sequelize');
 const sequelize = require('../db/db-sequelize');
 const RoomImageModel = require('./roomImage.model');
-const RoomModel = require('./room.model');
 const AddressModel = require('./address.model');
 class RoomTableModel extends Model {}
 
@@ -16,6 +15,10 @@ RoomTableModel.init({
         type: DataTypes.INTEGER,
         allowNull: false
     },
+    sex_id: {
+      type: DataTypes.INTEGER,
+      allowNull: true
+  },
     address_id: {
       type: DataTypes.INTEGER,
       allowNull: false,

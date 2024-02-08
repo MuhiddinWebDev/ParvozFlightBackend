@@ -10,6 +10,8 @@ const { userSchemas } = require('../middleware/validators/userValidator.middlewa
 
 
 router.get('/', auth(), awaitHandlerFactory(userController.getAll));
+router.get('/sex', auth(), awaitHandlerFactory(userController.getSex));
+router.get('/sex-phone', clientAuth(), awaitHandlerFactory(userController.getSex));
 router.get('/phone', clientAuth(), awaitHandlerFactory(userController.getPhone));
 router.get('/id/:id', auth(), awaitHandlerFactory(userController.getById));
 router.get('/username/:username', auth(), awaitHandlerFactory(userController.getByUsername));

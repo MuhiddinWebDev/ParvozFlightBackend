@@ -39,6 +39,23 @@ ClientModel.init({
       allowNull: true,
       defaultValue: "uz"
     },
+    age: {
+      type: DataTypes.INTEGER,
+      allowNull: true,
+    },
+    password: {
+      type: DataTypes.STRING(120),
+      allowNull: true,
+    },
+    sex_id: {
+      type: DataTypes.INTEGER,
+      allowNull: true,
+      // unique: true
+    },
+    passport: {
+      type: DataTypes.STRING(120),
+      allowNull: true,
+    },
 }, {
   sequelize,
   modelName: 'ClientModel',

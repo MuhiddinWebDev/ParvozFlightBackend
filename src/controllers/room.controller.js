@@ -358,6 +358,7 @@ class ServicesController extends BaseController {
                 parent_id: room_table.parent_id,
                 address_id: room_table.address_id,
                 price: room_table.price,
+                sex_id: room_table.sex_id,
                 phone_number: room_table.phone_number,
                 comment_uz: room_table.comment_uz,
                 comment_ru: room_table.comment_ru,
@@ -370,7 +371,6 @@ class ServicesController extends BaseController {
 
             for (let i = 0; i < images.length; i++) {
                 const element = images[i];
-
                 await RoomImageModel.create({
                     parent_id: model_table.id,
                     image: element.image,
@@ -425,6 +425,7 @@ class ServicesController extends BaseController {
             const model_table = await RoomTableModel.create({
                 parent_id: room_table.parent_id,
                 address_id: room_table.address_id,
+                sex_id: room_table.sex_id,
                 price: room_table.price,
                 phone_number: room_table.phone_number,
                 comment_uz: room_table.comment_uz,
@@ -509,6 +510,8 @@ class ServicesController extends BaseController {
             model_table.status = room_table.status;
             model_table.lat = room_table.lat;
             model_table.long = room_table.long;
+            model_table.sex_id = room_table.sex_id;
+            
             await model_table.save();
             await this.#deleteRelatedImage(model_table.id);
             for (let i = 0; i < images.length; i++) {

@@ -23,6 +23,44 @@ class UserController extends BaseController {
         });
         res.send(modelList);
     };
+    
+    getSex = async (req, res, next)=>{
+        let lang = req.get('Accept-Language');
+        lang = lang? lang: 'uz';
+        let kal = `${lang}`.slice(15, 17);
+        console.log(kal)
+        let result = [];
+        // let idx = req.params.id;
+        let model = [
+            {
+                id:1,
+                name_uz:'Umumiy',
+                name_ru:'Общий',
+                name_ka:'Генерал',
+            },
+            {
+                id:2,
+                name_uz:'Erkak',
+                name_ru:'Мужской',
+                name_ka:'Мард',
+            },
+            {
+                id:3,
+                name_uz:'Ayol',
+                name_ru:'Женский',
+                name_ka:'Зан',
+            }
+        ]
+    
+        for(let i = 0; i < model.length; i++){
+            let el = model[i]
+            result.push({
+                id: el.id,
+                name: el['name_' + kal]
+            })
+        }
+        res.send(result);
+    }
 
 
     getById = async (req, res, next) => {

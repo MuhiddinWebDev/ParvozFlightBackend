@@ -15,6 +15,7 @@ exports.roomSchemas = {
     parent_id: Joi.number().required(),
     address_id: Joi.number().required(),
     price: Joi.number().required(),
+    sex_id: Joi.number().required(),
     phone_number: Joi.string().max(16).required(),
     comment_uz: Joi.string().allow(null, ''),
     comment_ru: Joi.string().allow(null, ''),
@@ -27,7 +28,7 @@ exports.roomSchemas = {
         })
     ).allow('', null).required(),
     long: Joi.number().precision(2).empty(''),
-    lat: Joi.number().precision(2).empty('')    
+    lat: Joi.number().precision(2).empty('') 
   }),
 
 

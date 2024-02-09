@@ -44,6 +44,7 @@ module.exports = {
       await queryInterface.addColumn('room_table', 'sex_id', { 
         type: Sequelize.DataTypes.INTEGER,
         allowNull: true,
+        defaultValue:1
       });
 
       transaction.commit();

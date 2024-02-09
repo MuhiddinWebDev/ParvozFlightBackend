@@ -7,6 +7,7 @@ const sequelize = require("../db/db-sequelize");
 const { Op } = require("sequelize");
 const moment = require("moment");
 const fs = require("fs");
+const { query } = require("express-validator");
 /******************************************************************************
  *                              Work Controller
  ******************************************************************************/
@@ -191,24 +192,51 @@ class WorkController extends BaseController {
   };
 
   getAllWebProduct = async (req, res, next) => {
+    let filter = req.body;
+   
     let sql = `
         SELECT 
             w.id AS cat_id, w.title_uz AS cat_name,
             wt.id, wt.parent_id, 
+            wt.sex_id, wt.start_age, wt.end_age, wt.end_date,
             wt.title_uz AS title, 
             wt.from_price, wt.to_price, wt.phone, 
             wt.comment_uz AS comment, 
             wt.image, wt.status, 
             wt.price_type_uz AS price_type,
             wt.create_at, wt.address_id,
+            address.name_uz as address_name,
             wt.lat, wt.long
         FROM work_table wt 
         LEFT JOIN works w ON w.id = wt.parent_id
+        LEFT JOIN address ON wt.address_id = address.id
+        ${filter.status ? `WHERE wt.status = '${filter.status}'` : ''}
         ORDER BY wt.createdAt DESC`;
     let result = await sequelize.query(sql, {
       type: sequelize.QueryTypes.SELECT,
       raw: true,
     });
+    let sex_model = [
+      {
+        id: 1,
+        name_uz: "Umumiy",
+      },
+      {
+        id: 2,
+        name_uz: "Erkak",
+      },
+      {
+        id: 3,
+        name_uz: "Ayol",
+      },
+    ];
+    result.forEach(row => {
+      let sexObject = sex_model.find(sex => sex.id === row.sex_id);
+      
+      if (sexObject) {
+          row.sex_name = sexObject.name_uz;
+      }
+  });
 
     if (!result) {
       throw new HttpException(404, req.mf("data not found"));
@@ -284,7 +312,7 @@ class WorkController extends BaseController {
   };
 
   create = async (req, res, next) => {
-    console.log('TESTTTTT____________________________')
+    console.log("TESTTTTT____________________________");
     let { work_table, work_id } = req.body;
 
     let t = await sequelize.transaction();
@@ -323,7 +351,7 @@ class WorkController extends BaseController {
             price_type_ru: element.price_type_ru,
             price_type_ka: element.price_type_ka,
             sex_id: element.sex_id,
-            end_date: element.end_date,
+            end_date: element.end_date / 1000,
             start_age: element.start_age,
             end_age: element.end_age,
           },
@@ -376,7 +404,7 @@ class WorkController extends BaseController {
           price_type_ru: work_table.price_type_ru,
           price_type_ka: work_table.price_type_ka,
           sex_id: work_table.sex_id,
-          end_date: work_table.end_date,
+          end_date: work_table.end_date / 1000,
           start_age: work_table.start_age,
           end_age: work_table.end_age,
         },
@@ -422,7 +450,6 @@ class WorkController extends BaseController {
 
   update = async (req, res, next) => {
     let { work_table } = req.body;
-
     const model = await WorkModel.findOne({ where: { id: req.params.id } });
 
     if (!model) {
@@ -451,7 +478,7 @@ class WorkController extends BaseController {
             phone: element.phone,
             address_id: element.address_id,
             sex_id: element.sex_id,
-            end_date: element.end_date,
+            end_date: element.end_date / 1000,
             start_age: element.start_age,
             end_age: element.end_age,
           },
@@ -481,14 +508,13 @@ class WorkController extends BaseController {
 
   updateProduct = async (req, res, next) => {
     let { ...work_table } = req.body;
-
     let model = await WorkTableModel.findOne({ where: { id: req.params.id } });
 
     if (!model) {
       throw new HttpException(404, req.mf("data not found"));
     }
-
     let t = await sequelize.transaction();
+
     try {
       model.address_id = work_table.address_id;
       model.parent_id = work_table.parent_id;
@@ -509,7 +535,7 @@ class WorkController extends BaseController {
       model.long = work_table.long;
       model.status = work_table.status;
       model.sex_id = work_table.sex_id;
-      model.end_date = work_table.end_date;
+      model.end_date = work_table.end_date / 1000;
       model.start_age = work_table.start_age;
       model.end_age = work_table.end_age;
 

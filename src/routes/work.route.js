@@ -45,7 +45,7 @@ let upload = multer({
 
 router.get('/', clientAuth(), awaitHandlerFactory(workController.getAll));
 router.get('/all', auth(), awaitHandlerFactory(workController.getAllWeb));
-router.get('/all/product', auth(), awaitHandlerFactory(workController.getAllWebProduct));
+router.post('/all/product', auth(), awaitHandlerFactory(workController.getAllWebProduct));
 router.get('/all-product', clientAuth(), awaitHandlerFactory(workController.getAllProduct));
 router.get('/id/:id', auth(), awaitHandlerFactory(workController.getById));
 router.post('/all-by-id', clientAuth(), awaitHandlerFactory(workController.getAllByIds));

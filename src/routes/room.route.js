@@ -44,7 +44,7 @@ let upload = multer({
 
 router.get('/', clientAuth(), awaitHandlerFactory(roomController.getAll));
 router.get('/all', auth(), awaitHandlerFactory(roomController.getAll));
-router.get('/table', auth(), awaitHandlerFactory(roomController.getAllWebTable));
+router.post('/table/all', auth(), awaitHandlerFactory(roomController.getAllWebTable));
 router.get('/table/id/:id', auth(), awaitHandlerFactory(roomController.getByIdTable));
 router.post('/deteil', awaitHandlerFactory(roomController.getDetail));
 router.get('/id/:id', auth(), awaitHandlerFactory(roomController.getById));

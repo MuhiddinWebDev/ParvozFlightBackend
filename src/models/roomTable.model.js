@@ -1,33 +1,34 @@
-const { DataTypes, Model } = require('sequelize');
-const sequelize = require('../db/db-sequelize');
-const RoomImageModel = require('./roomImage.model');
-const AddressModel = require('./address.model');
+const { DataTypes, Model } = require("sequelize");
+const sequelize = require("../db/db-sequelize");
+const RoomImageModel = require("./roomImage.model");
+const AddressModel = require("./address.model");
 class RoomTableModel extends Model {}
 
-RoomTableModel.init({
+RoomTableModel.init(
+  {
     id: {
       autoIncrement: true,
       type: DataTypes.INTEGER,
       allowNull: false,
-      primaryKey: true
+      primaryKey: true,
     },
     parent_id: {
-        type: DataTypes.INTEGER,
-        allowNull: false
+      type: DataTypes.INTEGER,
+      allowNull: false,
     },
     sex_id: {
       type: DataTypes.INTEGER,
       allowNull: true,
-      defaultValue:1
-  },
+      defaultValue: 1,
+    },
     address_id: {
       type: DataTypes.INTEGER,
       allowNull: false,
-      defaultValue: 1
+      defaultValue: 1,
     },
     price: {
-        type: DataTypes.INTEGER,
-        allowNull: false,
+      type: DataTypes.INTEGER,
+      allowNull: false,
     },
     phone_number: {
       type: DataTypes.STRING(16),
@@ -48,34 +49,41 @@ RoomTableModel.init({
     area: {
       type: DataTypes.STRING(64),
       allowNull: true,
-      defaultValue: ""
+      defaultValue: "",
     },
     status: {
-      type: DataTypes.ENUM('empty', 'busy'),
+      type: DataTypes.ENUM("empty", "busy"),
       allowNull: true,
-      defaultValue: 'empty'
+      defaultValue: "empty",
     },
     lat: {
       type: DataTypes.DOUBLE,
       allowNull: false,
-      defaultValue: 0
+      defaultValue: 0,
     },
     long: {
       type: DataTypes.DOUBLE,
       allowNull: false,
-      defaultValue: 0
+      defaultValue: 0,
     },
-}, {
-  sequelize,
-  modelName: 'RoomTableModel',
-  tableName: 'room_table',
-  timestamps: true,
-  paranoid: true,
+  },
+  {
+    sequelize,
+    modelName: "RoomTableModel",
+    tableName: "room_table",
+    timestamps: true,
+    paranoid: true,
+  }
+);
+
+RoomTableModel.hasMany(RoomImageModel, {
+  as: "images",
+  foreignKey: "parent_id",
 });
-
-
-RoomTableModel.hasMany(RoomImageModel , { as: 'images', foreignKey: 'parent_id' });
-RoomTableModel.belongsTo(AddressModel, { as: 'address', foreignKey: 'address_id' });
+RoomTableModel.belongsTo(AddressModel, {
+  as: "address",
+  foreignKey: "address_id",
+});
 // RoomTableModel.hasOne(RoomModel , { as: 'room', foreignKey: 'parent_id' });
 
 module.exports = RoomTableModel;

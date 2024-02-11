@@ -16,6 +16,7 @@ router.post('/phone', joiMiddleware(clientSchemas.checkPhone), awaitHandlerFacto
 router.get('/get-client', clientAuth(), awaitHandlerFactory(clientController.getClient));
 router.post('/', auth(Role.Admin), joiMiddleware(clientSchemas.create), awaitHandlerFactory(clientController.create));
 router.patch('/id/:id', clientAuth(), joiMiddleware(clientSchemas.update), awaitHandlerFactory(clientController.update));
+router.patch('/update/id/:id', auth(), joiMiddleware(clientSchemas.update), awaitHandlerFactory(clientController.update));
 router.delete('/id/:id', auth(Role.Admin), awaitHandlerFactory(clientController.delete));
 
 router.post('/login', joiMiddleware(clientSchemas.login), awaitHandlerFactory(clientController.clientLogin));

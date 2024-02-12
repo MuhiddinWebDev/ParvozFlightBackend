@@ -26,5 +26,9 @@ exports.clientSchemas = {
     // fullname: Joi.string().required().min(3).max(64),
     // token: Joi.string().required().max(64),
     fcm_token: Joi.string().empty('').max(64)
-  }), 
+  }),
+  signIn: Joi.object({
+    phone: Joi.string().required(),
+    password: Joi.string().required()
+  }) 
 };

@@ -1,18 +1,26 @@
-const { DataTypes, Model } = require('sequelize');
-const sequelize = require('../db/db-sequelize');
-class ClientModel extends Model {}
+const { DataTypes, Model } = require("sequelize");
+const sequelize = require("../db/db-sequelize");
+class ClientModel extends Model {
+  toJSON() {
+    //password ni ko'rsatmaslik uchun
+    let values = Object.assign({}, this.get());
+    delete values.password;
+    return values;
+  }
+}
 
-ClientModel.init({
-    id: { 
-        type: DataTypes.INTEGER, 
-        primaryKey: true, 
-        autoIncrement: true, 
-        allowNull: false
+ClientModel.init(
+  {
+    id: {
+      type: DataTypes.INTEGER,
+      primaryKey: true,
+      autoIncrement: true,
+      allowNull: false,
     },
     fullname: {
       type: DataTypes.STRING(64),
       allowNull: true,
-      defaultValue: ''
+      defaultValue: "",
     },
     phone: {
       type: DataTypes.STRING(16),
@@ -37,7 +45,7 @@ ClientModel.init({
     lang: {
       type: DataTypes.STRING(2),
       allowNull: true,
-      defaultValue: "uz"
+      defaultValue: "uz",
     },
     age: {
       type: DataTypes.INTEGER,
@@ -56,12 +64,14 @@ ClientModel.init({
       type: DataTypes.STRING(120),
       allowNull: true,
     },
-}, {
-  sequelize,
-  modelName: 'ClientModel',
-  tableName: 'client',
-  timestamps: true,
-  paranoid: true,
-});
+  },
+  {
+    sequelize,
+    modelName: "ClientModel",
+    tableName: "client",
+    timestamps: true,
+    paranoid: true,
+  }
+);
 
 module.exports = ClientModel;

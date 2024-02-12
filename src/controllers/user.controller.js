@@ -54,14 +54,13 @@ class UserController extends BaseController {
 
     for (let i = 0; i < model.length; i++) {
       let el = model[i];
-    
-      if(idx && el.id != idx){
-          result.push({
-            id: el.id,
-            name: el["name_" + kal],
-          });
+
+      if (idx && el.id != idx) {
+        result.push({
+          id: el.id,
+          name: el["name_" + kal],
+        });
       }
-   
     }
     res.send(result);
   };

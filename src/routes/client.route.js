@@ -20,5 +20,6 @@ router.patch('/update/id/:id', auth(), joiMiddleware(clientSchemas.update), awai
 router.delete('/id/:id', auth(Role.Admin), awaitHandlerFactory(clientController.delete));
 
 router.post('/login', joiMiddleware(clientSchemas.login), awaitHandlerFactory(clientController.clientLogin));
+router.post('/sign-in', joiMiddleware(clientSchemas.signIn), awaitHandlerFactory(clientController.clientSignIn));
 
 module.exports = router;

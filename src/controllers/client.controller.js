@@ -1,6 +1,9 @@
 const ClientModel = require("../models/client.model");
 const HttpException = require("../utils/HttpException.utils");
 const BaseController = require("./BaseController");
+const bcrypt = require("bcryptjs");
+const jwt = require("jsonwebtoken");
+const { secret_jwt } = require("../startup/config");
 const { Op } = require("sequelize");
 let JSMTRand = require("js_mt_rand");
 const UniqueStringGenerator = require("unique-string-generator");
@@ -32,8 +35,9 @@ class ClientController extends BaseController {
       },
     ];
     for (let i = 0; i < modelList.length; i++) {
-
-      let sexObject = sexOption.find((sex) => sex.id === modelList[i].dataValues.sex_id);
+      let sexObject = sexOption.find(
+        (sex) => sex.id === modelList[i].dataValues.sex_id
+      );
       if (sexObject) {
         modelList[i].dataValues.sex_name = sexObject.name_uz;
       }
@@ -86,6 +90,7 @@ class ClientController extends BaseController {
   };
 
   update = async (req, res, next) => {
+    await this.hashPassword(req);
     let { fullname, phone, password, age, sex_id } = req.body;
     const model = await ClientModel.findOne({ where: { id: req.params.id } });
 
@@ -96,7 +101,7 @@ class ClientController extends BaseController {
     try {
       model.fullname = fullname;
       model.phone = phone;
-      model.password = password;
+      if (password) model.password = password;
       model.sex_id = sex_id;
       model.age = age;
       model.save();
@@ -130,7 +135,6 @@ class ClientController extends BaseController {
     const phone2 = "74445555666";
     let phone = req.body.phone;
     let fcm = req.body.fcm;
-
     let model = await ClientModel.findOne({ where: { phone: phone } });
     if (phone == phone1 || phone == phone2) {
       if (phone == phone1) {
@@ -228,6 +232,7 @@ class ClientController extends BaseController {
 
   clientLogin = async (req, res, next) => {
     let { phone, code } = req.body;
+    console.log(phone)
     let token = UniqueStringGenerator.UniqueString(64);
     const model = await ClientModel.findOne({
       where: {
@@ -269,8 +274,41 @@ class ClientController extends BaseController {
       model.lang = lang;
       await model.save();
     }
-
     res.send(model);
+  };
+  clientSignIn = async (req, res, next) => {
+    this.checkValidation(req);
+    const { phone, password: pass } = req.body;
+    const client = await ClientModel.findOne({
+      
+      where: {
+        phone,
+      },
+    });
+
+    if (!client) {
+      throw new HttpException(
+        401,
+        req.mf("Bu telefon raqam ro'yxatdan o'tmagan")
+      );
+    }
+
+    const isMatch = await bcrypt.compare(pass, client.password);
+
+    if (!isMatch) {
+      throw new HttpException(401, req.mf("Telefon raqam yoki parol xato !!!"));
+    }
+
+    const token = jwt.sign({ client_id: client.id.toString() }, secret_jwt);
+
+    client.token = token;
+    client.save();
+    res.send(client);
+  };
+  hashPassword = async (req) => {
+    if (req.body.password) {
+      req.body.password = await bcrypt.hash(req.body.password, 8);
+    }
   };
 }
 

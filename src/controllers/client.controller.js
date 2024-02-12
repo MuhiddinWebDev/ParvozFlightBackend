@@ -57,6 +57,11 @@ class ClientController extends BaseController {
     res.send(model);
   };
 
+  currentClient = async (req, res, next) => {
+    let client = req.currentClient;
+    res.send(client);
+  };
+
   getByPhoneNumber = async (req, res, next) => {
     const model = await ClientModel.findOne({
       where: { phone: req.params.phone },
@@ -91,19 +96,24 @@ class ClientController extends BaseController {
 
   update = async (req, res, next) => {
     await this.hashPassword(req);
-    let { fullname, phone, password, age, sex_id } = req.body;
+
+    let { fullname, phone, password, age, sex_id, passport } = req.body;
     const model = await ClientModel.findOne({ where: { id: req.params.id } });
 
     if (!model) {
       throw new HttpException(404, req.mf("data not found"));
     }
     const t = await sequelize.transaction();
+    
     try {
+      
       model.fullname = fullname;
       model.phone = phone;
       if (password) model.password = password;
       model.sex_id = sex_id;
       model.age = age;
+      model.passport = passport;
+
       model.save();
       await t.commit();
     } catch (err) {
@@ -111,6 +121,21 @@ class ClientController extends BaseController {
     }
 
     res.send(model);
+  };
+
+  getUploadFile = async (req, res, next) => {
+    let { file } = req.body;
+
+    try {
+      if (!file) {
+        throw new HttpException(405, req.mf("file type is invalid"));
+      }
+
+      const model = { file_name: file };
+      res.send(model);
+    } catch (error) {
+      throw new HttpException(500, error.message);
+    }
   };
 
   delete = async (req, res, next) => {
@@ -232,7 +257,6 @@ class ClientController extends BaseController {
 
   clientLogin = async (req, res, next) => {
     let { phone, code } = req.body;
-    console.log(phone)
     let token = UniqueStringGenerator.UniqueString(64);
     const model = await ClientModel.findOne({
       where: {
@@ -280,7 +304,6 @@ class ClientController extends BaseController {
     this.checkValidation(req);
     const { phone, password: pass } = req.body;
     const client = await ClientModel.findOne({
-      
       where: {
         phone,
       },
@@ -289,7 +312,7 @@ class ClientController extends BaseController {
     if (!client) {
       throw new HttpException(
         401,
-        req.mf("Bu telefon raqam ro'yxatdan o'tmagan")
+        req.mf("Bu telefon raqam ro'yxatdan o'tmagan. Iltimos ro'yxatdan o'ting!!!")
       );
     }
 

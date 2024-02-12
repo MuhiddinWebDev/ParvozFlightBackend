@@ -158,9 +158,22 @@ class WorkController extends BaseController {
   getAllProduct = async (req, res, next) => {
     let lang = req.get("Accept-Language");
     lang = lang ? lang : "uz";
-
+    let client = req.currentClient;
+    
+    let query = {};
+    if (client.sex_id) {
+      query.sex_id = client.sex_id;
+    }
+    
+    if (client.age) {
+      query.start_age = { [Op.lte]: client.age };
+      query.end_age = { [Op.gte]: client.age };
+    }
+    
+    query.status = "active";
+    
     const work_table = await WorkTableModel.findAll({
-      where: { status: "active" },
+      where: query,
       attributes: [
         "id",
         "image",
@@ -169,6 +182,9 @@ class WorkController extends BaseController {
         "phone",
         "lat",
         "long",
+        "sex_id",
+        "start_age",
+        "end_age",
         [sequelize.literal(`title_${lang}`), "title"],
         [sequelize.literal(`price_type_${lang}`), "price_type"],
         [sequelize.literal(`comment_${lang}`), "comment"],
@@ -193,7 +209,7 @@ class WorkController extends BaseController {
 
   getAllWebProduct = async (req, res, next) => {
     let filter = req.body;
-   
+
     let sql = `
         SELECT 
             w.id AS cat_id, w.title_uz AS cat_name,
@@ -210,7 +226,7 @@ class WorkController extends BaseController {
         FROM work_table wt 
         LEFT JOIN works w ON w.id = wt.parent_id
         LEFT JOIN address ON wt.address_id = address.id
-        ${filter.status ? `WHERE wt.status = '${filter.status}'` : ''}
+        ${filter.status ? `WHERE wt.status = '${filter.status}'` : ""}
         ORDER BY wt.createdAt DESC`;
     let result = await sequelize.query(sql, {
       type: sequelize.QueryTypes.SELECT,
@@ -230,13 +246,13 @@ class WorkController extends BaseController {
         name_uz: "Ayol",
       },
     ];
-    result.forEach(row => {
-      let sexObject = sex_model.find(sex => sex.id === row.sex_id);
-      
+    result.forEach((row) => {
+      let sexObject = sex_model.find((sex) => sex.id === row.sex_id);
+
       if (sexObject) {
-          row.sex_name = sexObject.name_uz;
+        row.sex_name = sexObject.name_uz;
       }
-  });
+    });
 
     if (!result) {
       throw new HttpException(404, req.mf("data not found"));

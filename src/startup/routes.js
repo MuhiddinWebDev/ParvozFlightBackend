@@ -93,6 +93,7 @@ module.exports = async function(app){
         app.use(`/api/v1/uploads/work`, express.static('uploads/work'));
         app.use(`/api/v1/uploads/room`, express.static('uploads/room'));
         app.use(`/api/v1/uploads/category`, express.static('uploads/category'));
+        app.use(`/api/v1/uploads/client`, express.static('uploads/client'));
 
         app.use(`/api/v1/users`, userRouter);
         app.use(`/api/v1/banner`, bannerRouter);

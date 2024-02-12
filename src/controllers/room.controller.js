@@ -6,6 +6,7 @@ const HttpException = require("../utils/HttpException.utils");
 const BaseController = require("./BaseController");
 const sequelize = require("../db/db-sequelize");
 const fs = require("fs");
+const { Op } = require("sequelize");
 /******************************************************************************
  *                              Services Controller
  ******************************************************************************/
@@ -25,14 +26,20 @@ class ServicesController extends BaseController {
     let lang = req.get("Accept-Language");
     lang = lang ? lang : "uz";
     let body = req.body;
+    let client = req.currentClient;
     let query = {};
-
+    console.log(client)
     query.status = "empty";
+
     if (body.address_id) {
       query.address_id = body.address_id;
     }
+
     if (body.parent_id) {
       query.parent_id = body.parent_id;
+    }
+    if(client){
+      query.sex_id = { [Op.in]: [1, client.sex_id]};
     }
     // const modelList = await RoomModel.findAll({
     //     where: room_query,
@@ -83,6 +90,7 @@ class ServicesController extends BaseController {
         "status",
         "lat",
         "long",
+        "sex_id",
         [sequelize.literal(`comment_${lang}`), "comment"],
       ],
       include: [

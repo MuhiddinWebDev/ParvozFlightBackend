@@ -17,6 +17,27 @@ class ClientController extends BaseController {
     let modelList = await ClientModel.findAll({
       order: [["id", "DESC"]],
     });
+    let sexOption = [
+      {
+        id: 2,
+        name_uz: "Erkak",
+        name_ru: "Мужской",
+        name_ka: "Мард",
+      },
+      {
+        id: 3,
+        name_uz: "Ayol",
+        name_ru: "Женский",
+        name_ka: "Зан",
+      },
+    ];
+    for (let i = 0; i < modelList.length; i++) {
+
+      let sexObject = sexOption.find((sex) => sex.id === modelList[i].dataValues.sex_id);
+      if (sexObject) {
+        modelList[i].dataValues.sex_name = sexObject.name_uz;
+      }
+    }
     res.send(modelList);
   };
 
@@ -65,7 +86,7 @@ class ClientController extends BaseController {
   };
 
   update = async (req, res, next) => {
-    let { fullname, phone , password} = req.body;
+    let { fullname, phone, password, age, sex_id } = req.body;
     const model = await ClientModel.findOne({ where: { id: req.params.id } });
 
     if (!model) {
@@ -76,10 +97,12 @@ class ClientController extends BaseController {
       model.fullname = fullname;
       model.phone = phone;
       model.password = password;
+      model.sex_id = sex_id;
+      model.age = age;
       model.save();
       await t.commit();
     } catch (err) {
-        await t.rollback()
+      await t.rollback();
     }
 
     res.send(model);

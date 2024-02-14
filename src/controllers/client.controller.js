@@ -96,8 +96,7 @@ class ClientController extends BaseController {
 
   update = async (req, res, next) => {
     await this.hashPassword(req);
-
-    let { fullname, phone, password, age, sex_id, passport } = req.body;
+    let { fullname, phone, password, age, sex_id, passport, token, lang } = req.body;
     const model = await ClientModel.findOne({ where: { id: req.params.id } });
 
     if (!model) {
@@ -109,10 +108,12 @@ class ClientController extends BaseController {
       
       model.fullname = fullname;
       model.phone = phone;
+      model.lang = lang;
+      model.age = age;
       if (password) model.password = password;
       model.sex_id = sex_id;
-      model.age = age;
       model.passport = passport;
+      model.token = token;
 
       model.save();
       await t.commit();
@@ -287,8 +288,7 @@ class ClientController extends BaseController {
 
     const client_id = req.currentClient.id;
     let fcm_token = req.query.fcm_token;
-    // console.log('id ', client_id);
-    // console.log('fcm ', fcm_token);
+
 
     let model = await ClientModel.findOne({ where: { id: client_id } });
     if (!model) {
@@ -303,6 +303,7 @@ class ClientController extends BaseController {
   clientSignIn = async (req, res, next) => {
     this.checkValidation(req);
     const { phone, password: pass } = req.body;
+
     const client = await ClientModel.findOne({
       where: {
         phone,

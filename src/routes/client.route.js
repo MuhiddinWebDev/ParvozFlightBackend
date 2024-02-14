@@ -39,13 +39,13 @@ let uploadFile = multer({
 }).single('file');
 
 router.get('/',  auth(Role.Admin), awaitHandlerFactory(clientController.getAll));
-router.get('/id/:id',  auth(Role.Admin), awaitHandlerFactory(clientController.getById));
+router.get('/id/:id', awaitHandlerFactory(clientController.getById));
 router.get('/client',  clientAuth(), awaitHandlerFactory(clientController.currentClient));
 router.get('/phone/:phone', auth(), awaitHandlerFactory(clientController.getByPhoneNumber));
 router.post('/phone', joiMiddleware(clientSchemas.checkPhone), awaitHandlerFactory(clientController.checkPhone));
 router.get('/get-client', clientAuth(), awaitHandlerFactory(clientController.getClient));
 router.post('/', auth(Role.Admin), joiMiddleware(clientSchemas.create), awaitHandlerFactory(clientController.create));
-router.patch('/id/:id', clientAuth(), joiMiddleware(clientSchemas.update), awaitHandlerFactory(clientController.update));
+router.patch('/id/:id',  joiMiddleware(clientSchemas.update), awaitHandlerFactory(clientController.update));
 router.patch('/update/id/:id', auth(), joiMiddleware(clientSchemas.update), awaitHandlerFactory(clientController.update));
 router.delete('/id/:id', auth(Role.Admin), awaitHandlerFactory(clientController.delete));
 router.post('/file', uploadFile, awaitHandlerFactory(clientController.getUploadFile));

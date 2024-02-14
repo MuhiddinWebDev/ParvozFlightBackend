@@ -28,7 +28,6 @@ class ServicesController extends BaseController {
     let body = req.body;
     let client = req.currentClient;
     let query = {};
-    console.log(client)
     query.status = "empty";
 
     if (body.address_id) {

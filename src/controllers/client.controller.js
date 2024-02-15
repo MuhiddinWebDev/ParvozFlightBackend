@@ -96,7 +96,7 @@ class ClientController extends BaseController {
 
   update = async (req, res, next) => {
     await this.hashPassword(req);
-    let { fullname, phone, password, age, sex_id, passport, token, lang } = req.body;
+    let { fullname, phone, password, age, sex_id, file_front, file_back, token, lang } = req.body;
     const model = await ClientModel.findOne({ where: { id: req.params.id } });
 
     if (!model) {
@@ -112,7 +112,8 @@ class ClientController extends BaseController {
       model.age = age;
       if (password) model.password = password;
       model.sex_id = sex_id;
-      model.passport = passport;
+      model.file_front = file_front;
+      model.file_back = file_back;
       model.token = token;
 
       model.save();

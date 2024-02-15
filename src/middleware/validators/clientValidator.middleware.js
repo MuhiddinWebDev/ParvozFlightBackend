@@ -17,7 +17,8 @@ exports.clientSchemas = {
     age: Joi.number().allow(null),
     password:Joi.string().allow('',null),
     sex_id: Joi.number().allow(null),
-    passport: Joi.string().allow('',null)
+    file_front: Joi.string().allow('',null),
+    file_back: Joi.string().allow('',null)
   }),
 
   login: Joi.object({

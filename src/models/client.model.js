@@ -60,7 +60,11 @@ ClientModel.init(
       allowNull: true,
       // unique: true
     },
-    passport: {
+    file_front: {
+      type: DataTypes.STRING(120),
+      allowNull: true,
+    },
+    file_back: {
       type: DataTypes.STRING(120),
       allowNull: true,
     },

@@ -30,7 +30,8 @@ class BaseController{
     }
 
     sendSmsToLogin = (data) => {
-
+        console.log(data);
+        console.log("_____________________")
         var config = {
         method: 'post',
         url: 'https://yboburzhon@bk.ru:8afKebWawXU6BVX8bcZVweCBx-ArZVEM@gate.smsaero.ru/v2/sms/send',

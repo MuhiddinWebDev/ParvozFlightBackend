@@ -328,7 +328,6 @@ class WorkController extends BaseController {
   };
 
   create = async (req, res, next) => {
-    console.log("TESTTTTT____________________________");
     let { work_table, work_id } = req.body;
 
     let t = await sequelize.transaction();

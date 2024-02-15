@@ -103,9 +103,9 @@ class ClientController extends BaseController {
       throw new HttpException(404, req.mf("data not found"));
     }
     const t = await sequelize.transaction();
-    
+
     try {
-      
+
       model.fullname = fullname;
       model.phone = phone;
       model.lang = lang;
@@ -157,30 +157,20 @@ class ClientController extends BaseController {
 
   checkPhone = async (req, res, next) => {
     const code = mt.rand(111111, 999999);
-    const phone1 = "71112222333";
-    const phone2 = "74445555666";
+    // const phone1 = "71112222333";
+    // const phone2 = "74445555666";
     let phone = req.body.phone;
     let fcm = req.body.fcm;
     let model = await ClientModel.findOne({ where: { phone: phone } });
-    if (phone == phone1 || phone == phone2) {
-      if (phone == phone1) {
-        phone = phone1;
-      } else {
-        phone = phone2;
-      }
-      if (!model) {
-        model = await ClientModel.create({
-          phone: phone,
-          code: 123123,
-        });
-      } else {
-        model.code = 123123;
-        await model.save();
-      }
-    } else {
-      let fcm_token = fcm;
-      let title = "Ваш смс-код: " + code;
-      let type = "login";
+
+    let fcm_token = fcm;
+    let title = "Ваш смс-код: " + code;
+    let type = "login";
+    let data = {
+      check: false
+    }
+    if (!model) {
+      data.check = false;
       var message = {
         to: fcm_token,
         notification: {
@@ -188,72 +178,71 @@ class ClientController extends BaseController {
           type: type,
         },
       };
-
+      await ClientModel.create({
+        phone: phone,
+        code: code
+      })
       await this.notification(message);
 
-      if (!model) {
-        model = await ClientModel.create({
-          phone,
-          code,
-        });
-      } else {
-        model.code = code;
-        await model.save();
-      }
-      let text_phone = phone;
-      let result_ru = text_phone.indexOf("7");
-      let result_uz = text_phone.indexOf("9");
-      if (result_uz == 0) {
-        const urls = "https://send.smsxabar.uz/broker-api/send";
-        const username = "parvozfly";
-        const password = "A9ws0#L#[{j9";
-        const encodedCredentials = btoa(username + ":" + password);
-        await axios.default
-          .post(
-            urls,
-            {
-              messages: [
-                {
-                  recipient: phone,
-                  "message-id": "abc000000001",
-
-                  sms: {
-                    originator: "3700",
-                    content: {
-                      text: "Ваш смс-код: " + code,
-                    },
-                  },
-                },
-              ],
-            },
-            {
-              headers: {
-                Authorization: "Basic " + encodedCredentials,
-              },
-            }
-          )
-          .then((response) => {
-            if (response.data == "Request is received") {
-              // res.send(data);
-            } else {
-              data.title = "Sms kod yuborishda xatolik";
-              data.data = {};
-              res.send(data);
-            }
-          });
-      } else if (result_ru == 0) {
-        const text = "Ваш смс-код: " + code;
-        var data = JSON.stringify({
-          numbers: [phone],
-          sign: "SMS Aero",
-          text: text,
-        });
-
-        await this.sendSmsToLogin(data);
-      }
+      res.send(data);
+    } else {
+      model.code = code;
+      await model.save();
+      data.check = true
+      res.send(data);
     }
+    // let text_phone = phone;
+    // let result_ru = text_phone.indexOf("7");
+    // let result_uz = text_phone.indexOf("9");
+    // if (result_uz == 0) {
+    //   const urls = "https://send.smsxabar.uz/broker-api/send";
+    //   const username = "parvozfly";
+    //   const password = "A9ws0#L#[{j9";
+    //   const encodedCredentials = btoa(username + ":" + password);
+    //   await axios.default
+    //     .post(
+    //       urls,
+    //       {
+    //         messages: [
+    //           {
+    //             recipient: phone,
+    //             "message-id": "abc000000001",
 
-    res.send(model);
+    //             sms: {
+    //               originator: "3700",
+    //               content: {
+    //                 text: "Ваш смс-код: " + code,
+    //               },
+    //             },
+    //           },
+    //         ],
+    //       },
+    //       {
+    //         headers: {
+    //           Authorization: "Basic " + encodedCredentials,
+    //         },
+    //       }
+    //     )
+    //     .then((response) => {
+    //       if (response.data == "Request is received") {
+    //         // res.send(data);
+    //       } else {
+    //         data.title = "Sms kod yuborishda xatolik";
+    //         data.data = {};
+    //         res.send(data);
+    //       }
+    //     });
+    // } else if (result_ru == 0) {
+    //   const text = "Ваш смс-код: " + code;
+    //   var data = JSON.stringify({
+    //     numbers: [phone],
+    //     sign: "SMS Aero",
+    //     text: text,
+    //   });
+
+    //   await this.sendSmsToLogin(data);
+    // }
+
   };
 
   clientLogin = async (req, res, next) => {
@@ -300,6 +289,7 @@ class ClientController extends BaseController {
     }
     res.send(model);
   };
+
   clientSignIn = async (req, res, next) => {
     this.checkValidation(req);
     const { phone, password: pass } = req.body;
@@ -309,12 +299,9 @@ class ClientController extends BaseController {
         phone,
       },
     });
-
+    console.log('TEST______________________________________________')
     if (!client) {
-      throw new HttpException(
-        401,
-        req.mf("Bu telefon raqam ro'yxatdan o'tmagan. Iltimos ro'yxatdan o'ting!!!")
-      );
+      throw new HttpException(401, req.mf("Bu telefon raqam ro'yxatdan o'tmagan. Iltimos ro'yxatdan o'ting!!!"));
     }
 
     const isMatch = await bcrypt.compare(pass, client.password);
@@ -323,10 +310,11 @@ class ClientController extends BaseController {
       throw new HttpException(401, req.mf("Telefon raqam yoki parol xato !!!"));
     }
 
-    const token = jwt.sign({ client_id: client.id.toString() }, secret_jwt);
+    let token = UniqueStringGenerator.UniqueString(64);
 
     client.token = token;
     client.save();
+
     res.send(client);
   };
   hashPassword = async (req) => {

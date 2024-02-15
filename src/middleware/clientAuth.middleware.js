@@ -4,6 +4,7 @@ const ClientModel = require('../models/client.model');
 const auth = () => {
     return async function (req, res, next) {
         try {
+
             const token = req.headers.token;
             
 
@@ -12,8 +13,9 @@ const auth = () => {
             // }
 
             // Verify Token
+        
             const client = await ClientModel.findOne({ where: {token: token }});
-            
+         
             if (!client) {
                 throw new HttpException(401, req.mf('Authentication failed!'));
             }

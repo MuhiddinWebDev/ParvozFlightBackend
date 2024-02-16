@@ -300,7 +300,6 @@ class ClientController extends BaseController {
         phone,
       },
     });
-    console.log('TEST______________________________________________')
     if (!client) {
       throw new HttpException(401, req.mf("Bu telefon raqam ro'yxatdan o'tmagan. Iltimos ro'yxatdan o'ting!!!"));
     }
@@ -323,6 +322,14 @@ class ClientController extends BaseController {
       req.body.password = await bcrypt.hash(req.body.password, 8);
     }
   };
+  #deleteFile = (file) => {
+    try {
+      fs.unlinkSync('./uploads/client/' + file);
+    } catch (error) {
+      return 0;
+    }
+    return 1;
+  }
 }
 
 /******************************************************************************

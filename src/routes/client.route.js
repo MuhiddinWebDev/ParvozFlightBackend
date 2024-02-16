@@ -16,7 +16,6 @@ const storage = multer.diskStorage({
         cb(null, './uploads/client/');
     },
     filename: function (req, file, cb) {
-        console.log(req.body)
         const time = Math.floor(new Date().getTime());
         req.body.file = "client_" + time + "_" + UniqueStringGenerator.UniqueString() + path.extname(file.originalname);
         cb(null, req.body.file);
@@ -49,7 +48,6 @@ router.patch('/id/:id', clientAuth(), joiMiddleware(clientSchemas.update), await
 router.patch('/update/id/:id', auth(), joiMiddleware(clientSchemas.update), awaitHandlerFactory(clientController.update));
 router.delete('/id/:id', auth(Role.Admin), awaitHandlerFactory(clientController.delete));
 router.post('/file', uploadFile, awaitHandlerFactory(clientController.getUploadFile));
-
 router.post('/login', joiMiddleware(clientSchemas.login), awaitHandlerFactory(clientController.clientLogin));
 router.post('/sign-in', joiMiddleware(clientSchemas.signIn), awaitHandlerFactory(clientController.clientSignIn));
 

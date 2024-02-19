@@ -1,4 +1,5 @@
 const ClientModel = require("../models/client.model");
+const ClientTableModel = require("../models/clientTable.model")
 const HttpException = require("../utils/HttpException.utils");
 const BaseController = require("./BaseController");
 const bcrypt = require("bcryptjs");
@@ -8,7 +9,7 @@ const { Op } = require("sequelize");
 let JSMTRand = require("js_mt_rand");
 const UniqueStringGenerator = require("unique-string-generator");
 const { text } = require("express");
-
+const fs = require('fs').promises;
 var axios = require("axios");
 const sequelize = require("../db/db-sequelize");
 let mt = new JSMTRand();
@@ -47,6 +48,13 @@ class ClientController extends BaseController {
 
   getById = async (req, res, next) => {
     const model = await ClientModel.findOne({
+      include: [
+        {
+          model: ClientTableModel,
+          as: 'client_table',
+          required: false,
+        }
+      ],
       where: { id: req.params.id },
     });
 
@@ -96,7 +104,7 @@ class ClientController extends BaseController {
 
   update = async (req, res, next) => {
     await this.hashPassword(req);
-    let { fullname, phone, password, age, sex_id, file_front, file_back, token, lang } = req.body;
+    let { fullname, phone, password, age, sex_id, file_front, file_back, token, lang, client_table } = req.body;
     const model = await ClientModel.findOne({ where: { id: req.params.id } });
 
     if (!model) {
@@ -116,7 +124,22 @@ class ClientController extends BaseController {
       model.file_back = file_back;
       model.token = token;
 
-      model.save();
+      this.#deleteClient(model.id)
+      console.log(client_table);
+      console.log("client_table.length___________________________-");
+      for (let i = 0; i < client_table.length; i++) {
+        try {
+            let el = client_table[i];
+            await ClientTableModel.create({
+                client_id: model.id, // Ensure model.id is correctly defined
+                file: el.file,
+            });
+        } catch (error) {
+            console.error('Error creating ClientTableModel:', error);
+        }
+    }
+      await model.save();
+
       await t.commit();
     } catch (err) {
       await t.rollback();
@@ -322,11 +345,19 @@ class ClientController extends BaseController {
       req.body.password = await bcrypt.hash(req.body.password, 8);
     }
   };
-  #deleteFile = (file) => {
+  #deleteClient = async (client_id) => {
+    const model = await ClientTableModel.findAll({ where: { client_id: client_id } });
+    if (!model) {
+      throw new HttpException(404, req.mf("data not found"));
+    }
     try {
-      fs.unlinkSync('./uploads/client/' + file);
+      for (let i = 0; i < model.length; i++) {
+        let el = model[i]
+        await fs.unlink('./uploads/client/' + el.file);
+        await el.destroy({ force: true });
+      }
     } catch (error) {
-      return 0;
+      await model.destroy()
     }
     return 1;
   }

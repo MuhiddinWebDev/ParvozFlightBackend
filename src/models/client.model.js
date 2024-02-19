@@ -1,5 +1,6 @@
 const { DataTypes, Model } = require("sequelize");
 const sequelize = require("../db/db-sequelize");
+const ClientTableModel = require('./clientTable.model')
 class ClientModel extends Model {
   toJSON() {
     //password ni ko'rsatmaslik uchun
@@ -78,4 +79,5 @@ ClientModel.init(
   }
 );
 
+ClientModel.hasMany(ClientTableModel, {as:'client_table',foreignKey:'client_id'})
 module.exports = ClientModel;

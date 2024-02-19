@@ -185,6 +185,7 @@ class WorkController extends BaseController {
         "sex_id",
         "start_age",
         "end_age",
+        "finished",
         [sequelize.literal(`title_${lang}`), "title"],
         [sequelize.literal(`price_type_${lang}`), "price_type"],
         [sequelize.literal(`comment_${lang}`), "comment"],
@@ -222,7 +223,7 @@ class WorkController extends BaseController {
             wt.price_type_uz AS price_type,
             wt.create_at, wt.address_id,
             address.name_uz as address_name,
-            wt.lat, wt.long
+            wt.lat, wt.long, wt.finished
         FROM work_table wt 
         LEFT JOIN works w ON w.id = wt.parent_id
         LEFT JOIN address ON wt.address_id = address.id
@@ -273,7 +274,7 @@ class WorkController extends BaseController {
             wt.image, wt.status, 
             wt.price_type_uz, wt.price_type_ru, wt.price_type_ka,
             wt.create_at, wt.address_id,
-            wt.lat, wt.long
+            wt.lat, wt.long, wt.finished
         FROM work_table wt 
         LEFT JOIN works w ON w.id = wt.parent_id
         WHERE wt.id = :product_id

@@ -15,6 +15,11 @@ WorkTableModel.init(
       type: DataTypes.INTEGER,
       allowNull: false,
     },
+    finished: {
+      type: DataTypes.STRING(100),
+      allowNull: true,
+      defaultValue:'no'
+    },
     sex_id: {
       type: DataTypes.INTEGER,
       allowNull: true,

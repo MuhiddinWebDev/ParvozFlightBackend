@@ -1,15 +1,18 @@
 const cron = require("node-cron");
 const TicketModel = require("../models/tickets.model");
+const WorkTable = require('../models/workTable.model');
+
 const sequelize = require("../db/db-sequelize");
 const moment = require('moment');
 
 const { Op } = require("sequelize");
 
 module.exports = function executeTaskFromDatabase() {
-    cron.schedule("*/20 * * * *", async () => {
+    cron.schedule("*/1 * * * *", async () => {
         try {
+
             const result = await checkTicket(); // Await the async function and get the result
-            console.log(result); // Log the result
+            const work_result = await checkWorkTable();
         } catch (err) {
             console.error("Error executing task:", err);
         }
@@ -19,7 +22,28 @@ module.exports = function executeTaskFromDatabase() {
             timezone: "Asia/Tashkent"
         }
     );
+    
+    async function checkWorkTable(){
+        let models = await WorkTable.findAll({
+            where: {
+                end_date: { [Op.lte]: moment().unix() }
+            }
+        });
 
+        try {
+            for (const element of models) {
+                element.finished = 'yes'
+                element.save()
+            }
+        } catch (error) {
+            for (const element of models) {
+                element.finished = 'no'
+                element.save()
+            }
+        }
+
+        return 'Data has been deleted';
+    }
     async function checkTicket() {
         let models = await TicketModel.findAll({
             where: {

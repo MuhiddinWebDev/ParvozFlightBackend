@@ -1,6 +1,16 @@
 const { DataTypes, Model } = require('sequelize');
 const sequelize = require('../db/db-sequelize');
-class ClientTableModel extends Model { }
+class ClientTableModel extends Model { 
+  toJSON () {//password ni ko'rsatmaslik uchun
+    let values = Object.assign({}, this.get());
+        delete values.client_id;
+        delete values.createdAt;
+        delete values.updatedAt;
+        delete values.deletedAt;
+        return values;
+    }
+}
+
 
 ClientTableModel.init({
   id: {

@@ -3,11 +3,14 @@ const sequelize = require("../db/db-sequelize");
 const ClientTableModel = require('./clientTable.model')
 class ClientModel extends Model {
   toJSON() {
-    //password ni ko'rsatmaslik uchun
     let values = Object.assign({}, this.get());
     delete values.password;
+    delete values.createdAt;
+    delete values.updatedAt;
+    delete values.deletedAt;
     return values;
   }
+
 }
 
 ClientModel.init(
@@ -79,5 +82,5 @@ ClientModel.init(
   }
 );
 
-ClientModel.hasMany(ClientTableModel, {as:'client_table',foreignKey:'client_id'})
+ClientModel.hasMany(ClientTableModel, { as: 'client_table', foreignKey: 'client_id' })
 module.exports = ClientModel;

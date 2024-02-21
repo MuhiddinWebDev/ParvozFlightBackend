@@ -8,7 +8,7 @@ const moment = require('moment');
 const { Op } = require("sequelize");
 
 module.exports = function executeTaskFromDatabase() {
-    cron.schedule("*/1 * * * *", async () => {
+    cron.schedule("*/30 * * * *", async () => {
         try {
 
             const result = await checkTicket(); // Await the async function and get the result

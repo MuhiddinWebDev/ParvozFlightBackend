@@ -67,7 +67,22 @@ class ClientController extends BaseController {
 
   currentClient = async (req, res, next) => {
     let client = req.currentClient;
-    res.send(client);
+    const model = await ClientModel.findOne({
+      include: [
+        {
+          model: ClientTableModel,
+          as: 'client_table',
+          required: false,
+        }
+      ],
+      where: { id: client.id },
+    });
+
+    if (!model) {
+      throw new HttpException(404, req.mf("data not found"));
+    }
+
+    res.send(model);
   };
 
   getByPhoneNumber = async (req, res, next) => {
@@ -123,22 +138,21 @@ class ClientController extends BaseController {
       model.file_front = file_front;
       model.file_back = file_back;
       model.token = token;
+      await model.save();
 
-      this.#deleteClient(model.id)
-      console.log(client_table);
-      console.log("client_table.length___________________________-");
+      this.#deleteClient(model.id, req);
+
       for (let i = 0; i < client_table.length; i++) {
         try {
-            let el = client_table[i];
-            await ClientTableModel.create({
-                client_id: model.id, // Ensure model.id is correctly defined
-                file: el.file,
-            });
+          let el = client_table[i];
+          await ClientTableModel.create({
+            client_id: model.id, // Ensure model.id is correctly defined
+            file: el.file,
+          });
         } catch (error) {
-            console.error('Error creating ClientTableModel:', error);
+          console.error('Error creating ClientTableModel:', error);
         }
-    }
-      await model.save();
+      }
 
       await t.commit();
     } catch (err) {
@@ -156,7 +170,7 @@ class ClientController extends BaseController {
         throw new HttpException(405, req.mf("file type is invalid"));
       }
 
-      const model = { file_name: file };
+      const model = { file: file };
       res.send(model);
     } catch (error) {
       throw new HttpException(500, error.message);
@@ -340,26 +354,34 @@ class ClientController extends BaseController {
 
     res.send(client);
   };
+
   hashPassword = async (req) => {
     if (req.body.password) {
       req.body.password = await bcrypt.hash(req.body.password, 8);
     }
   };
-  #deleteClient = async (client_id) => {
+
+  #deleteClient = async (client_id, req) => {
     const model = await ClientTableModel.findAll({ where: { client_id: client_id } });
-    if (!model) {
-      throw new HttpException(404, req.mf("data not found"));
-    }
+
     try {
-      for (let i = 0; i < model.length; i++) {
-        let el = model[i]
-        await fs.unlink('./uploads/client/' + el.file);
-        await el.destroy({ force: true });
+      if(model){
+        for (let i = 0; i < model.length; i++) {
+          let el = model[i];
+          await fs.unlink('./uploads/client/' + el.file);
+          await el.destroy({ force: true });
+  
+        }
       }
     } catch (error) {
-      await model.destroy()
+      if(model){
+        for (let i = 0; i < model.length; i++) {
+          let el = model[i];
+          await el.destroy({ force: true });
+        }
+      }
+
     }
-    return 1;
   }
 }
 

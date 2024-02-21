@@ -25,7 +25,7 @@ exports.workSchemas = {
           lat: Joi.number().precision(2).empty(''),
           address_id: Joi.number().required(),
           sex_id: Joi.number(),
-          end_date: Joi.number().allow(null),
+          end_date: Joi.number().allow(null,""),
           start_age: Joi.number().allow(null),
           end_age: Joi.number().allow(null),
         })
@@ -57,7 +57,7 @@ exports.workSchemas = {
           status: Joi.string().valid('new', 'active', 'rejected').required(),
           address_id: Joi.number().required(),
           sex_id: Joi.number().required(),
-          end_date: Joi.number().allow(null),
+          end_date: Joi.number().allow(null,""),
           start_age: Joi.number().allow(null),
           end_age: Joi.number().allow(null),
         })
@@ -95,7 +95,7 @@ exports.workSchemas = {
           status: Joi.string().valid('new', 'active', 'rejected').required(),
           address_id: Joi.number().required(),
           sex_id: Joi.number().required(),
-          end_date: Joi.number().allow(null),
+          end_date: Joi.number().allow(null,""),
           start_age: Joi.number().allow(null),
           end_age: Joi.number().allow(null),
         })
@@ -126,7 +126,7 @@ exports.workSchemas = {
     address_id: Joi.number().required(),
     sex_id: Joi.number().required(),
     start_age: Joi.number().allow(null),
-    end_date: Joi.number().allow(null),
+    end_date: Joi.number().allow(null,""),
     end_age: Joi.number().allow(null),
   }),
 
@@ -153,7 +153,7 @@ exports.workSchemas = {
     parent_id: Joi.number(),
     sex_id: Joi.number().allow(null),
     start_age: Joi.number().allow(null),
-    end_date: Joi.number().allow(null),
+    end_date: Joi.string(),
     end_age: Joi.number().allow(null),
   }),
 };

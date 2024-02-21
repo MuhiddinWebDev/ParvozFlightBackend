@@ -1,6 +1,7 @@
 const RoomModel = require("../models/room.model");
 const RoomTableModel = require("../models/roomTable.model");
 const RoomImageModel = require("../models/roomImage.model");
+const ClientModel = require("../models/client.model");
 const AddressModel = require("../models/address.model");
 const HttpException = require("../utils/HttpException.utils");
 const BaseController = require("./BaseController");
@@ -37,8 +38,8 @@ class ServicesController extends BaseController {
     if (body.parent_id) {
       query.parent_id = body.parent_id;
     }
-    if(client){
-      query.sex_id = { [Op.in]: [1, client.sex_id]};
+    if (client) {
+      query.sex_id = { [Op.in]: [1, client.sex_id] };
     }
     // const modelList = await RoomModel.findAll({
     //     where: room_query,
@@ -418,6 +419,7 @@ class ServicesController extends BaseController {
           },
         ],
       });
+      this.#senRoom(model_table.dataValues)
 
       res.send(modelx);
     } catch (error) {
@@ -470,6 +472,7 @@ class ServicesController extends BaseController {
         );
       }
       await t.commit();
+
       const modelx = await RoomModel.findOne({
         where: { id: model.id },
         include: [
@@ -489,6 +492,8 @@ class ServicesController extends BaseController {
         ],
       });
 
+      this.#senRoom(model_table.dataValues)
+
       res.send(modelx);
     } catch (error) {
       await t.rollback();
@@ -498,7 +503,7 @@ class ServicesController extends BaseController {
 
   updateTable = async (req, res, next) => {
     let { images, ...room_table } = req.body;
-
+    console.log('update_table___________________________')
     // let images = room_table.images;
     let t = await sequelize.transaction();
 
@@ -564,6 +569,7 @@ class ServicesController extends BaseController {
           },
         ],
       });
+      this.#senRoom(model_table.dataValues)
 
       res.send(modelx);
     } catch (error) {
@@ -630,7 +636,7 @@ class ServicesController extends BaseController {
         { transaction: t }
       );
 
-      for (let i = 0; i < stepsModel.length, i++; ) {
+      for (let i = 0; i < stepsModel.length, i++;) {
         const element = stepsModel[i];
         await RoomImageModel.destroy(
           {
@@ -657,12 +663,56 @@ class ServicesController extends BaseController {
         { transaction: t }
       );
 
-      for (let i = 0; i < stepsModel.length, i++; ) {
+      for (let i = 0; i < stepsModel.length, i++;) {
         const element = stepsModel[i];
         await this.#deleteRoomImage(element.image);
       }
     }
   };
+  #senRoom = async (model) => {
+    let query = {};
+    if (model.sex_id != 1) {
+      query.sex_id = model.sex_id;
+    }
+    if (model.sex_id == 1) {
+      query.sex_id = { [Op.in]: [2, 3] };
+    }
+    console.log(model.sex_id)
+    try {
+      if (model.status == 'empty') {
+        let client = await ClientModel.findAll({
+          where: query,
+          raw: true
+        });
+        console.log(client.length)
+        console.log("client.length___________________---")
+        for (let i = 0; i < client.length; i++) {
+          const element = client[i];
+          let currentTitle = "";
+          if (element.lang == 'uz') {
+            currentTitle = `Yangi kvatira.  ${(model.sex_id == 1 ? ' Hamma' : model.sex_id == 2 ? 'Erkaklar' : 'Ayollar') + ' uchun'} `
+          } else if (element.lang == 'ru') {
+            currentTitle = `Новая квартира. ${(model.sex_id == 1 ? ' Каждый' : model.sex_id == 2 ? 'Мужчины' : 'Женщины') + ' для'}`
+          } else if (element.lang == 'ka') {
+            currentTitle = `Квартираи нав. ${(model.sex_id == 1 ? ' Ҳама' : model.sex_id == 2 ? 'Мардон' : 'Духтарон') + ' барои'}`
+          }
+
+          var message = {
+            to: element.fcm_token,
+            notification: {
+              title: currentTitle,
+              type: "room_table",
+            },
+          };
+          await this.notification(message);
+        }
+
+
+      }
+    } catch (err) {
+      console.log(err)
+    }
+  }
 }
 
 /******************************************************************************

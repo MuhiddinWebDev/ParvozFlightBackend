@@ -1,5 +1,6 @@
 const WorkModel = require("../models/work.model");
 const WorkTableModel = require("../models/workTable.model");
+const ClientModel = require('../models/client.model')
 const AddressModel = require("../models/address.model");
 const HttpException = require("../utils/HttpException.utils");
 const BaseController = require("./BaseController");
@@ -64,9 +65,23 @@ class WorkController extends BaseController {
   getAllByIds = async (req, res, next) => {
     let lang = req.get("Accept-Language");
     lang = lang ? lang : "uz";
+
     let query = {};
     let body = req.body;
+    let client = req.currentClient;
+
     query.status = "active";
+
+
+    if (client.sex_id) {
+      query.sex_id = { [Op.in]: [1, client.sex_id] };
+    }
+
+
+    if (client.age) {
+      query.start_age = { [Op.lte]: client.age };
+      query.end_age = { [Op.gte]: client.age };
+    }
 
     if (body.address_id) {
       query.address_id = body.address_id;
@@ -117,6 +132,7 @@ class WorkController extends BaseController {
         "phone",
         "lat",
         "long",
+        "finished",
         [sequelize.literal(`title_${lang}`), "title"],
         [sequelize.literal(`price_type_${lang}`), "price_type"],
         [sequelize.literal(`comment_${lang}`), "comment"],
@@ -137,13 +153,13 @@ class WorkController extends BaseController {
     if (!work) {
       throw new HttpException(404, req.mf("data not found"));
     }
+
     for (let i = 0; i < work.length; i++) {
       let element = work[i];
       let workParent = await WorkModel.findOne({
         attributes: ["id", [sequelize.literal(`title_${lang}`), "title"]],
         where: { id: element.parent_id },
       });
-      console.log();
       if (workParent) {
         element.dataValues.work_type = {
           id: workParent.dataValues.id,
@@ -159,21 +175,22 @@ class WorkController extends BaseController {
     let lang = req.get("Accept-Language");
     lang = lang ? lang : "uz";
     let client = req.currentClient;
-    
+
     let query = {};
     if (client.sex_id) {
       query.sex_id = client.sex_id;
     }
-    
+    console.log(client.age)
+    console.log("client.age________________--")
+
     if (client.age) {
       query.start_age = { [Op.lte]: client.age };
       query.end_age = { [Op.gte]: client.age };
     }
-    
+
     query.status = "active";
-    
+
     const work_table = await WorkTableModel.findAll({
-      where: query,
       attributes: [
         "id",
         "image",
@@ -198,6 +215,7 @@ class WorkController extends BaseController {
           required: false,
         },
       ],
+      where: query,
       order: [["id", "DESC"]],
     });
 
@@ -420,7 +438,7 @@ class WorkController extends BaseController {
           price_type_ru: work_table.price_type_ru,
           price_type_ka: work_table.price_type_ka,
           sex_id: work_table.sex_id,
-          end_date: work_table.end_date / 1000,
+          end_date: new Date(work_table.end_date).getTime() / 1000,
           start_age: work_table.start_age,
           end_age: work_table.end_age,
         },
@@ -550,19 +568,22 @@ class WorkController extends BaseController {
       model.lat = work_table.lat;
       model.long = work_table.long;
       model.status = work_table.status;
+
       model.sex_id = work_table.sex_id;
       model.end_date = work_table.end_date / 1000;
       model.start_age = work_table.start_age;
       model.end_age = work_table.end_age;
 
       await model.save();
-
+      
       await t.commit();
-
+      
       const modelx = await WorkTableModel.findOne({
         where: { id: model.id },
       });
-
+      console.log('Test__________________________________________________________')
+      this.#senWork(model.dataValues)
+      
       res.send(modelx);
     } catch (error) {
       await t.rollback();
@@ -643,7 +664,42 @@ class WorkController extends BaseController {
     }
     return 1;
   };
+  #senWork = async (model) => {
+    let query = {
+    };
+    query.sex_id = { [Op.in]: [1, model.sex_id] };
+    query.age = { [Op.between]: [model.start_age, model.end_age] };
+    console.log(model.status)
+    if (model.status == 'active') {
+      let client = await ClientModel.findAll({
+        where: query,
+        raw: true
+      });
+      for (let i = 0; i < client.length; i++) {
+        const element = client[i];
+        let currentTitle = "";
+      
+        if (element.lang == 'uz') {
+          currentTitle = `Yangi ish.  ${model.title_uz } ${(model.sex_id == 1 ? ' Hamma' : model.sex_id == 2 ? 'Erkak' : 'Ayol') + ' uchun'} Yosh ${model.start_age}dan ${model.end_age} gacha`
+        }else if (element.lang == 'ru') {
+          currentTitle = `Новая работа. ${model.title_ru } ${(model.sex_id == 1 ? ' Каждый' : model.sex_id == 2 ? 'Мужской' : 'Женский') + ' для'} Лет от ${model.start_age} до ${model.end_age}`
+        } else if (element.lang == 'ka') {
+          currentTitle = `Кори нав. ${model.title_ka } ${(model.sex_id == 1 ? ' Ҳама' : model.sex_id == 2 ? 'Мард' : 'Зан') + ' барои'} Синну сол аз ${model.start_age} то ${model.end_age}`
+        }
+        
+        var message = {
+          to: element.fcm_token,
+          notification: {
+            title: currentTitle,
+            type: "work",
+          },
+        };
+        await this.notification(message);
+      }
 
+
+    }
+  }
   #deleteRelated = async (parent_id) => {
     let work_table = WorkTableModel.findAll({
       where: { parent_id: parent_id },

@@ -581,7 +581,6 @@ class WorkController extends BaseController {
       const modelx = await WorkTableModel.findOne({
         where: { id: model.id },
       });
-      console.log('Test__________________________________________________________')
       this.#senWork(model.dataValues)
       
       res.send(modelx);
@@ -692,6 +691,7 @@ class WorkController extends BaseController {
           notification: {
             title: currentTitle,
             type: "work",
+            id: model.id
           },
         };
         await this.notification(message);

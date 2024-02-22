@@ -503,7 +503,6 @@ class ServicesController extends BaseController {
 
   updateTable = async (req, res, next) => {
     let { images, ...room_table } = req.body;
-    console.log('update_table___________________________')
     // let images = room_table.images;
     let t = await sequelize.transaction();
 
@@ -677,15 +676,13 @@ class ServicesController extends BaseController {
     if (model.sex_id == 1) {
       query.sex_id = { [Op.in]: [2, 3] };
     }
-    console.log(model.sex_id)
     try {
       if (model.status == 'empty') {
         let client = await ClientModel.findAll({
           where: query,
           raw: true
         });
-        console.log(client.length)
-        console.log("client.length___________________---")
+
         for (let i = 0; i < client.length; i++) {
           const element = client[i];
           let currentTitle = "";
@@ -702,6 +699,7 @@ class ServicesController extends BaseController {
             notification: {
               title: currentTitle,
               type: "room_table",
+              id: model.id
             },
           };
           await this.notification(message);

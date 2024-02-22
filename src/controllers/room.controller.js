@@ -28,6 +28,7 @@ class ServicesController extends BaseController {
     lang = lang ? lang : "uz";
     let body = req.body;
     let client = req.currentClient;
+    
     let query = {};
     query.status = "empty";
 
@@ -41,6 +42,7 @@ class ServicesController extends BaseController {
     if (client) {
       query.sex_id = { [Op.in]: [1, client.sex_id] };
     }
+    console.log(query)
     // const modelList = await RoomModel.findAll({
     //     where: room_query,
     //     attributes: [
@@ -698,8 +700,8 @@ class ServicesController extends BaseController {
             to: element.fcm_token,
             notification: {
               title: currentTitle,
-              type: "room_table",
-              id: model.id
+              body: "room",
+              id: `${model.id}`
             },
           };
           await this.notification(message);

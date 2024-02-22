@@ -575,14 +575,14 @@ class WorkController extends BaseController {
       model.end_age = work_table.end_age;
 
       await model.save();
-      
+
       await t.commit();
-      
+
       const modelx = await WorkTableModel.findOne({
         where: { id: model.id },
       });
       this.#senWork(model.dataValues)
-      
+
       res.send(modelx);
     } catch (error) {
       await t.rollback();
@@ -674,21 +674,22 @@ class WorkController extends BaseController {
         where: query,
         raw: true
       });
+      console.log(client)
       for (let i = 0; i < client.length; i++) {
         const element = client[i];
         let currentTitle = "";
-      
+
         if (element.lang == 'uz') {
-          currentTitle = `Yangi ish.  ${model.title_uz } ${(model.sex_id == 1 ? ' Hamma' : model.sex_id == 2 ? 'Erkak' : 'Ayol') + ' uchun'} Yosh ${model.start_age}dan ${model.end_age} gacha`
-        }else if (element.lang == 'ru') {
-          currentTitle = `Новая работа. ${model.title_ru } ${(model.sex_id == 1 ? ' Каждый' : model.sex_id == 2 ? 'Мужской' : 'Женский') + ' для'} Лет от ${model.start_age} до ${model.end_age}`
+          currentTitle = `Yangi ish.  ${model.title_uz} ${(model.sex_id == 1 ? ' Hamma' : model.sex_id == 2 ? 'Erkak' : 'Ayol') + ' uchun'} Yosh ${model.start_age}dan ${model.end_age} gacha`
+        } else if (element.lang == 'ru') {
+          currentTitle = `Новая работа. ${model.title_ru} ${(model.sex_id == 1 ? ' Каждый' : model.sex_id == 2 ? 'Мужской' : 'Женский') + ' для'} Лет от ${model.start_age} до ${model.end_age}`
         } else if (element.lang == 'ka') {
-          currentTitle = `Кори нав. ${model.title_ka } ${(model.sex_id == 1 ? ' Ҳама' : model.sex_id == 2 ? 'Мард' : 'Зан') + ' барои'} Синну сол аз ${model.start_age} то ${model.end_age}`
+          currentTitle = `Кори нав. ${model.title_ka} ${(model.sex_id == 1 ? ' Ҳама' : model.sex_id == 2 ? 'Мард' : 'Зан') + ' барои'} Синну сол аз ${model.start_age} то ${model.end_age}`
         }
-        
+
         var message = {
           to: element.fcm_token,
-          notification: {
+          data: {
             title: currentTitle,
             type: "work",
             id: model.id

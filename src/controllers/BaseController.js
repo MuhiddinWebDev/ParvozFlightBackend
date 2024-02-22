@@ -7,7 +7,7 @@ var fcm = new FCM(serverKey);
 
 var axios = require('axios');
 
-class BaseController{
+class BaseController {
     checkValidation = (req) => {
         const errors = validationResult(req)
         if (!errors.isEmpty()) {
@@ -18,37 +18,37 @@ class BaseController{
 
     // Notification for client
     notification = (message) => {
-        var message = message;
-          fcm.send(message, function(err, response) {
+        // var message = message;
+        fcm.send(message, function (err, response) {
             if (err) {
-                // console.log("Something has gone wrong!" + err);
-                // console.log("Respponse:! " + response);
+                console.log("Something has gone wrong!" + err);
+                console.log("Respponse:! " + response);
             } else {
-            //   console.log("Successfully sent with response: ", response);
+                console.log("Successfully sent with response: ", response);
             }
-          });
+        });
     }
 
     sendSmsToLogin = (data) => {
         console.log(data);
         console.log("_____________________")
         var config = {
-        method: 'post',
-        url: 'https://yboburzhon@bk.ru:8afKebWawXU6BVX8bcZVweCBx-ArZVEM@gate.smsaero.ru/v2/sms/send',
-        headers: { 
-            'Content-Type': 'application/json', 
-            // 'Cookie': '_csrf=445710372ce325b270e169dca0c6dade7605a2b0b16902a3b1d91f76256a9d6ca%3A2%3A%7Bi%3A0%3Bs%3A5%3A%22_csrf%22%3Bi%3A1%3Bs%3A32%3A%22XOiVBtjdhS0UrZ-zkn-AMM38WXO2nHNR%22%3B%7D'
-        },
-        data : data
+            method: 'post',
+            url: 'https://yboburzhon@bk.ru:8afKebWawXU6BVX8bcZVweCBx-ArZVEM@gate.smsaero.ru/v2/sms/send',
+            headers: {
+                'Content-Type': 'application/json',
+                // 'Cookie': '_csrf=445710372ce325b270e169dca0c6dade7605a2b0b16902a3b1d91f76256a9d6ca%3A2%3A%7Bi%3A0%3Bs%3A5%3A%22_csrf%22%3Bi%3A1%3Bs%3A32%3A%22XOiVBtjdhS0UrZ-zkn-AMM38WXO2nHNR%22%3B%7D'
+            },
+            data: data
         };
 
         axios(config)
-        .then(function (response) {
-        console.log(JSON.stringify(response.data));
-        })
-        .catch(function (error) {
-        console.log(error);
-        });
+            .then(function (response) {
+                console.log(JSON.stringify(response.data));
+            })
+            .catch(function (error) {
+                console.log(error);
+            });
     }
 }
 

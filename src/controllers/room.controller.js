@@ -28,7 +28,7 @@ class ServicesController extends BaseController {
     lang = lang ? lang : "uz";
     let body = req.body;
     let client = req.currentClient;
-    
+
     let query = {};
     query.status = "empty";
 
@@ -421,7 +421,7 @@ class ServicesController extends BaseController {
           },
         ],
       });
-      this.#senRoom(model_table.dataValues)
+      this.#sendRoom(model_table.dataValues)
 
       res.send(modelx);
     } catch (error) {
@@ -494,7 +494,7 @@ class ServicesController extends BaseController {
         ],
       });
 
-      this.#senRoom(model_table.dataValues)
+      this.#sendRoom(model_table.dataValues)
 
       res.send(modelx);
     } catch (error) {
@@ -570,7 +570,7 @@ class ServicesController extends BaseController {
           },
         ],
       });
-      this.#senRoom(model_table.dataValues)
+      this.#sendRoom(model_table.dataValues)
 
       res.send(modelx);
     } catch (error) {
@@ -670,7 +670,8 @@ class ServicesController extends BaseController {
       }
     }
   };
-  #senRoom = async (model) => {
+
+  #sendRoom = async (model) => {
     let query = {};
     if (model.sex_id != 1) {
       query.sex_id = model.sex_id;
@@ -701,7 +702,6 @@ class ServicesController extends BaseController {
             notification: {
               title: currentTitle,
               body: "room",
-              id: `${model.id}`
             },
           };
           await this.notification(message);
@@ -712,6 +712,22 @@ class ServicesController extends BaseController {
     } catch (err) {
       console.log(err)
     }
+  }
+
+  sendPostman = async (req, res, next) => {
+    let model = req.body;
+    let currentClient = req.currentClient;
+    let message = {
+      to: currentClient.fcm_token,
+      data: {
+        title: model.title,
+        body: 2,
+        type: "room",
+      },
+    };
+    await this.notification(message);
+
+    res.send(message)
   }
 }
 

@@ -18,8 +18,9 @@ class BaseController {
 
     // Notification for client
     notification = (message) => {
-        // var message = message;
+        var message = message;
         fcm.send(message, function (err, response) {
+            console.log(message)
             if (err) {
                 console.log("Something has gone wrong!" + err);
                 console.log("Respponse:! " + response);
@@ -27,6 +28,7 @@ class BaseController {
                 console.log("Successfully sent with response: ", response);
             }
         });
+        
     }
 
     sendSmsToLogin = (data) => {

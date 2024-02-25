@@ -58,5 +58,6 @@ router.delete('/id/:id', auth(Role.Admin), awaitHandlerFactory(roomController.de
 router.delete('/table/:id', auth(Role.Admin), awaitHandlerFactory(roomController.deleteTable));
 router.post('/image', upload, awaitHandlerFactory(roomController.createImage));
 router.post('/update-image', upload, awaitHandlerFactory(roomController.updateImage));
+router.post('/postman', clientAuth(), awaitHandlerFactory(roomController.sendPostman));
 
 module.exports = router;

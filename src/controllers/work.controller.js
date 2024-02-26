@@ -674,7 +674,6 @@ class WorkController extends BaseController {
         where: query,
         raw: true
       });
-      console.log(client)
       for (let i = 0; i < client.length; i++) {
         const element = client[i];
         let currentTitle = "";

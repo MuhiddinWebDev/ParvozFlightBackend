@@ -701,7 +701,13 @@ class ServicesController extends BaseController {
             to: element.fcm_token,
             notification: {
               title: currentTitle,
-              body: "room",
+              body: model.id,
+              type: "room"
+            },
+            data: {
+              title: currentTitle,
+              body: model.id,
+              type: "room"
             },
           };
           await this.notification(message);

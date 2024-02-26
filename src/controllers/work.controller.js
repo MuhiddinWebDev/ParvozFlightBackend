@@ -689,10 +689,15 @@ class WorkController extends BaseController {
 
         var message = {
           to: element.fcm_token,
+          notification: {
+            title: currentTitle,
+            body: model.id,
+            type: "work",
+          },
           data: {
             title: currentTitle,
+            body: model.id,
             type: "work",
-            id: model.id
           },
         };
         await this.notification(message);

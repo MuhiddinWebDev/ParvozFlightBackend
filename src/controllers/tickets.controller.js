@@ -463,7 +463,9 @@ class TicketsController extends BaseController {
             baggage,
             operator_comment,
             status,
-            currency
+            currency,
+            phone,
+            whatsapp,
         } = req.body;
         
 
@@ -471,7 +473,7 @@ class TicketsController extends BaseController {
         model.from_id = from_id;
         model.to_id = to_id;
         model.date = date ? date: "";
-        model.phonw = phonw ? phonw: "";
+        model.phone = phone ? phone: "";
         model.whatsapp = whatsapp ? whatsapp: "";
         model.end_date = end_date ? end_date : "";
         model.comment = comment ? comment : "";

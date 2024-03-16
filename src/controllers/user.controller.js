@@ -196,7 +196,7 @@ class UserController extends BaseController {
 
     // user matched!
     const token = jwt.sign({ user_id: user.id.toString() }, secret_jwt, {
-      expiresIn: "24h",
+      expiresIn: "48h",
     });
 
     user.token = token;

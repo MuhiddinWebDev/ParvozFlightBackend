@@ -666,7 +666,12 @@ class WorkController extends BaseController {
   #senWork = async (model) => {
     let query = {
     };
-    query.sex_id = { [Op.in]: [1, model.sex_id] };
+    if (model.sex_id == 1) {
+      query.sex_id = { [Op.in]: [2, 3] };
+    }
+    if (model.sex_id != 1) {
+      query.sex_id = model.sex_id;
+    }
     query.age = { [Op.between]: [model.start_age, model.end_age] };
     console.log(model.status)
     if (model.status == 'active') {

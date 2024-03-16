@@ -17,6 +17,7 @@ let mt = new JSMTRand();
  *                              User Controller
  ******************************************************************************/
 class ClientController extends BaseController {
+
   getAll = async (req, res, next) => {
     let modelList = await ClientModel.findAll({
       order: [["id", "DESC"]],
@@ -194,6 +195,7 @@ class ClientController extends BaseController {
   };
 
   checkPhone = async (req, res, next) => {
+
     const code = mt.rand(111111, 999999);
     // const phone1 = "71112222333";
     // const phone2 = "74445555666";
@@ -218,7 +220,8 @@ class ClientController extends BaseController {
       };
       await ClientModel.create({
         phone: phone,
-        code: code
+        code: code,
+        bonus:0
       })
       await this.notification(message);
 

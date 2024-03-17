@@ -41,15 +41,15 @@ let upload = multer({
 }).single('icon');
 
 
-router.get('/', auth(Role.Admin), awaitHandlerFactory(transportController.getAll));
+router.get('/',  auth(), awaitHandlerFactory(transportController.getAll));
 router.get('/all', clientAuth(), awaitHandlerFactory(transportController.getAll));
 router.get('/all-transport', agentAuth(), awaitHandlerFactory(transportController.getAll));
-router.get('/id/:id', auth(Role.Admin), awaitHandlerFactory(transportController.getById));
+router.get('/id/:id',  auth(), awaitHandlerFactory(transportController.getById));
 router.get('/one/id/:id', clientAuth(), awaitHandlerFactory(transportController.getById));
-router.post('/', auth(Role.Admin), joiMiddleware(transportSchemas.create), awaitHandlerFactory(transportController.create));
-router.patch('/id/:id', auth(Role.Admin), joiMiddleware(transportSchemas.create), awaitHandlerFactory(transportController.update));
-router.delete('/id/:id', auth(Role.Admin), awaitHandlerFactory(transportController.delete));
+router.post('/',  auth(), joiMiddleware(transportSchemas.create), awaitHandlerFactory(transportController.create));
+router.patch('/id/:id',  auth(), joiMiddleware(transportSchemas.create), awaitHandlerFactory(transportController.update));
+router.delete('/id/:id',  auth(), awaitHandlerFactory(transportController.delete));
 
-router.post('/image', upload, auth(Role.Admin), awaitHandlerFactory(transportController.getUploadImage));
+router.post('/image', upload,  auth(), awaitHandlerFactory(transportController.getUploadImage));
 
 module.exports = router;

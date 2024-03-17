@@ -16,9 +16,9 @@ router.get('/phone', clientAuth(), awaitHandlerFactory(userController.getPhone))
 router.get('/id/:id', auth(), awaitHandlerFactory(userController.getById));
 router.get('/username/:username', auth(), awaitHandlerFactory(userController.getByUsername));
 router.get('/whoami', auth(), awaitHandlerFactory(userController.getCurrentUser));
-router.post('/', auth(Role.Admin), joiMiddleware(userSchemas.create), awaitHandlerFactory(userController.create));
-router.patch('/id/:id', auth(Role.Admin), joiMiddleware(userSchemas.update), awaitHandlerFactory(userController.update));
-router.delete('/id/:id', auth(Role.Admin), awaitHandlerFactory(userController.delete));
+router.post('/',  auth(), joiMiddleware(userSchemas.create), awaitHandlerFactory(userController.create));
+router.patch('/id/:id',  auth(), joiMiddleware(userSchemas.update), awaitHandlerFactory(userController.update));
+router.delete('/id/:id',  auth(), awaitHandlerFactory(userController.delete));
 
 router.post('/login', joiMiddleware(userSchemas.login), awaitHandlerFactory(userController.userLogin));
 

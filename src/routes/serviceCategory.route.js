@@ -41,10 +41,10 @@ let upload = multer({
 
 
 router.get('/all', clientAuth(), awaitHandlerFactory(serviceCategoryController.getAll));
-router.get('/', auth(Role.Admin), awaitHandlerFactory(serviceCategoryController.getAllWeb));
-router.get('/id/:id', auth(Role.Admin), awaitHandlerFactory(serviceCategoryController.getById));
-router.post('/', auth(Role.Admin), upload, joiMiddleware(serviceCategorySchemas), awaitHandlerFactory(serviceCategoryController.create));
-router.patch('/id/:id', auth(Role.Admin), upload, awaitHandlerFactory(serviceCategoryController.update));
-router.delete('/id/:id', auth(Role.Admin), awaitHandlerFactory(serviceCategoryController.delete));
+router.get('/',  auth(), awaitHandlerFactory(serviceCategoryController.getAllWeb));
+router.get('/id/:id',  auth(), awaitHandlerFactory(serviceCategoryController.getById));
+router.post('/',  auth(), upload, joiMiddleware(serviceCategorySchemas), awaitHandlerFactory(serviceCategoryController.create));
+router.patch('/id/:id',  auth(), upload, awaitHandlerFactory(serviceCategoryController.update));
+router.delete('/id/:id',  auth(), awaitHandlerFactory(serviceCategoryController.delete));
 
 module.exports = router;

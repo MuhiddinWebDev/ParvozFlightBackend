@@ -42,10 +42,10 @@ let upload = multer({
 
 
 router.get('/', clientAuth(), awaitHandlerFactory(bannerController.getAll));
-router.get('/all', auth(Role.Admin), awaitHandlerFactory(bannerController.getAll));
-router.get('/id/:id', auth(Role.Admin), awaitHandlerFactory(bannerController.getById));
-router.post('/', upload, auth(Role.Admin), joiMiddleware(bannerSchemas), awaitHandlerFactory(bannerController.create));
-router.patch('/id/:id', upload, auth(Role.Admin), joiMiddleware(bannerSchemas), awaitHandlerFactory(bannerController.update));
-router.delete('/id/:id', auth(Role.Admin), awaitHandlerFactory(bannerController.delete));
+router.get('/all', auth(), awaitHandlerFactory(bannerController.getAll));
+router.get('/id/:id', auth(), awaitHandlerFactory(bannerController.getById));
+router.post('/', upload, auth(), joiMiddleware(bannerSchemas), awaitHandlerFactory(bannerController.create));
+router.patch('/id/:id', upload, auth(), joiMiddleware(bannerSchemas), awaitHandlerFactory(bannerController.update));
+router.delete('/id/:id', auth(), awaitHandlerFactory(bannerController.delete));
 
 module.exports = router;

@@ -82,7 +82,7 @@ router.get('/unfinished', clientAuth(), awaitHandlerFactory(orderController.unfi
 router.get('/id/:id', awaitHandlerFactory(orderController.getById));
 router.post('/pay-client', auth(), awaitHandlerFactory(orderController.payClient));
 router.post('/service_id/:id', clientAuth(), awaitHandlerFactory(orderController.create));
-router.post('/create/service_id/:id', clientAuth(), auth(Role.Admin), awaitHandlerFactory(orderController.created));
+router.post('/create/service_id/:id', clientAuth(),  auth(), awaitHandlerFactory(orderController.created));
 router.post('/step/action', awaitHandlerFactory(orderController.getStepAction));
 router.post('/send/fields', clientAuth(), joiMiddleware(orderSchemas.sendFieldsMobil), awaitHandlerFactory(orderController.getSendFields));
 router.post('/send-fields', auth(),  awaitHandlerFactory(orderController.sendFields));

@@ -10,11 +10,11 @@ const { bookedTicketSchemas } = require('../middleware/validators/bookedTicketVa
 
 
 router.get('/all', clientAuth(), awaitHandlerFactory(bookedTicketController.getAll));
-router.get('/', auth(Role.Admin), awaitHandlerFactory(bookedTicketController.getAll));
-router.get('/id/:id', auth(Role.Admin), awaitHandlerFactory(bookedTicketController.getById));
-router.post('/', auth(Role.Admin), joiMiddleware(bookedTicketSchemas.create), awaitHandlerFactory(bookedTicketController.create));
+router.get('/', auth(), awaitHandlerFactory(bookedTicketController.getAll));
+router.get('/id/:id', auth(), awaitHandlerFactory(bookedTicketController.getById));
+router.post('/', auth(), joiMiddleware(bookedTicketSchemas.create), awaitHandlerFactory(bookedTicketController.create));
 router.post('/create', clientAuth(), joiMiddleware(bookedTicketSchemas.create), awaitHandlerFactory(bookedTicketController.create));
-router.patch('/id/:id', auth(Role.Admin), joiMiddleware(bookedTicketSchemas.update), awaitHandlerFactory(bookedTicketController.update));
-router.delete('/id/:id', auth(Role.Admin), awaitHandlerFactory(bookedTicketController.delete));
+router.patch('/id/:id', auth(), joiMiddleware(bookedTicketSchemas.update), awaitHandlerFactory(bookedTicketController.update));
+router.delete('/id/:id', auth(), awaitHandlerFactory(bookedTicketController.delete));
 
 module.exports = router;

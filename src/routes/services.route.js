@@ -41,11 +41,11 @@ let upload = multer({
 }).single('icon');
 
 router.get('/', clientAuth(), awaitHandlerFactory(servicesController.getAll));
-router.get('/all', auth(Role.Admin), awaitHandlerFactory(servicesController.getAllWeb));
+router.get('/all',  auth(), awaitHandlerFactory(servicesController.getAllWeb));
 router.get('/detail/:id', clientAuth(), awaitHandlerFactory(servicesController.getDetail));
-router.get('/id/:id', auth(Role.Admin), awaitHandlerFactory(servicesController.getById));
-router.post('/', upload, auth(Role.Admin), joiMiddleware(servicesSchemas), awaitHandlerFactory(servicesController.create));
-router.patch('/id/:id', upload, auth(Role.Admin), joiMiddleware(servicesSchemas), awaitHandlerFactory(servicesController.update));
-router.delete('/id/:id', auth(Role.Admin), awaitHandlerFactory(servicesController.delete));
+router.get('/id/:id',  auth(), awaitHandlerFactory(servicesController.getById));
+router.post('/', upload,  auth(), joiMiddleware(servicesSchemas), awaitHandlerFactory(servicesController.create));
+router.patch('/id/:id', upload,  auth(), joiMiddleware(servicesSchemas), awaitHandlerFactory(servicesController.update));
+router.delete('/id/:id',  auth(), awaitHandlerFactory(servicesController.delete));
 
 module.exports = router;

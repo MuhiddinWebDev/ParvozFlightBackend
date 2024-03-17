@@ -1,4 +1,5 @@
 const UserModel = require("../models/user.model");
+const UserTableModel = require("../models/userTable.model")
 const HttpException = require("../utils/HttpException.utils");
 const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
@@ -67,6 +68,13 @@ class UserController extends BaseController {
 
   getById = async (req, res, next) => {
     const user = await UserModel.findOne({
+      include: [
+        {
+          model: UserTableModel,
+          as: 'user_table',
+          required: false
+        }
+      ],
       where: { id: req.params.id },
     });
 
@@ -106,17 +114,23 @@ class UserController extends BaseController {
 
   create = async (req, res, next) => {
     this.checkValidation(req);
-
+    const currentUser = req.currentUser
     await this.hashPassword(req);
-    let { username, fullname, password, role, phone } = req.body;
-    console.log('test________________');
+    let { username, fullname, password, role, phone, all_page, user_table } = req.body;
     const model = await UserModel.create({
       username,
       fullname,
       password,
       role,
       phone,
+      all_page
     });
+
+    const filter_table = user_table.map((user) => ({
+      ...user,
+      user_id: currentUser.id
+    }))
+    await UserTableModel.bulkCreate(filter_table);
 
     if (!model) {
       throw new HttpException(500, req.mf("Something went wrong"));
@@ -129,7 +143,7 @@ class UserController extends BaseController {
     this.checkValidation(req);
 
     await this.hashPassword(req);
-    let { username, fullname, password, role, phone } = req.body;
+    let { username, fullname, password, role, phone, all_page, user_table } = req.body;
 
     const model = await UserModel.findOne({ where: { id: req.params.id } });
 
@@ -142,7 +156,15 @@ class UserController extends BaseController {
     if (password) model.password = password;
     model.role = role;
     model.phone = phone;
+    model.all_page = all_page;
     model.save();
+    
+    const filter_table = user_table.map((user) => ({
+      ...user,
+      user_id: model.id
+    }))
+    await this.#del_user_table(model.id);
+    await UserTableModel.bulkCreate(filter_table);
 
     res.send(model);
   };
@@ -209,6 +231,20 @@ class UserController extends BaseController {
       req.body.password = await bcrypt.hash(req.body.password, 8);
     }
   };
+
+  #del_user_table = async (user_id) => {
+
+    try {
+      await UserTableModel.destroy(
+        {
+          where: { user_id: user_id },
+          force: true
+        }
+      )
+    } catch (err) {
+      console.log(err)
+    }
+  }
 }
 
 /******************************************************************************

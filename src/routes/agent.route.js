@@ -13,9 +13,9 @@ router.get('/', auth(), awaitHandlerFactory(agentController.getAll));
 router.get('/id/:id', auth(), awaitHandlerFactory(agentController.getById));
 router.post('/code', auth(), awaitHandlerFactory(agentController.checkCode));
 router.post('/check-code', clientAuth(), awaitHandlerFactory(agentController.checkCode));
-router.post('/', auth(Role.Admin), joiMiddleware(agentSchemas.create), awaitHandlerFactory(agentController.create));
-router.patch('/id/:id', auth(Role.Admin), joiMiddleware(agentSchemas.update), awaitHandlerFactory(agentController.update));
-router.delete('/id/:id', auth(Role.Admin), awaitHandlerFactory(agentController.delete));
+router.post('/', auth(), joiMiddleware(agentSchemas.create), awaitHandlerFactory(agentController.create));
+router.patch('/id/:id', auth(), joiMiddleware(agentSchemas.update), awaitHandlerFactory(agentController.update));
+router.delete('/id/:id', auth(), awaitHandlerFactory(agentController.delete));
 router.post('/login', joiMiddleware(agentSchemas.login), awaitHandlerFactory(agentController.agentLogin));
 
 module.exports = router;

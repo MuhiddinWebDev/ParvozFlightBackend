@@ -44,8 +44,8 @@ let upload = multer({
 router.get('/', clientAuth(), awaitHandlerFactory(reviewsController.getAll));
 router.get('/all', auth(), awaitHandlerFactory(reviewsController.getAll));
 router.get('/id/:id', auth(), awaitHandlerFactory(reviewsController.getById));
-router.post('/', auth(Role.Admin), upload, joiMiddleware(reviewsSchemas), awaitHandlerFactory(reviewsController.create));
-router.patch('/id/:id', upload, auth(Role.Admin), joiMiddleware(reviewsSchemas), awaitHandlerFactory(reviewsController.update));
-router.delete('/id/:id', auth(Role.Admin), awaitHandlerFactory(reviewsController.delete));
+router.post('/',  auth(), upload, joiMiddleware(reviewsSchemas), awaitHandlerFactory(reviewsController.create));
+router.patch('/id/:id', upload,  auth(), joiMiddleware(reviewsSchemas), awaitHandlerFactory(reviewsController.update));
+router.delete('/id/:id',  auth(), awaitHandlerFactory(reviewsController.delete));
 
 module.exports = router;

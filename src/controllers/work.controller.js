@@ -711,6 +711,7 @@ class WorkController extends BaseController {
     }
   }
   #deleteRelated = async (parent_id) => {
+    
     let work_table = WorkTableModel.findAll({
       where: { parent_id: parent_id },
     });

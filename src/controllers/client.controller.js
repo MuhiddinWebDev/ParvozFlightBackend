@@ -1,5 +1,6 @@
 const ClientModel = require("../models/client.model");
-const ClientTableModel = require("../models/clientTable.model")
+const ClientTableModel = require("../models/clientTable.model");
+const BonusModel = require("../models/bonus.model")
 const HttpException = require("../utils/HttpException.utils");
 const BaseController = require("./BaseController");
 const bcrypt = require("bcryptjs");
@@ -202,13 +203,13 @@ class ClientController extends BaseController {
     let phone = req.body.phone;
     let fcm = req.body.fcm;
     let model = await ClientModel.findOne({ where: { phone: phone } });
-
     let fcm_token = fcm;
     let title = "Ваш смс-код: " + code;
     let type = "login";
     let data = {
       check: false
     }
+    console.log(title)
     if (!model) {
       data.check = false;
       var message = {
@@ -221,7 +222,7 @@ class ClientController extends BaseController {
       await ClientModel.create({
         phone: phone,
         code: code,
-        bonus:0
+        isLogin: false,
       })
       await this.notification(message);
 
@@ -289,6 +290,7 @@ class ClientController extends BaseController {
   clientLogin = async (req, res, next) => {
     let { phone, code } = req.body;
     let token = UniqueStringGenerator.UniqueString(64);
+    const bonus = await BonusModel.findOne();
     const model = await ClientModel.findOne({
       where: {
         phone,
@@ -306,6 +308,8 @@ class ClientController extends BaseController {
       model.fullname = "";
     }
     model.token = token;
+    model.isLogin = true;
+    model.bonus = bonus.dataValues.summa;
     model.code = "";
     model.save();
 
@@ -353,6 +357,7 @@ class ClientController extends BaseController {
     let token = UniqueStringGenerator.UniqueString(64);
 
     client.token = token;
+    client.isLogin = false;
     client.save();
 
     res.send(client);

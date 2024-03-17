@@ -55,6 +55,14 @@ ClientModel.init(
       type: DataTypes.INTEGER,
       allowNull: true,
     },
+    bonus: {
+      type: DataTypes.DECIMAL(11, 2),
+      allowNull: true,
+    },
+    isLogin: {
+      type: DataTypes.BOOLEAN,
+      allowNull: true,
+    },
     password: {
       type: DataTypes.STRING(120),
       allowNull: true,

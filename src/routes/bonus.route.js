@@ -8,7 +8,7 @@ const { bonusSchemas } = require('../middleware/validators/bonusValidator.middle
 
 
 router.get('/all', auth(), awaitHandlerFactory(bonusController.getAll));
-router.get('/id/:id', auth(), awaitHandlerFactory(bonusController.getById));
+router.get('/one', auth(), awaitHandlerFactory(bonusController.getById));
 router.post('/', auth(), joiMiddleware(bonusSchemas), awaitHandlerFactory(bonusController.create));
 router.patch('/id/:id', auth(), joiMiddleware(bonusSchemas), awaitHandlerFactory(bonusController.update));
 router.delete('/id/:id', auth(), awaitHandlerFactory(bonusController.delete));

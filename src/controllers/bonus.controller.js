@@ -21,9 +21,7 @@ class bonusController extends BaseController {
 
     getById = async (req, res, next) => {
 
-        const bonus = await bonusModel.findOne({
-            where: { id: req.params.id }
-        });
+        const bonus = await bonusModel.findOne();
 
         if (!bonus) {
             throw new HttpException(404, req.mf('data not found'));
@@ -55,7 +53,6 @@ class bonusController extends BaseController {
     update = async (req, res, next) => {
 
         const model = await bonusModel.findOne({ where: { id: req.params.id } });
-
         let {
             summa,
 

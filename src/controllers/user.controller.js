@@ -109,7 +109,7 @@ class UserController extends BaseController {
 
     await this.hashPassword(req);
     let { username, fullname, password, role, phone } = req.body;
-
+    console.log('test________________');
     const model = await UserModel.create({
       username,
       fullname,

@@ -14,6 +14,7 @@ module.exports = {
       await queryInterface.addColumn('client', 'isLogin', {
         type: Sequelize.DataTypes.BOOLEAN,
         allowNull: true,
+        defaultValue: false
       });
 
 

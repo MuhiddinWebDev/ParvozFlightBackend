@@ -114,7 +114,6 @@ class UserController extends BaseController {
 
   create = async (req, res, next) => {
     this.checkValidation(req);
-    const currentUser = req.currentUser
     await this.hashPassword(req);
     let { username, fullname, password, role, phone, all_page, user_table } = req.body;
     const model = await UserModel.create({
@@ -128,7 +127,7 @@ class UserController extends BaseController {
 
     const filter_table = user_table.map((user) => ({
       ...user,
-      user_id: currentUser.id
+      user_id: model.id
     }))
     await UserTableModel.bulkCreate(filter_table);
 
@@ -158,7 +157,7 @@ class UserController extends BaseController {
     model.phone = phone;
     model.all_page = all_page;
     model.save();
-    
+
     const filter_table = user_table.map((user) => ({
       ...user,
       user_id: model.id

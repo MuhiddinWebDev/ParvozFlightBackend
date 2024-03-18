@@ -578,13 +578,15 @@ class WorkController extends BaseController {
 
       await model.save();
 
+
       await t.commit();
 
       const modelx = await WorkTableModel.findOne({
         where: { id: model.id },
       });
-      this.#senWork(model.dataValues)
 
+      await this.#senWork(model.dataValues)
+      await this.#calculateAge(model.dataValues)
       res.send(modelx);
     } catch (error) {
       await t.rollback();
@@ -657,30 +659,39 @@ class WorkController extends BaseController {
     res.send(req.mf("data has been deleted"));
   };
 
-  #deleteBannerimg = (icon) => {
-    try {
-      fs.unlinkSync("./uploads/icon/" + icon);
-    } catch (error) {
-      return 0;
-    }
-    return 1;
-  };
+  #calculateAge = async (model) =>{
+    console.log(model.start_age)
+    console.log(model.end_age);
+    const date_birth  = new Date();
+    const start_time = new Date( date_birth.getFullYear() - model.start_age, 0 , 1 );
+    const end_time = new Date( date_birth.getFullYear() - model.end_age, 0 , 1 );
+    console.log(start_time);
+    console.log(end_time);
+
+    console.log(start_time.getTime());
+    console.log(end_time.getTime());
+  }
+
   #senWork = async (model) => {
-    let query = {
-    };
+    let query = {};
+    const date_birth  = new Date();
+    const end_birth = new Date( date_birth.getFullYear() - model.start_age, 0 , 1 );
+    const start_birth = new Date( date_birth.getFullYear() - model.end_age, 0 , 1 );
     if (model.sex_id == 1) {
       query.sex_id = { [Op.in]: [2, 3] };
     }
     if (model.sex_id != 1) {
       query.sex_id = model.sex_id;
     }
-    query.age = { [Op.between]: [model.start_age, model.end_age] };
-    console.log(model.status)
+
+    query.age = { [Op.between]: [start_birth.getTime() / 1000, end_birth.getTime() / 1000] };
+
     if (model.status == 'active') {
       let client = await ClientModel.findAll({
         where: query,
         raw: true
       });
+
       for (let i = 0; i < client.length; i++) {
         const element = client[i];
         let currentTitle = "";
@@ -712,6 +723,8 @@ class WorkController extends BaseController {
 
     }
   }
+
+
   #deleteRelated = async (parent_id) => {
 
     let work_table = WorkTableModel.findAll({

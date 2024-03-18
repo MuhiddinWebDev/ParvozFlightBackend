@@ -348,7 +348,7 @@ class WorkController extends BaseController {
 
   create = async (req, res, next) => {
     let { work_table, work_id } = req.body;
-
+    const currentUser = req.currentUser
     let t = await sequelize.transaction();
 
     try {
@@ -388,6 +388,7 @@ class WorkController extends BaseController {
             end_date: element.end_date / 1000,
             start_age: element.start_age,
             end_age: element.end_age,
+            user_id: currentUser.id
           },
           { transaction: t }
         );
@@ -414,6 +415,7 @@ class WorkController extends BaseController {
 
   createWork = async (req, res, next) => {
     let { ...work_table } = req.body;
+    const currentClient = req.currentClient;
     let t = await sequelize.transaction();
 
     try {
@@ -441,6 +443,7 @@ class WorkController extends BaseController {
           end_date: new Date(work_table.end_date).getTime() / 1000,
           start_age: work_table.start_age,
           end_age: work_table.end_age,
+          client_id: currentClient.id
         },
         { transaction: t }
       );
@@ -568,7 +571,6 @@ class WorkController extends BaseController {
       model.lat = work_table.lat;
       model.long = work_table.long;
       model.status = work_table.status;
-
       model.sex_id = work_table.sex_id;
       model.end_date = work_table.end_date / 1000;
       model.start_age = work_table.start_age;
@@ -711,7 +713,7 @@ class WorkController extends BaseController {
     }
   }
   #deleteRelated = async (parent_id) => {
-    
+
     let work_table = WorkTableModel.findAll({
       where: { parent_id: parent_id },
     });

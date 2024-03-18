@@ -16,6 +16,14 @@ RoomTableModel.init(
       type: DataTypes.INTEGER,
       allowNull: false,
     },
+    user_id: {
+      type: DataTypes.INTEGER,
+      allowNull: true,
+    },
+    client_id: {
+      type: DataTypes.INTEGER,
+      allowNull: true,
+    },
     sex_id: {
       type: DataTypes.INTEGER,
       allowNull: true,

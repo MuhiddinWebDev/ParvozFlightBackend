@@ -120,6 +120,148 @@ module.exports = {
         },
         ], {});
 
+        await queryInterface.bulkInsert('user_table', [
+            {
+              title: "Banner",
+              icon: ' bx-notepad',
+              name: "banner",
+              status: true,
+              user_id:1,
+          },
+          {
+              title: "Xizmat turlari",
+              icon: " bx-directions",
+              name: "service-type",
+              status: true,
+              user_id:1,
+          },
+          {
+              title: "Xizmatlar",
+              icon: "bx bx-down-arrow-alt",
+              name: "service",
+              status: true,
+              user_id:1,
+          },
+          {
+              title: "Buyurtma berish",
+              icon: "bx-cart-download",
+              name: "Order",
+              status: true,
+              user_id:1,
+          },
+          {
+              title: "Buyurtmalar",
+              icon: "bx-table",
+              name: "OrderList",
+              status: true,
+              user_id:1,
+          },
+          {
+              title: "Agentlar",
+              icon: "n-icon-agent",
+              name: "promocode",
+              status: true,
+              user_id:1,
+          },
+          {
+              title: "Foydalanuvchi",
+              icon: "bxs-user-circle",
+              name: "users",
+              status: true,
+              user_id:1,
+          },
+          {
+              title: "Katigoriya",
+              icon: "bx-bar-chart-square",
+              name: "works",
+              status: true,
+              user_id:1,
+          },
+          {
+              title: "Vakansiya",
+              icon: "bx-sitemap",
+              name: "Vakansiya",
+              status: true,
+              user_id:1,
+          },
+          {
+              title: "Bron bilet",
+              icon: "n-icon-agent",
+              name: "booked-tickets",
+              status: true,
+              user_id:1,
+          },
+          {
+              title: "Manzil bilet",
+              icon: "TickIcon",
+              name: "address-ticket",
+              status: true,
+              user_id:1,
+          },
+          {
+              title: "Bilet",
+              icon: "bxs-id-card",
+              name: "Bilet",
+              status: true,
+              user_id:1,
+          },
+          {
+              title: "Transport",
+              icon: "bxs-truck",
+              name: "Transport",
+              status: true,
+              user_id:1,
+          },
+          {
+              title: "Manzil",
+              icon: "bxs-map",
+              name: "Manzil",
+              status: true,
+              user_id:1,
+          },
+          {
+              title: "Uylar",
+              icon: "bx-building-house",
+              name: "houses",
+              status: true,
+              user_id:1,
+          },
+          {
+              title: "Ijaraga uy",
+              icon: "bxs-hotel",
+              name: "Hotel",
+              status: true,
+              user_id:1,
+          },
+          {
+              title: "Mijozlarimiz",
+              icon: "bxs-group",
+              name: "clients",
+              status: true,
+              user_id:1,
+          },
+      
+          {
+              title: "Mijozlarmiz fikri",
+              icon: "bx-street-view",
+              name: "reviews",
+              status: true,
+              user_id:1,
+          },
+          {
+              title: "Suhbatlar",
+              icon: "bxs-chat",
+              name: "chat",
+              status: true,
+              user_id:1,
+          },
+          ], {});
+        
+        await queryInterface.bulkInsert('bonus',[
+            {
+                summa:0
+            }
+        ], {})
     },
 
     async down(queryInterface, Sequelize) {

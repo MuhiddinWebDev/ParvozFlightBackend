@@ -15,6 +15,14 @@ WorkTableModel.init(
       type: DataTypes.INTEGER,
       allowNull: false,
     },
+    user_id: {
+      type: DataTypes.INTEGER,
+      allowNull: true,
+    },
+    client_id: {
+      type: DataTypes.INTEGER,
+      allowNull: true,
+    },
     finished: {
       type: DataTypes.STRING(100),
       allowNull: true,

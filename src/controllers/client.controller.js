@@ -134,7 +134,7 @@ class ClientController extends BaseController {
       model.fullname = fullname;
       model.phone = phone;
       model.lang = lang;
-      model.age = age;
+      model.age = age / 1000;
       if (password) model.password = password;
       model.sex_id = sex_id;
       model.file_front = file_front;
@@ -209,7 +209,6 @@ class ClientController extends BaseController {
     let data = {
       check: false
     }
-    console.log(title)
     if (!model) {
       data.check = false;
       var message = {

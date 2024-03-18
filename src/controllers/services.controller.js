@@ -15,16 +15,16 @@ class ServicesController extends BaseController {
     getAll = async (req, res, next) => {
 
         let lang = req.get('Accept-Language');
-        lang = lang? lang: 'uz';
+        lang = lang ? lang : 'uz';
         const category_id = req.query.category_id;
         console.log(category_id);
         let modelList = await ServicesModel.findAll({
-            where: {category_id},
+            where: { category_id },
             attributes: [
                 'id', 'icon', 'summa',
-                [ sequelize.literal(`name_${lang}`), 'name' ],
-                [ sequelize.literal(`average_date_${lang}`), 'average_date' ],
-                [ sequelize.literal(`comment_${lang}`), 'comment' ],
+                [sequelize.literal(`name_${lang}`), 'name'],
+                [sequelize.literal(`average_date_${lang}`), 'average_date'],
+                [sequelize.literal(`comment_${lang}`), 'comment'],
             ],
             order: [
                 ['id', 'ASC']
@@ -45,7 +45,7 @@ class ServicesController extends BaseController {
                             model: StepsFieldsTableModel,
                             as: 'steps_fields_table',
                             required: false
-    
+
                         }
                     ]
                 },
@@ -53,7 +53,7 @@ class ServicesController extends BaseController {
                     model: ServiceCategoryModel,
                     as: 'service_category',
                     required: false,
-                    attributes: ['id','k_name_uz']
+                    attributes: ['id', 'k_name_uz']
                 }
             ],
         });
@@ -65,18 +65,18 @@ class ServicesController extends BaseController {
         res.send(service);
     };
 
-    
+
     getDetail = async (req, res, next) => {
 
         let lang = req.get('Accept-Language');
-        lang = lang? lang: 'uz';
+        lang = lang ? lang : 'uz';
 
         const service = await ServicesModel.findOne({
             attributes: [
                 'id', 'icon', 'summa',
-                [ sequelize.literal(`name_${lang}`), 'name' ],
-                [ sequelize.literal(`average_date_${lang}`), 'average_date' ],
-                [ sequelize.literal(`comment_${lang}`), 'comment' ],
+                [sequelize.literal(`name_${lang}`), 'name'],
+                [sequelize.literal(`average_date_${lang}`), 'average_date'],
+                [sequelize.literal(`comment_${lang}`), 'comment'],
             ],
             where: { id: req.params.id }
         });
@@ -102,7 +102,7 @@ class ServicesController extends BaseController {
                             model: StepsFieldsTableModel,
                             as: 'steps_fields_table',
                             required: false
-    
+
                         }
                     ],
 
@@ -111,7 +111,7 @@ class ServicesController extends BaseController {
                     model: ServiceCategoryModel,
                     as: 'service_category',
                     required: false,
-                    attributes: ['id','k_name_uz']
+                    attributes: ['id', 'k_name_uz']
                 }
             ],
         });
@@ -127,14 +127,14 @@ class ServicesController extends BaseController {
     create = async (req, res, next) => {
 
         let { services_steps_table, ...services } = req.body;
-
+        const currentUser = req.currentUser;
         // let steps_fields_table = services_steps_table.steps_fields_table;
 
         let t = await sequelize.transaction()
 
         try {
-            
-        
+
+
             const model = await ServicesModel.create({
                 category_id: services.category_id,
                 name_uz: services.name_uz,
@@ -148,22 +148,23 @@ class ServicesController extends BaseController {
                 comment_ru: services.comment_ru,
                 comment_ka: services.comment_ka,
                 summa: services.summa,
-                discount_summa: services.discount_summa
+                discount_summa: services.discount_summa,
+                user_id: currentUser.id
             }, { transaction: t });
 
             if (!model) {
                 throw new HttpException(500, req.mf('Something went wrong'));
             }
-            
+
             for (let i = 0; i < services_steps_table.length; i++) {
                 let step_status = "waiting";
                 let step_active = false;
                 const element = services_steps_table[i];
-                if(i == 0){
+                if (i == 0) {
                     step_status = "active";
                     step_active = true;
                 }
-               let model_table = await ServicesStepsTableModel.create({
+                let model_table = await ServicesStepsTableModel.create({
                     parent_id: model.id,
                     title_uz: element.title_uz,
                     title_ru: element.title_ru,
@@ -183,7 +184,7 @@ class ServicesController extends BaseController {
                 for (let j = 0; j < element.steps_fields_table.length; j++) {
                     let elementx = element.steps_fields_table[j]
                     // console.log(elementx.title_uz);
-                    if(element.action){
+                    if (element.action) {
                         await StepsFieldsTableModel.create({
                             steps_parent_id: model_table.id,
                             title_uz: elementx.title_uz,
@@ -208,7 +209,7 @@ class ServicesController extends BaseController {
                                 model: StepsFieldsTableModel,
                                 as: 'steps_fields_table',
                                 required: false
-        
+
                             }
                         ],
 
@@ -217,7 +218,7 @@ class ServicesController extends BaseController {
                         model: ServiceCategoryModel,
                         as: 'service_category',
                         required: false,
-                        attributes: ['id','k_name_uz']
+                        attributes: ['id', 'k_name_uz']
                     }
                 ],
             });
@@ -234,7 +235,7 @@ class ServicesController extends BaseController {
 
         let { services_steps_table, ...services } = req.body;
 
-        const model = await ServicesModel.findOne({ where: { id: req.params.id }} );
+        const model = await ServicesModel.findOne({ where: { id: req.params.id } });
 
         if (!model) {
             throw new HttpException(404, req.mf('data not found'));
@@ -244,7 +245,7 @@ class ServicesController extends BaseController {
         if (!model) {
             throw new HttpException(404, req.mf('data not found'));
         }
-    
+
         let t = await sequelize.transaction()
         try {
 
@@ -268,17 +269,17 @@ class ServicesController extends BaseController {
             model.comment_ka = services.comment_ka;
             model.summa = services.summa;
             model.discount_summa = services.discount_summa;
-           await model.save();
+            await model.save();
 
             await this.#deleteRelated(model.id);
 
-    
+
             for (let i = 0; i < services_steps_table.length; i++) {
                 const element = services_steps_table[i];
 
                 let step_status = "waiting";
                 let step_active = false;
-                if(i == 0){
+                if (i == 0) {
                     step_status = "active";
                     step_active = true;
                 }
@@ -302,8 +303,8 @@ class ServicesController extends BaseController {
                 for (let j = 0; j < element.steps_fields_table.length; j++) {
                     let elementx = element.steps_fields_table[j]
                     // console.log(elementx.title);
-                    
-                    if(element.action == 1){
+
+                    if (element.action == 1) {
                         await StepsFieldsTableModel.create({
                             steps_parent_id: model_table.id,
                             title_uz: elementx.title_uz,
@@ -330,7 +331,7 @@ class ServicesController extends BaseController {
                                 model: StepsFieldsTableModel,
                                 as: 'steps_fields_table',
                                 required: false
-        
+
                             }
                         ],
 
@@ -339,7 +340,7 @@ class ServicesController extends BaseController {
                         model: ServiceCategoryModel,
                         as: 'service_category',
                         required: false,
-                        attributes: ['id','k_name_uz']
+                        attributes: ['id', 'k_name_uz']
                     }
                 ],
             });
@@ -350,13 +351,13 @@ class ServicesController extends BaseController {
             await t.rollback();
             throw new HttpException(500, error.message)
         }
-    
+
     };
 
 
     delete = async (req, res, next) => {
-        const model = await ServicesModel.findOne({ where : { id: req.params.id } })
-        
+        const model = await ServicesModel.findOne({ where: { id: req.params.id } })
+
         if (!model) {
             throw new HttpException(404, req.mf('data not found'));
         }
@@ -386,18 +387,18 @@ class ServicesController extends BaseController {
     #deleteRelated = async (parent_id) => {
         let stepsModel = ServicesStepsTableModel.findAll({ where: { parent_id: parent_id } });
 
-        if(stepsModel){
+        if (stepsModel) {
             await ServicesStepsTableModel.destroy({
                 where: { parent_id: parent_id },
                 force: true
             }, { transaction: t });
             for (let i = 0; i < stepsModel.length; i++) {
-                
+
                 await StepsFieldsTableModel.destroy({
                     where: { steps_parent_id: stepsModel.id },
                     force: true
                 }, { transaction: t });
-                
+
             }
         }
 

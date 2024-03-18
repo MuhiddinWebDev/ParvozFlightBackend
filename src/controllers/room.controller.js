@@ -362,7 +362,7 @@ class ServicesController extends BaseController {
 
   createTable = async (req, res, next) => {
     let { images, ...room_table } = req.body;
-
+    const currentUser = req.currentUser;
     let t = await sequelize.transaction();
 
     try {
@@ -388,6 +388,7 @@ class ServicesController extends BaseController {
           status: room_table.status,
           lat: room_table.lat,
           long: room_table.long,
+          user_id: currentUser.id
         },
         { transaction: t }
       );
@@ -432,7 +433,7 @@ class ServicesController extends BaseController {
 
   createTableMobil = async (req, res, next) => {
     let { images, ...room_table } = req.body;
-
+    const currentClient = req.currentClient
     let t = await sequelize.transaction();
 
     try {
@@ -458,6 +459,7 @@ class ServicesController extends BaseController {
           status: room_table.status,
           lat: room_table.lat,
           long: room_table.long,
+          client_id: currentClient.id
         },
         { transaction: t }
       );

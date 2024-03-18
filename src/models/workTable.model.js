@@ -1,7 +1,7 @@
 const { DataTypes, Model } = require("sequelize");
 const sequelize = require("../db/db-sequelize");
 const AddressModel = require("./address.model");
-class WorkTableModel extends Model {}
+class WorkTableModel extends Model { }
 
 WorkTableModel.init(
   {
@@ -26,7 +26,7 @@ WorkTableModel.init(
     finished: {
       type: DataTypes.STRING(100),
       allowNull: true,
-      defaultValue:'no'
+      defaultValue: 'no'
     },
     sex_id: {
       type: DataTypes.INTEGER,

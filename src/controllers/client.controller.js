@@ -21,6 +21,9 @@ class ClientController extends BaseController {
 
   getAll = async (req, res, next) => {
     let modelList = await ClientModel.findAll({
+      attributes: [
+        'id', 'fullname', 'phone', 'bonus', 'age', 'sex_id', 'code', 'lang',
+      ],
       order: [["id", "DESC"]],
     });
     let sexOption = [
@@ -372,16 +375,16 @@ class ClientController extends BaseController {
     const model = await ClientTableModel.findAll({ where: { client_id: client_id } });
 
     try {
-      if(model){
+      if (model) {
         for (let i = 0; i < model.length; i++) {
           let el = model[i];
           await fs.unlink('./uploads/client/' + el.file);
           await el.destroy({ force: true });
-  
+
         }
       }
     } catch (error) {
-      if(model){
+      if (model) {
         for (let i = 0; i < model.length; i++) {
           let el = model[i];
           await el.destroy({ force: true });

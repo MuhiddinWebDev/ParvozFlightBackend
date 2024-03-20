@@ -161,6 +161,14 @@ class ServicesController extends BaseController {
 
   getAllWebTable = async (req, res, next) => {
     let filter = req.body;
+    let currentUser = req.currentUser;
+    const query = {};
+    if(currentUser.role == 'User'){
+      query.user_id = currentUser.id;
+    }
+    if(filter.user_id){
+      query.user_id = filter.user_id;
+    }
     let sql = ` 
     SELECT 
         rt.id, rt.parent_id, 
@@ -183,6 +191,13 @@ class ServicesController extends BaseController {
       }
       if (filter.sex_id) {
         sql += `rt.sex_id = ${filter.sex_id}`;
+      }
+      if(query?.user_id){
+        sql +=` AND rt.user_id = ${query.user_id}`
+      }
+    }else{
+      if(query.user_id){
+        sql +=` WHERE  rt.user_id = ${query.user_id}`
       }
     }
 

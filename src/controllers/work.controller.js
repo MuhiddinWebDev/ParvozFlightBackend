@@ -180,8 +180,7 @@ class WorkController extends BaseController {
     if (client.sex_id) {
       query.sex_id = client.sex_id;
     }
-    console.log(client.age)
-    console.log("client.age________________--")
+    
 
     if (client.age) {
       query.start_age = { [Op.lte]: client.age };
@@ -228,7 +227,14 @@ class WorkController extends BaseController {
 
   getAllWebProduct = async (req, res, next) => {
     let filter = req.body;
-
+    const currentUser = req.currentUser;
+    let query = {}
+    if (currentUser.role == 'User') {
+      query.user_id = currentUser.id;
+    }
+    if(filter.user_id){
+      query.user_id = filter.user_id;
+    }
     let sql = `
         SELECT 
             w.id AS cat_id, w.title_uz AS cat_name,
@@ -241,12 +247,27 @@ class WorkController extends BaseController {
             wt.price_type_uz AS price_type,
             wt.create_at, wt.address_id,
             address.name_uz as address_name,
-            wt.lat, wt.long, wt.finished
+            wt.lat, wt.long, wt.finished,
+            user.fullname as user_name, client.fullname as client_name
         FROM work_table wt 
         LEFT JOIN works w ON w.id = wt.parent_id
         LEFT JOIN address ON wt.address_id = address.id
-        ${filter.status ? `WHERE wt.status = '${filter.status}'` : ""}
-        ORDER BY wt.createdAt DESC`;
+        LEFT JOIN client ON wt.client_id = client.id
+        LEFT JOIN user ON wt.user_id = user.id
+        `;
+    if (filter.status || query.user_id) {
+      sql += " WHERE ";
+      if(filter.status){
+        sql += ` wt.status = '${filter.status}' `
+      }
+      if(filter.status && query.user_id){
+        sql += ` AND `
+      }
+      if(query.user_id){
+        sql += ` wt.user_id = ${ query.user_id} OR wt.client_id IS NOT NULL  `
+      }
+    }
+    sql += " ORDER BY wt.createdAt DESC";
     let result = await sequelize.query(sql, {
       type: sequelize.QueryTypes.SELECT,
       raw: true,
@@ -443,7 +464,8 @@ class WorkController extends BaseController {
           end_date: new Date(work_table.end_date).getTime() / 1000,
           start_age: work_table.start_age,
           end_age: work_table.end_age,
-          client_id: currentClient.id
+          client_id: currentClient.id,
+          user_id: null
         },
         { transaction: t }
       );
@@ -586,7 +608,6 @@ class WorkController extends BaseController {
       });
 
       await this.#senWork(model.dataValues)
-      await this.#calculateAge(model.dataValues)
       res.send(modelx);
     } catch (error) {
       await t.rollback();
@@ -659,24 +680,13 @@ class WorkController extends BaseController {
     res.send(req.mf("data has been deleted"));
   };
 
-  #calculateAge = async (model) =>{
-    console.log(model.start_age)
-    console.log(model.end_age);
-    const date_birth  = new Date();
-    const start_time = new Date( date_birth.getFullYear() - model.start_age, 0 , 1 );
-    const end_time = new Date( date_birth.getFullYear() - model.end_age, 0 , 1 );
-    console.log(start_time);
-    console.log(end_time);
 
-    console.log(start_time.getTime());
-    console.log(end_time.getTime());
-  }
 
   #senWork = async (model) => {
     let query = {};
-    const date_birth  = new Date();
-    const end_birth = new Date( date_birth.getFullYear() - model.start_age, 0 , 1 );
-    const start_birth = new Date( date_birth.getFullYear() - model.end_age, 0 , 1 );
+    const date_birth = new Date();
+    const end_birth = new Date(date_birth.getFullYear() - model.start_age, 0, 1);
+    const start_birth = new Date(date_birth.getFullYear() - model.end_age, 0, 1);
     if (model.sex_id == 1) {
       query.sex_id = { [Op.in]: [2, 3] };
     }
@@ -691,19 +701,17 @@ class WorkController extends BaseController {
         where: query,
         raw: true
       });
-
       for (let i = 0; i < client.length; i++) {
         const element = client[i];
         let currentTitle = "";
 
         if (element.lang == 'uz') {
-          currentTitle = `Yangi ish.  ${model.title_uz} ${(model.sex_id == 1 ? ' Hamma' : model.sex_id == 2 ? 'Erkak' : 'Ayol') + ' uchun'} Yosh ${model.start_age}dan ${model.end_age} gacha`
+          currentTitle = `Yangi ish.  ${model.title_uz} ${(model.sex_id == 1 ? ' Hamma' : model.sex_id == 2 ? 'Erkak' : 'Ayol') + ' uchun'} Yosh ${model.start_age} dan ${model.end_age} gacha`
         } else if (element.lang == 'ru') {
           currentTitle = `Новая работа. ${model.title_ru} ${(model.sex_id == 1 ? ' Каждый' : model.sex_id == 2 ? 'Мужской' : 'Женский') + ' для'} Лет от ${model.start_age} до ${model.end_age}`
         } else if (element.lang == 'ka') {
           currentTitle = `Кори нав. ${model.title_ka} ${(model.sex_id == 1 ? ' Ҳама' : model.sex_id == 2 ? 'Мард' : 'Зан') + ' барои'} Синну сол аз ${model.start_age} то ${model.end_age}`
         }
-
         var message = {
           to: element.fcm_token,
           notification: {

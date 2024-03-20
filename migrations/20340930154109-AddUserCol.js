@@ -14,8 +14,7 @@ module.exports = {
       await queryInterface.addColumn('room_table', 'user_id', {
         type: Sequelize.DataTypes.INTEGER,
         allowNull: true,
-        defaultValue: true
-      });
+        });
       
       await queryInterface.addColumn('room_table', 'client_id', {
         type: Sequelize.DataTypes.INTEGER,
@@ -25,7 +24,6 @@ module.exports = {
       await queryInterface.addColumn('work_table', 'user_id', {
         type: Sequelize.DataTypes.INTEGER,
         allowNull: true,
-        defaultValue: true
       });
       await queryInterface.addColumn('work_table', 'client_id', {
         type: Sequelize.DataTypes.INTEGER,
@@ -34,7 +32,6 @@ module.exports = {
       await queryInterface.addColumn('services', 'user_id', {
         type: Sequelize.DataTypes.INTEGER,
         allowNull: true,
-        defaultValue: true
       });
      
 

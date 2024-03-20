@@ -162,7 +162,7 @@ class UserController extends BaseController {
       ...user,
       user_id: model.id
     }))
-    await this.#del_user_table(model.id);
+    await this.#del_user_table(model.dataValues.id);
     await UserTableModel.bulkCreate(filter_table);
 
     res.send(model);

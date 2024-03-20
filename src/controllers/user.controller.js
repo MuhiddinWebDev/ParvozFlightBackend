@@ -168,7 +168,6 @@ class UserController extends BaseController {
       ...user,
       user_id: model.id,
     }))
-    console.log(filter_table)
     await UserTableModel.bulkCreate(filter_table);
 
     res.send(model);

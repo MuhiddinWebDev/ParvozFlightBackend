@@ -14,7 +14,8 @@ exports.userSchemas = {
         title: Joi.string().required(),
         name: Joi.string().required(),
         icon: Joi.string().required(),
-        status: Joi.boolean().required()
+        status: Joi.boolean().required(),
+        menu_id: Joi.number().required(),
       })
     )
 
@@ -32,7 +33,8 @@ exports.userSchemas = {
         title: Joi.string().required(),
         name: Joi.string().required(),
         icon: Joi.string().required(),
-        status: Joi.boolean().required()
+        status: Joi.boolean().required(),
+        menu_id: Joi.number().required(),
       })
     )
   }),

@@ -1,5 +1,7 @@
 const MenuTableModel = require('../models/menuTable.model');
 const HttpException = require('../utils/HttpException.utils');
+const UserModel = require('../models/user.model');
+const UserTableModel = require('../models/userTable.model')
 const BaseController = require('./BaseController');
 const { Op } = require('sequelize');
 const sequelize = require('../db/db-sequelize');
@@ -40,6 +42,8 @@ class MenuTableController extends BaseController {
             throw new HttpException(500, req.mf('Something went wrong'));
         }
 
+        await this.#addMenuUser(model.dataValues, 'create');
+
         res.status(201).send(model);
     };
 
@@ -58,6 +62,8 @@ class MenuTableController extends BaseController {
         model.statu = form_data.status;
         model.save();
 
+        await this.#addMenuUser(model.dataValues, 'update');
+
         res.send(model);
     };
 
@@ -70,6 +76,7 @@ class MenuTableController extends BaseController {
         }
 
         try {
+            await UserTableModel.destroy({ where: { menu_id: model.id }, force: true })
             await model.destroy({ force: true });
         } catch (error) {
             await model.destroy();
@@ -78,6 +85,27 @@ class MenuTableController extends BaseController {
         res.send(req.mf('data has been deleted'));
     };
 
+    #addMenuUser = async (model, action) => {
+        const user_model = await UserModel.findAll();
+
+        if (action == 'update') {
+            await UserTableModel.destroy({ where: { menu_id: model.id }, force: true })
+
+        }
+
+        for (let i = 0; i < user_model.length; i++) {
+            const element = user_model[i];
+            const user_table = await UserTableModel.create({
+                title: model.title,
+                name: model.name,
+                icon: model.icon,
+                status: model.status,
+                menu_id: model.id,
+                user_id: element.id
+            });
+        };
+
+    }
 
 }
 

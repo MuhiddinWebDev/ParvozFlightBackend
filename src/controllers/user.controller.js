@@ -1,5 +1,6 @@
 const UserModel = require("../models/user.model");
-const UserTableModel = require("../models/userTable.model")
+const UserTableModel = require("../models/userTable.model");
+const MenuTableModel = require("../models/menuTable.model")
 const HttpException = require("../utils/HttpException.utils");
 const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
@@ -124,19 +125,22 @@ class UserController extends BaseController {
       phone,
       all_page
     });
-
     const filter_table = user_table.map((user) => ({
       ...user,
-      user_id: model.id
+      user_id: model.id,
     }))
+
     await UserTableModel.bulkCreate(filter_table);
 
+
+    // }
     if (!model) {
       throw new HttpException(500, req.mf("Something went wrong"));
     }
 
     res.status(201).send(model);
   };
+
 
   update = async (req, res, next) => {
     this.checkValidation(req);
@@ -158,12 +162,13 @@ class UserController extends BaseController {
     model.all_page = all_page;
     model.save();
 
+    await this.#del_user_table(model.dataValues.id);
+
     const filter_table = user_table.map((user) => ({
       ...user,
-      user_id: model.id
+      user_id: model.id,
     }))
-    await this.#del_user_table(model.dataValues.id);
-    
+    console.log(filter_table)
     await UserTableModel.bulkCreate(filter_table);
 
     res.send(model);

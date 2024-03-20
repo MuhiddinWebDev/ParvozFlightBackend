@@ -22,6 +22,10 @@ UserTableModel.init({
     type: DataTypes.INTEGER,
     allowNull: true,
   },
+  menu_id: {
+    type: DataTypes.INTEGER,
+    allowNull: true,
+  },
   title: {
     type: DataTypes.STRING(256),
     allowNull: true,

@@ -1085,15 +1085,11 @@ class OrderController extends BaseController {
     created = async (req, res, next) => {
 
         const  service_id = req.params.id;
-        // let { token} = req.headers;
         let datetime = Math.floor(new Date().getTime())
-        // console.log('log');
             
         const user_id = req.currentUser.id;
         const client_id = req.currentClient.id;
-        // console.log(user_id);
-        // console.log(client_id);
-        // console.log(service_id);
+    
 
         let t = await sequelize.transaction()
 

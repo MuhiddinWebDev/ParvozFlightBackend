@@ -22,6 +22,7 @@ const serviceCategoryRouter = require('../routes/serviceCategory.route');
 const bookedTicketRouter = require('../routes/bookedTicket.route');
 const bonusRouter = require("../routes/bonus.route");
 const menuTableRouter = require("../routes/menuTable.route");
+const reportRouter = require("../routes/report.route");
 
 const HttpException = require('../utils/HttpException.utils');
 
@@ -114,8 +115,9 @@ module.exports = async function (app) {
     app.use(`/api/v1/room`, roomRouter);
     app.use(`/api/v1/service-category`, serviceCategoryRouter);
     app.use(`/api/v1/booked-ticket`, bookedTicketRouter);
-    app.use(`/api/v1/bonus`, bonusRouter)
-    app.use(`/api/v1/menu-table`, menuTableRouter)
+    app.use(`/api/v1/bonus`, bonusRouter);
+    app.use(`/api/v1/menu-table`, menuTableRouter);
+    app.use(`/api/v1/report`, reportRouter);
     // 404 error
     app.all('*', (req, res, next) => {
         const err = new HttpException(404, req.mf('Endpoint not found'));

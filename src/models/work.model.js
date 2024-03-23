@@ -31,5 +31,6 @@ WorkModel.init({
 });
 
 WorkModel.hasMany(WorkTableModel, { as: 'work_table', foreignKey: 'parent_id' });
+WorkTableModel.belongsTo(WorkModel, { as: 'work', foreignKey: 'parent_id' });
 
 module.exports = WorkModel;

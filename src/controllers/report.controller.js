@@ -4,6 +4,8 @@ const UserModel = require('../models/user.model');
 const RoomTableModel = require('../models/roomTable.model');
 const RoomImageModel = require("../models/roomImage.model");
 const AddressModel = require("../models/address.model");
+const WorkTableModel = require("../models/workTable.model");
+const WorkModel = require("../models/work.model")
 const RoomModel = require('../models/room.model');
 const BaseController = require('./BaseController');
 const sequelize = require("../db/db-sequelize");
@@ -170,13 +172,92 @@ class ReportController extends BaseController {
         // });
 
         // res.send(result);
+        // let lang = req.get("Accept-Language");
+        // lang = lang ? lang : "uz";
+        // let body = req.body;
+        // let client = req.currentClient;
+
+        // let query = {};
+        // query.status = "empty";
+
+        // if (body.address_id) {
+        //     query.address_id = body.address_id;
+        // }
+
+        // if (body.parent_id) {
+        //     query.parent_id = body.parent_id;
+        // }
+        // if (client) {
+        //     query.sex_id = { [Op.in]: [1, client.sex_id] };
+        // }
+
+
+        // const modelList = await RoomTableModel.findAll({
+        //     where: query,
+        //     attributes: [
+        //         "id",
+        //         "parent_id",
+        //         "price",
+        //         "phone_number",
+        //         "area",
+        //         "status",
+        //         "lat",
+        //         "long",
+        //         "sex_id",
+        //         [sequelize.literal(`comment_${lang}`), "comment"],
+        //     ],
+        //     include: [
+        //         {
+        //             model: AddressModel,
+        //             attributes: ["id", [sequelize.literal(`address.name_${lang}`), "name"]],
+        //             as: "address",
+        //             required: false,
+        //         },
+        //         {
+        //             model: RoomImageModel,
+        //             as: "images",
+        //             attributes: ["id", "image", "parent_id"],
+        //             required: false,
+        //         },
+        //         {
+        //             model: RoomModel,
+        //             attributes: [
+        //                 "id",
+        //                 [sequelize.literal(`room.name_${lang}`), "name"]
+        //             ],
+        //             as: 'room',
+        //             required: false
+        //         }
+        //     ],
+        //     order: [["id", "DESC"]],
+        // });
+
+        // if (!modelList) {
+        //     throw new HttpException(404, req.mf("data not found"));
+        // }
+
+
+
+        // res.send(modelList)
         let lang = req.get("Accept-Language");
         lang = lang ? lang : "uz";
+
+        let query = {};
         let body = req.body;
         let client = req.currentClient;
 
-        let query = {};
-        query.status = "empty";
+        query.status = "active";
+
+
+        // if (client.sex_id) {
+        //     query.sex_id = { [Op.in]: [1, client.sex_id] };
+        // }
+
+
+        // if (client.age) {
+        //   query.start_age = { [Op.lte]: client.age };
+        //   query.end_age = { [Op.gte]: client.age };
+        // }
 
         if (body.address_id) {
             query.address_id = body.address_id;
@@ -185,23 +266,22 @@ class ReportController extends BaseController {
         if (body.parent_id) {
             query.parent_id = body.parent_id;
         }
-        if (client) {
-            query.sex_id = { [Op.in]: [1, client.sex_id] };
-        }
 
 
-        const modelList = await RoomTableModel.findAll({
-            where: query,
+
+        const work = await WorkTableModel.findAll({
             attributes: [
                 "id",
+                "image",
                 "parent_id",
-                "price",
-                "phone_number",
-                "area",
-                "status",
+                "from_price",
+                "to_price",
+                "phone",
                 "lat",
                 "long",
-                "sex_id",
+                "finished",
+                [sequelize.literal(`WorkTableModel.title_${lang}`), "title"],
+                [sequelize.literal(`price_type_${lang}`), "price_type"],
                 [sequelize.literal(`comment_${lang}`), "comment"],
             ],
             include: [
@@ -212,31 +292,24 @@ class ReportController extends BaseController {
                     required: false,
                 },
                 {
-                    model: RoomImageModel,
-                    as: "images",
-                    attributes: ["id", "image", "parent_id"],
+                    model: WorkModel,
+                    attributes: ["id", [sequelize.literal(`work.title_${lang}`), "name"]],
+                    as: "work",
                     required: false,
                 },
-                {
-                    model: RoomModel,
-                    attributes: [
-                        "id",
-                        [sequelize.literal(`room.name_${lang}`), "name"]
-                    ],
-                    as: 'room',
-                    required: false
-                }
             ],
+            where: query,
             order: [["id", "DESC"]],
+            required: false,
         });
-        
-        if (!modelList) {
+
+        if (!work) {
             throw new HttpException(404, req.mf("data not found"));
         }
 
 
 
-        res.send(modelList);
+        res.send(work);
     };
 
 }

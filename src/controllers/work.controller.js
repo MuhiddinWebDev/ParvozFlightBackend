@@ -72,15 +72,19 @@ class WorkController extends BaseController {
 
     query.status = "active";
 
+    const date_birth = new Date();
+    const client_age = new Date(client.age * 1000);
+    let result_age = date_birth.getFullYear() - client_age.getFullYear()
+
 
     if (client.sex_id) {
       query.sex_id = { [Op.in]: [1, client.sex_id] };
     }
 
 
-    if (client.age) {
-      query.start_age = { [Op.lte]: client.age };
-      query.end_age = { [Op.gte]: client.age };
+    if (result_age) {
+      query.start_age = { [Op.lte]: result_age };
+      query.end_age = { [Op.gte]: result_age };
     }
 
     if (body.address_id) {
@@ -91,36 +95,7 @@ class WorkController extends BaseController {
       query.parent_id = body.parent_id;
     }
 
-    // const work = await WorkModel.findOne({
-    //     attributes: [
-    //         'id',
-    //         [ sequelize.literal(`WorkModel.title_${lang}`), 'title' ]
-    //     ],
-    //     where: { id: req.params.id },
-    //     include: [
-    //         {
-    //             model: WorkTableModel,
-    //             attributes: [
-    //                 'id', 'image','parent_id', 'from_price', 'to_price', 'phone','lat','long',
-    //                 [ sequelize.literal(`work_table.title_${lang}`), 'title' ],
-    //                 [ sequelize.literal(`work_table.comment_${lang}`), 'comment' ],
-    //             ],
-    //             as: 'work_table',
-    //             where: query,
-    //             required: false,
-    //             include: [
-    //                 {
-    //                     model: AddressModel,
-    //                     attributes: [
-    //                         [ sequelize.literal(`\`work_table->address\`.name_${lang}`), 'name' ]
-    //                     ],
-    //                     as: 'address',
-    //                     required: false
-    //                 }
-    //             ],
-    //         }
-    //     ],
-    // });
+
 
     const work = await WorkTableModel.findAll({
       attributes: [
@@ -133,15 +108,21 @@ class WorkController extends BaseController {
         "lat",
         "long",
         "finished",
-        [sequelize.literal(`title_${lang}`), "title"],
+        [sequelize.literal(`WorkTableModel.title_${lang}`), "title"],
         [sequelize.literal(`price_type_${lang}`), "price_type"],
         [sequelize.literal(`comment_${lang}`), "comment"],
       ],
       include: [
         {
           model: AddressModel,
-          attributes: ["id", [sequelize.literal(`name_${lang}`), "name"]],
+          attributes: ["id", [sequelize.literal(`address.name_${lang}`), "name"]],
           as: "address",
+          required: false,
+        },
+        {
+          model: WorkModel,
+          attributes: ["id", [sequelize.literal(`work.title_${lang}`), "name"]],
+          as: "work",
           required: false,
         },
       ],
@@ -154,19 +135,7 @@ class WorkController extends BaseController {
       throw new HttpException(404, req.mf("data not found"));
     }
 
-    for (let i = 0; i < work.length; i++) {
-      let element = work[i];
-      let workParent = await WorkModel.findOne({
-        attributes: ["id", [sequelize.literal(`title_${lang}`), "title"]],
-        where: { id: element.parent_id },
-      });
-      if (workParent) {
-        element.dataValues.work_type = {
-          id: workParent.dataValues.id,
-          name: workParent.dataValues.title,
-        };
-      }
-    }
+
 
     res.send(work);
   };
@@ -180,7 +149,7 @@ class WorkController extends BaseController {
     if (client.sex_id) {
       query.sex_id = client.sex_id;
     }
-    
+
 
     if (client.age) {
       query.start_age = { [Op.lte]: client.age };
@@ -232,7 +201,7 @@ class WorkController extends BaseController {
     if (currentUser.role == 'User') {
       query.user_id = currentUser.id;
     }
-    if(filter.user_id){
+    if (filter.user_id) {
       query.user_id = filter.user_id;
     }
     let sql = `
@@ -257,14 +226,14 @@ class WorkController extends BaseController {
         `;
     if (filter.status || query.user_id) {
       sql += " WHERE ";
-      if(filter.status){
+      if (filter.status) {
         sql += ` wt.status = '${filter.status}' `
       }
-      if(filter.status && query.user_id){
+      if (filter.status && query.user_id) {
         sql += ` AND `
       }
-      if(query.user_id){
-        sql += ` wt.user_id = ${ query.user_id} OR wt.client_id IS NOT NULL  `
+      if (query.user_id) {
+        sql += ` wt.user_id = ${query.user_id} OR wt.client_id IS NOT NULL  `
       }
     }
     sql += " ORDER BY wt.createdAt DESC";

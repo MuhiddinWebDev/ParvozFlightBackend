@@ -1,8 +1,19 @@
 const { DataTypes, Model } = require("sequelize");
 const sequelize = require("../db/db-sequelize");
 const RoomImageModel = require("./roomImage.model");
+
+const ClietModel = require("../models/client.model");
+const UserModel = require("../models/user.model");
 const AddressModel = require("./address.model");
-class RoomTableModel extends Model {}
+class RoomTableModel extends Model { 
+  toJSON() {
+    let values = Object.assign({}, this.get());
+    delete values.createdAt;
+    delete values.updatedAt;
+    delete values.deletedAt;
+    return values;
+  }
+}
 
 RoomTableModel.init(
   {
@@ -84,6 +95,8 @@ RoomTableModel.init(
   }
 );
 
+
+
 RoomTableModel.hasMany(RoomImageModel, {
   as: "images",
   foreignKey: "parent_id",
@@ -92,6 +105,10 @@ RoomTableModel.belongsTo(AddressModel, {
   as: "address",
   foreignKey: "address_id",
 });
-// RoomTableModel.hasOne(RoomModel , { as: 'room', foreignKey: 'parent_id' });
+
+
+
+RoomTableModel.belongsTo(UserModel, { as: "user", foreignKey: "user_id" });
+RoomTableModel.belongsTo(ClietModel, { as: "client", foreignKey: "client_id" });
 
 module.exports = RoomTableModel;

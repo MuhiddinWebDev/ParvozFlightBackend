@@ -1,5 +1,10 @@
 const OrderTable = require('../models/order.model');
-const ClietModel = require('../models/client.model')
+const ClietModel = require('../models/client.model');
+const UserModel = require('../models/user.model');
+const RoomTableModel = require('../models/roomTable.model');
+const RoomImageModel = require("../models/roomImage.model");
+const AddressModel = require("../models/address.model");
+const RoomModel = require('../models/room.model');
 const BaseController = require('./BaseController');
 const sequelize = require("../db/db-sequelize");
 const { Op } = require("sequelize");
@@ -15,10 +20,10 @@ class ReportController extends BaseController {
         console.log(query)
 
         let result = await OrderTable.findAll({
-            include:[
+            include: [
                 {
                     model: ClietModel,
-                    as:'client',
+                    as: 'client',
                     required: false
                 }
             ],
@@ -116,6 +121,122 @@ class ReportController extends BaseController {
         }
 
         res.send(result);
+    };
+
+    RoomReport = async (req, res, next) => {
+
+        // let result = await RoomTableModel.findAll({
+        //     // include:[
+        //     //     {
+        //     //         model: UserModel,
+        //     //         as:'user',
+        //     //         attributes:['id','fullname'],
+        //     //         required: false
+        //     //     },
+        //     //     {
+        //     //         model: ClietModel,
+        //     //         as:'client',
+        //     //         attributes:['id','fullname'],
+        //     //         required: false
+        //     //     },
+        //     //     {
+        //     //         model: RoomModel,
+        //     //         as: 'room',
+        //     //         attributes:['id','name_uz'],
+        //     //         required: false
+        //     //     }
+        //     // ]
+        //     attributes: [
+        //         "id",
+        //         "parent_id",
+        //         "price",
+        //         "phone_number",
+        //         "area",
+        //         "status",
+        //         "lat",
+        //         "long",
+        //         "sex_id",
+        //     ],
+        //     include: [
+
+        //         {
+        //             model: RoomModel,
+        //             as: 'room',
+        //             attributes: ['id', 'name_uz'],
+        //             required: false
+        //         }
+        //     ],
+        //     order: [["id", "DESC"]],
+        // });
+
+        // res.send(result);
+        let lang = req.get("Accept-Language");
+        lang = lang ? lang : "uz";
+        let body = req.body;
+        let client = req.currentClient;
+
+        let query = {};
+        query.status = "empty";
+
+        if (body.address_id) {
+            query.address_id = body.address_id;
+        }
+
+        if (body.parent_id) {
+            query.parent_id = body.parent_id;
+        }
+        if (client) {
+            query.sex_id = { [Op.in]: [1, client.sex_id] };
+        }
+
+
+        const modelList = await RoomTableModel.findAll({
+            where: query,
+            attributes: [
+                "id",
+                "parent_id",
+                "price",
+                "phone_number",
+                "area",
+                "status",
+                "lat",
+                "long",
+                "sex_id",
+                [sequelize.literal(`comment_${lang}`), "comment"],
+            ],
+            include: [
+                {
+                    model: AddressModel,
+                    attributes: ["id", [sequelize.literal(`address.name_${lang}`), "name"]],
+                    as: "address",
+                    required: false,
+                },
+                {
+                    model: RoomImageModel,
+                    as: "images",
+                    attributes: ["id", "image", "parent_id"],
+                    required: false,
+                },
+                {
+                    model: RoomModel,
+                    attributes: [
+                        "id",
+                        [sequelize.literal(`room.name_${lang}`), "name"]
+                    ],
+                    as: 'room',
+                    required: false
+                }
+            ],
+            order: [["id", "DESC"]],
+        });
+        
+        if (!modelList) {
+            throw new HttpException(404, req.mf("data not found"));
+        }
+
+
+
+        res.send(modelList);
     };
 
 }

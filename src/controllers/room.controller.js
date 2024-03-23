@@ -1,7 +1,7 @@
 const RoomModel = require("../models/room.model");
 const RoomTableModel = require("../models/roomTable.model");
-const RoomImageModel = require("../models/roomImage.model");
 const ClientModel = require("../models/client.model");
+const RoomImageModel = require("../models/roomImage.model");
 const AddressModel = require("../models/address.model");
 const HttpException = require("../utils/HttpException.utils");
 const BaseController = require("./BaseController");
@@ -42,44 +42,6 @@ class ServicesController extends BaseController {
     if (client) {
       query.sex_id = { [Op.in]: [1, client.sex_id] };
     }
-    console.log(query)
-    // const modelList = await RoomModel.findAll({
-    //     where: room_query,
-    //     attributes: [
-    //         'id',
-    //         [ sequelize.literal(`RoomModel.name_${lang}`), 'name' ]
-    //     ],
-    //     include: [
-    //         {
-    //             model: RoomTableModel,
-    //             where: query,
-    //             as: 'room_table',
-    //             required: true,
-    //             attributes: [
-    //                 'id', 'parent_id', 'price', 'phone_number', 'area', 'status', 'lat', 'long',
-    //                 [ sequelize.literal(`comment_${lang}`), 'comment' ]
-    //             ],
-    //             include: [
-    //                 {
-    //                     model: AddressModel,
-    //                     attributes: [
-    //                         'id',
-    //                         [ sequelize.literal(`\`room_table->address\`.name_${lang}`), 'name' ]
-    //                     ],
-    //                     as: 'address',
-    //                     required: false
-    //                 },
-    //                 {
-    //                     model: RoomImageModel,
-    //                     as: 'images',
-    //                     required: false
-
-    //                 }
-    //             ],
-
-    //         },
-    //     ],
-    // });
 
     const modelList = await RoomTableModel.findAll({
       where: query,
@@ -98,7 +60,7 @@ class ServicesController extends BaseController {
       include: [
         {
           model: AddressModel,
-          attributes: ["id", [sequelize.literal(`name_${lang}`), "name"]],
+          attributes: ["id", [sequelize.literal(`address.name_${lang}`), "name"]],
           as: "address",
           required: false,
         },
@@ -108,6 +70,15 @@ class ServicesController extends BaseController {
           attributes: ["id", "image", "parent_id"],
           required: false,
         },
+        {
+          model: RoomModel,
+          attributes: [
+            "id",
+            [sequelize.literal(`room.name_${lang}`), "name"]
+          ],
+          as: 'room',
+          required: false
+        }
       ],
       order: [["id", "DESC"]],
     });
@@ -116,19 +87,7 @@ class ServicesController extends BaseController {
       throw new HttpException(404, req.mf("data not found"));
     }
 
-    for (let i = 0; i < modelList.length; i++) {
-      let element = modelList[i];
-      let room = await RoomModel.findOne({
-        attributes: ["id", [sequelize.literal(`name_${lang}`), "name"]],
-        where: { id: element.parent_id },
-      });
-      if (room) {
-        element.dataValues.room_type = {
-          id: room.dataValues.id,
-          name: room.dataValues.name,
-        };
-      }
-    }
+
 
     res.send(modelList);
   };
@@ -163,10 +122,10 @@ class ServicesController extends BaseController {
     let filter = req.body;
     let currentUser = req.currentUser;
     const query = {};
-    if(currentUser.role == 'User'){
+    if (currentUser.role == 'User') {
       query.user_id = currentUser.id;
     }
-    if(filter.user_id){
+    if (filter.user_id) {
       query.user_id = filter.user_id;
     }
     let sql = ` 
@@ -192,12 +151,12 @@ class ServicesController extends BaseController {
       if (filter.sex_id) {
         sql += `rt.sex_id = ${filter.sex_id}`;
       }
-      if(query?.user_id){
-        sql +=` AND rt.user_id = ${query.user_id}`
+      if (query?.user_id) {
+        sql += ` AND rt.user_id = ${query.user_id}`
       }
-    }else{
-      if(query.user_id){
-        sql +=` WHERE  rt.user_id = ${query.user_id}`
+    } else {
+      if (query.user_id) {
+        sql += ` WHERE  rt.user_id = ${query.user_id}`
       }
     }
 

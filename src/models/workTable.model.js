@@ -1,6 +1,8 @@
 const { DataTypes, Model } = require("sequelize");
 const sequelize = require("../db/db-sequelize");
 const AddressModel = require("./address.model");
+const UserModel = require('../models/user.model');
+const ClientModel = require('../models/client.model');
 class WorkTableModel extends Model { }
 
 WorkTableModel.init(
@@ -141,5 +143,6 @@ WorkTableModel.belongsTo(AddressModel, {
   as: "address",
   foreignKey: "address_id",
 });
-
+WorkTableModel.belongsTo(UserModel, { as: 'user', foreignKey: 'user_id' });
+WorkTableModel.belongsTo(ClientModel, { as: 'client', foreignKey: 'client_id' });
 module.exports = WorkTableModel;

@@ -18,8 +18,7 @@ class ReportController extends BaseController {
         // let {  } = req.body;
         let query = {};
         query.client_id = 11;
-        console.log("query____________")
-        console.log(query)
+       
 
         let result = await OrderTable.findAll({
             include: [
@@ -36,282 +35,176 @@ class ReportController extends BaseController {
     };
 
 
-    OrderSverka = async (req, res, next) => {
-        this.checkValidation(req);
-
-        let { start_date, end_date, Order_id, filial_id, type } = req.body;
-
-        let query = {}, query_begin = {}, query_end = {};
-        query.datetime = {
-            [Op.gte]: start_date,
-            [Op.lte]: end_date,
-        };
-
-        if (Order_id) {
-            query.Order_id = Order_id;
-            query_begin.Order_id = Order_id;
-            query_end.Order_id = Order_id;
-        }
-
-        if (type != null) {
-            query.type = type;
-            query_begin.type = type;
-            query_end.type = type;
-        }
-
-        query_begin.datetime = {
-            [Op.lt]: start_date,
-        };
-        query_end.datetime = {
-            [Op.lte]: end_date,
-        };
-
+    RoomReport = async (req, res, next) => {
+        let { user_id, client_id, sex_id, start_date, end_date } = req.body;
+        let query = {};
         let result = {
-            total_begin: 0,
-            total_kirim: 0,
+            total_ad_user: 0,
+            total_ad_client: 0,
+            total_sex: 0,
+            total_price: 0,
             data: [],
-            total_chiqim: 0,
-            total_end: 0,
         }
-        result.data = await OrderTable.findAll({
-            attributes: [
-                'datetime', 'doc_id', 'doc_type', 'comment',
-                [sequelize.literal('CASE WHEN type = 1 AND datetime >= ' + start_date + ' AND datetime <= ' + end_date + '  THEN summa ELSE 0 END'), 'kirim'],
-                [sequelize.literal('CASE WHEN type = 0 AND datetime >= ' + start_date + ' AND datetime <= ' + end_date + '  THEN summa ELSE 0 END'), 'chiqim'],
-            ],
+        if (user_id) {
+            query.user_id = user_id
+        }
+        if (client_id) {
+            query.client_id = client_id;
+        }
+        if (sex_id) {
+            query.sex_id = sex_id;
+        }
+        query.createdAt = {
+            [Op.between]: [new Date(start_date * 1000), new Date(end_date * 1000)]
+        }
+        result.data = await RoomTableModel.findAll({
             include: [
                 {
-                    model: OrderModel,
-                    as: "Order",
-                    attributes: ['id', "name"],
+                    model: UserModel,
+                    as: 'user',
+                    attributes: ['id', 'fullname', 'phone'],
+                    required: false
                 },
                 {
-                    model: PayTpeModel,
-                    as: "pay_type",
-                    attributes: ['id', "name"],
+                    model: ClietModel,
+                    as: 'client',
+                    attributes: ['id', 'fullname', 'phone'],
+                    required: false
+                },
+                {
+                    model: RoomModel,
+                    as: 'room',
+                    attributes: ['id', 'name_uz'],
+                    required: false
                 }
             ],
+            attributes: [
+                'id', 'price', 'status', 'createdAt',
+                [sequelize.literal("CASE WHEN RoomTableModel.sex_id = 1 THEN 'Umumiy' WHEN RoomTableModel.sex_id = 2 THEN 'Erkak' ELSE 'Ayol' END"), 'sex_name']
+            ],
             where: query,
-            order: [["datetime", "ASC"]],
+            order: [[client_id ? 'client_id' : 'user_id', "DESC"]],
+        });
+
+        result.total_ad_user = await RoomTableModel.findOne({
+            attributes: [
+                [sequelize.literal('COUNT(user_id)'), 'count']
+            ],
+            where: query,
         })
 
-        //begin total
-        let Order_register = await OrderTable.findOne({
+        result.total_ad_client = await RoomTableModel.findOne({
             attributes: [
-                "id", 'datetime',
-                [sequelize.literal("sum((summa) * power(-1, type + 1))",), "total",],
+                [sequelize.literal('COUNT(client_id)'), 'count']
             ],
-            where: query_begin,
-        });
-        result.begin_total = Order_register.dataValues.total ? Order_register.dataValues.total : 0;
+            where: query,
+        })
 
-        //end total
-        Order_register = await OrderTable.findOne({
+        result.total_sex = await RoomTableModel.findOne({
             attributes: [
-                "id", 'datetime',
-                [sequelize.literal("sum((summa) * power(-1, type + 1))",), "total",]
+                [sequelize.literal('COUNT(sex_id)'), 'count']
             ],
-            where: query_end,
-        });
-        result.end_total = Order_register.dataValues.total ? Order_register.dataValues.total : 0;
+            where: query,
+        })
 
-        for (let i = 0; i < result.data.length; i++) {
-            let element = result.data[i].toJSON();
-
-            result.total_kirim += element.kirim ? element.kirim : 0;
-            result.total_chiqim += element.chiqim ? element.chiqim : 0;
-        }
-
+        result.total_price = await RoomTableModel.findOne({
+            attributes: [
+                [sequelize.literal('SUM(price)'), 'price']
+            ],
+            where: query,
+        })
         res.send(result);
+
     };
 
-    RoomReport = async (req, res, next) => {
-
-        // let result = await RoomTableModel.findAll({
-        //     // include:[
-        //     //     {
-        //     //         model: UserModel,
-        //     //         as:'user',
-        //     //         attributes:['id','fullname'],
-        //     //         required: false
-        //     //     },
-        //     //     {
-        //     //         model: ClietModel,
-        //     //         as:'client',
-        //     //         attributes:['id','fullname'],
-        //     //         required: false
-        //     //     },
-        //     //     {
-        //     //         model: RoomModel,
-        //     //         as: 'room',
-        //     //         attributes:['id','name_uz'],
-        //     //         required: false
-        //     //     }
-        //     // ]
-        //     attributes: [
-        //         "id",
-        //         "parent_id",
-        //         "price",
-        //         "phone_number",
-        //         "area",
-        //         "status",
-        //         "lat",
-        //         "long",
-        //         "sex_id",
-        //     ],
-        //     include: [
-
-        //         {
-        //             model: RoomModel,
-        //             as: 'room',
-        //             attributes: ['id', 'name_uz'],
-        //             required: false
-        //         }
-        //     ],
-        //     order: [["id", "DESC"]],
-        // });
-
-        // res.send(result);
-        // let lang = req.get("Accept-Language");
-        // lang = lang ? lang : "uz";
-        // let body = req.body;
-        // let client = req.currentClient;
-
-        // let query = {};
-        // query.status = "empty";
-
-        // if (body.address_id) {
-        //     query.address_id = body.address_id;
-        // }
-
-        // if (body.parent_id) {
-        //     query.parent_id = body.parent_id;
-        // }
-        // if (client) {
-        //     query.sex_id = { [Op.in]: [1, client.sex_id] };
-        // }
-
-
-        // const modelList = await RoomTableModel.findAll({
-        //     where: query,
-        //     attributes: [
-        //         "id",
-        //         "parent_id",
-        //         "price",
-        //         "phone_number",
-        //         "area",
-        //         "status",
-        //         "lat",
-        //         "long",
-        //         "sex_id",
-        //         [sequelize.literal(`comment_${lang}`), "comment"],
-        //     ],
-        //     include: [
-        //         {
-        //             model: AddressModel,
-        //             attributes: ["id", [sequelize.literal(`address.name_${lang}`), "name"]],
-        //             as: "address",
-        //             required: false,
-        //         },
-        //         {
-        //             model: RoomImageModel,
-        //             as: "images",
-        //             attributes: ["id", "image", "parent_id"],
-        //             required: false,
-        //         },
-        //         {
-        //             model: RoomModel,
-        //             attributes: [
-        //                 "id",
-        //                 [sequelize.literal(`room.name_${lang}`), "name"]
-        //             ],
-        //             as: 'room',
-        //             required: false
-        //         }
-        //     ],
-        //     order: [["id", "DESC"]],
-        // });
-
-        // if (!modelList) {
-        //     throw new HttpException(404, req.mf("data not found"));
-        // }
-
-
-
-        // res.send(modelList)
-        let lang = req.get("Accept-Language");
-        lang = lang ? lang : "uz";
-
+    WorkReport = async (req, res, next) => {
+        let { user_id, client_id, sex_id, start_date, end_date } = req.body;
         let query = {};
-        let body = req.body;
-        let client = req.currentClient;
-
-        query.status = "active";
-
-
-        // if (client.sex_id) {
-        //     query.sex_id = { [Op.in]: [1, client.sex_id] };
-        // }
-
-
-        // if (client.age) {
-        //   query.start_age = { [Op.lte]: client.age };
-        //   query.end_age = { [Op.gte]: client.age };
-        // }
-
-        if (body.address_id) {
-            query.address_id = body.address_id;
+        let result = {
+            total_ad_user: 0,
+            total_ad_client: 0,
+            total_sex: 0,
+            total_price_from: 0,
+            total_price_to: 0,
+            data: [],
         }
-
-        if (body.parent_id) {
-            query.parent_id = body.parent_id;
+        if (user_id) {
+            query.user_id = user_id
         }
-
-
-
-        const work = await WorkTableModel.findAll({
-            attributes: [
-                "id",
-                "image",
-                "parent_id",
-                "from_price",
-                "to_price",
-                "phone",
-                "lat",
-                "long",
-                "finished",
-                [sequelize.literal(`WorkTableModel.title_${lang}`), "title"],
-                [sequelize.literal(`price_type_${lang}`), "price_type"],
-                [sequelize.literal(`comment_${lang}`), "comment"],
-            ],
+        if (client_id) {
+            query.client_id = client_id;
+        }
+        if (sex_id) {
+            query.sex_id = sex_id;
+        }
+        query.createdAt = {
+            [Op.between]: [new Date(start_date * 1000), new Date(end_date * 1000)]
+        }
+        result.data = await WorkTableModel.findAll({
             include: [
                 {
-                    model: AddressModel,
-                    attributes: ["id", [sequelize.literal(`address.name_${lang}`), "name"]],
-                    as: "address",
-                    required: false,
+                    model: UserModel,
+                    as: 'user',
+                    attributes: ['id', 'fullname', 'phone'],
+                    required: false
+                },
+                {
+                    model: ClietModel,
+                    as: 'client',
+                    attributes: ['id', 'fullname', 'phone'],
+                    required: false
                 },
                 {
                     model: WorkModel,
-                    attributes: ["id", [sequelize.literal(`work.title_${lang}`), "name"]],
-                    as: "work",
-                    required: false,
-                },
+                    as: 'work',
+                    attributes: ['id', 'title_uz'],
+                    required: false
+                }
+            ],
+            attributes: [
+                'id', 'status', 'createdAt', 'title_uz', 'from_price', 'to_price',
+                [sequelize.literal("CASE WHEN WorkTableModel.sex_id = 1 THEN 'Umumiy' WHEN WorkTableModel.sex_id = 2 THEN 'Erkak' ELSE 'Ayol' END"), 'sex_name']
             ],
             where: query,
-            order: [["id", "DESC"]],
-            required: false,
+            order: [[client_id ? 'client_id' : 'user_id', "DESC"]],
         });
 
-        if (!work) {
-            throw new HttpException(404, req.mf("data not found"));
-        }
+        result.total_ad_user = await WorkTableModel.findOne({
+            attributes: [
+                [sequelize.literal('COUNT(user_id)'), 'count']
+            ],
+            where: query,
+        })
 
+        result.total_ad_client = await WorkTableModel.findOne({
+            attributes: [
+                [sequelize.literal('COUNT(client_id)'), 'count']
+            ],
+            where: query,
+        })
 
+        result.total_sex = await WorkTableModel.findOne({
+            attributes: [
+                [sequelize.literal('COUNT(sex_id)'), 'count']
+            ],
+            where: query,
+        })
 
-        res.send(work);
+        result.total_price_from = await WorkTableModel.findOne({
+            attributes: [
+                [sequelize.literal('SUM(from_price)'), 'summa']
+            ],
+            where: query,
+        })
+        result.total_price_to = await WorkTableModel.findOne({
+            attributes: [
+                [sequelize.literal('SUM(to_price)'), 'summa']
+            ],
+            where: query,
+        })
+        res.send(result);
+
     };
-
 }
 
 module.exports = new ReportController

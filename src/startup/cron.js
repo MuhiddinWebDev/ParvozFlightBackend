@@ -8,7 +8,7 @@ const moment = require('moment');
 const { Op } = require("sequelize");
 
 module.exports = function executeTaskFromDatabase() {
-    cron.schedule("*/30 * * * *", async () => {
+    cron.schedule("*/1 * * * *", async () => {
         try {
 
             const result = await checkTicket(); // Await the async function and get the result
@@ -53,14 +53,13 @@ module.exports = function executeTaskFromDatabase() {
 
         try {
             for (const element of models) {
-                await element.destroy({ force: true });
+                await element.destroy();
             }
         } catch (error) {
             await TicketModel.destroy({
                 where: {
                     date: { [Op.lte]: moment().format('YYYY-MM-DD HH:mm') }
                 },
-                force: true,
             });
         }
 

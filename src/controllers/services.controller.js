@@ -17,7 +17,6 @@ class ServicesController extends BaseController {
         let lang = req.get('Accept-Language');
         lang = lang ? lang : 'uz';
         const category_id = req.query.category_id;
-        console.log(category_id);
         let modelList = await ServicesModel.findAll({
             where: { category_id },
             attributes: [

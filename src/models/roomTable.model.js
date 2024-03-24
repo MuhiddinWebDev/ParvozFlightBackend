@@ -8,7 +8,6 @@ const AddressModel = require("./address.model");
 class RoomTableModel extends Model { 
   toJSON() {
     let values = Object.assign({}, this.get());
-    delete values.createdAt;
     delete values.updatedAt;
     delete values.deletedAt;
     return values;

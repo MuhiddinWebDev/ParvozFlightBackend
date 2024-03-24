@@ -34,7 +34,6 @@ class OrderController extends BaseController {
         };
 
         if(agent_id != "" && agent_id > 0) query.agent_id = agent_id;
-        console.log('query ', query);
         
         let modelList = await OrderModel.findAll({
             attributes: [
@@ -314,9 +313,7 @@ class OrderController extends BaseController {
 
         let { step_id, request_id } = req.body;
         let { ...fields } = req.body.fields;
-        console.log('test');
-        console.log(req.body);
-        console.log(fields);
+       
         
 
         let t = await sequelize.transaction()

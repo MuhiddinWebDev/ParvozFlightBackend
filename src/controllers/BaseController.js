@@ -20,7 +20,6 @@ class BaseController {
     notification = (message) => {
         var message = message;
         fcm.send(message, function (err, response) {
-            console.log(message)
             if (err) {
                 console.log("Something has gone wrong!" + err);
                 console.log("Respponse:! " + response);
@@ -32,8 +31,7 @@ class BaseController {
     }
 
     sendSmsToLogin = (data) => {
-        console.log(data);
-        console.log("_____________________")
+        
         var config = {
             method: 'post',
             url: 'https://yboburzhon@bk.ru:8afKebWawXU6BVX8bcZVweCBx-ArZVEM@gate.smsaero.ru/v2/sms/send',

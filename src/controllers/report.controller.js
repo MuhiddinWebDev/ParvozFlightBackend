@@ -2,11 +2,12 @@ const OrderTable = require('../models/order.model');
 const ClietModel = require('../models/client.model');
 const UserModel = require('../models/user.model');
 const RoomTableModel = require('../models/roomTable.model');
-const RoomImageModel = require("../models/roomImage.model");
-const AddressModel = require("../models/address.model");
 const WorkTableModel = require("../models/workTable.model");
 const WorkModel = require("../models/work.model")
 const RoomModel = require('../models/room.model');
+const TicketModel = require('../models/tickets.model');
+const AddressBiletModel = require('../models/addressBilet.model')
+const TransportModel = require("../models/transport.model")
 const BaseController = require('./BaseController');
 const sequelize = require("../db/db-sequelize");
 const { Op } = require("sequelize");
@@ -18,7 +19,7 @@ class ReportController extends BaseController {
         // let {  } = req.body;
         let query = {};
         query.client_id = 11;
-       
+
 
         let result = await OrderTable.findAll({
             include: [
@@ -205,6 +206,81 @@ class ReportController extends BaseController {
         res.send(result);
 
     };
+
+    TicketReport = async (req, res, next) => {
+        let { user_id, client_id, start_date, end_date } = req.body;
+        let query = {};
+        let result = {
+            total_uzs: 0,
+            total_rus: 0,
+            total_usd: 0,
+            data: [],
+        }
+        if (user_id) {
+            query.creator_id = user_id
+        }
+        if (client_id) {
+            query.client_id = client_id;
+        }
+
+        // query.createdAt = {
+        //     [Op.between]: [new Date(start_date * 1000), new Date(end_date * 1000)]
+        // }
+        result.data = await TicketModel.findAll({
+            attributes: [
+                'id', 'date', 'end_date', 'status','company',
+                [sequelize.literal("CASE WHEN TicketsModel.currency = 'UZS' THEN price ELSE 0 END"), 'price_uzs'],
+                [sequelize.literal("CASE WHEN TicketsModel.currency = 'RUB' THEN price ELSE 0 END"), 'price_rus'],
+                [sequelize.literal("CASE WHEN TicketsModel.currency = 'USD' THEN price ELSE 0 END"), 'price_usd']
+            ],
+            include: [
+                {
+                    model: UserModel,
+                    as: 'user',
+                    attributes: ['id', 'fullname', 'phone'],
+                    required: false
+                },
+                {
+                    model: ClietModel,
+                    as: 'client',
+                    attributes: ['id', 'fullname', 'phone'],
+                    required: false
+                },
+                {
+                    model: TransportModel,
+                    as: 'transport',
+                    attributes: ['id', 'name_uz']
+                },
+                {
+                    model: AddressBiletModel,
+                    as: 'from',
+                    attributes: ['id', 'name_uz']
+                },
+                {
+                    model: AddressBiletModel,
+                    as: 'to',
+                    attributes: ['id', 'name_uz']
+                }
+            ],
+            where: query,
+            order: [[client_id ? 'client_id' : 'creator_id', "DESC"]],
+        });
+
+        result.total_uzs = await TicketModel.findOne({
+            attributes: [[sequelize.literal("SUM(CASE WHEN TicketsModel.currency = 'UZS' THEN price ELSE 0 END)"), 'price']],
+            where: query
+        })
+        result.total_rus = await TicketModel.findOne({
+            attributes: [[sequelize.literal("SUM(CASE WHEN TicketsModel.currency = 'RUB' THEN price ELSE 0 END)"), 'price']],
+            where: query
+        })
+        result.total_usd = await TicketModel.findOne({
+            attributes: [[sequelize.literal("SUM(CASE WHEN TicketsModel.currency = 'USD' THEN price ELSE 0 END)"), 'price']],
+            where: query
+        })
+
+        res.send(result);
+    }
 }
 
 module.exports = new ReportController

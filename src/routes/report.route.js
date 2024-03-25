@@ -7,6 +7,7 @@ const awaitHandlerFactory = require('../middleware/awaitHandlerFactory.middlewar
 router.post('/order-report', auth(), awaitHandlerFactory(reportController.OrderReport));
 router.post('/room-report', auth(), awaitHandlerFactory(reportController.RoomReport));
 router.post('/work-report', auth(), awaitHandlerFactory(reportController.WorkReport));
+router.post('/ticket-report', auth(), awaitHandlerFactory(reportController.TicketReport));
 
 
 module.exports = router;

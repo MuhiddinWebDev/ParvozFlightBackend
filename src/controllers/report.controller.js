@@ -208,6 +208,7 @@ class ReportController extends BaseController {
     };
 
     TicketReport = async (req, res, next) => {
+        
         let { user_id, client_id, start_date, end_date } = req.body;
         let query = {};
         let result = {
@@ -223,12 +224,16 @@ class ReportController extends BaseController {
             query.client_id = client_id;
         }
 
-        // query.createdAt = {
-        //     [Op.between]: [new Date(start_date * 1000), new Date(end_date * 1000)]
-        // }
+        query.date = {
+            [Op.gte]: new Date(start_date * 1000)
+        };
+        query.end_date = {
+            [Op.lte]: new Date(end_date * 1000)
+        };
+
         result.data = await TicketModel.findAll({
             attributes: [
-                'id', 'date', 'end_date', 'status','company',
+                'id', 'date', 'end_date', 'status', 'company_name',
                 [sequelize.literal("CASE WHEN TicketsModel.currency = 'UZS' THEN price ELSE 0 END"), 'price_uzs'],
                 [sequelize.literal("CASE WHEN TicketsModel.currency = 'RUB' THEN price ELSE 0 END"), 'price_rus'],
                 [sequelize.literal("CASE WHEN TicketsModel.currency = 'USD' THEN price ELSE 0 END"), 'price_usd']

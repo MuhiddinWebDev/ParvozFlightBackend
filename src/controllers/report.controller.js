@@ -37,13 +37,18 @@ class ReportController extends BaseController {
 
 
     RoomReport = async (req, res, next) => {
-        let { user_id, client_id, sex_id, start_date, end_date } = req.body;
+        let currentUser = req.currentUser;
+        let { user_id, client_id, sex_id, range, } = req.body;
         let query = {};
         let result = {
             total_ad_user: 0,
             total_ad_client: 0,
-            total_sex: 0,
+            total_sex_all: 0,
+            total_sex_male: 0,
+            total_sex_female: 0,
             total_price: 0,
+            total_busy:0,
+            total_empty: 0,
             data: [],
         }
         if (user_id) {
@@ -55,8 +60,11 @@ class ReportController extends BaseController {
         if (sex_id) {
             query.sex_id = sex_id;
         }
+        if (currentUser.role == 'User') {
+            query.user_id = currentUser.id;
+        }
         query.createdAt = {
-            [Op.between]: [new Date(start_date * 1000), new Date(end_date * 1000)]
+            [Op.between]: [new Date(range[0]), new Date(range[1])]
         }
         result.data = await RoomTableModel.findAll({
             include: [
@@ -101,25 +109,51 @@ class ReportController extends BaseController {
             where: query,
         })
 
-        result.total_sex = await RoomTableModel.findOne({
+        result.total_sex_all = await RoomTableModel.findOne({
             attributes: [
-                [sequelize.literal('COUNT(sex_id)'), 'count']
+                [sequelize.literal('SUM(CASE WHEN sex_id = 1 THEN 1 ELSE 0 END)'), 'count']
+            ],
+            where: query,
+        });
+        result.total_sex_male = await RoomTableModel.findOne({
+            attributes: [
+                [sequelize.literal('SUM(CASE WHEN sex_id = 2 THEN 1 ELSE 0 END)'), 'count']
+            ],
+            where: query,
+        });
+        result.total_sex_female = await RoomTableModel.findOne({
+            attributes: [
+                [sequelize.literal('SUM(CASE WHEN sex_id = 3 THEN 1 ELSE 0 END)'), 'count']
             ],
             where: query,
         })
+
 
         result.total_price = await RoomTableModel.findOne({
             attributes: [
                 [sequelize.literal('SUM(price)'), 'price']
             ],
             where: query,
-        })
+        });
+
+        result.total_busy = await RoomTableModel.findOne({
+            attributes: [
+                [sequelize.literal('SUM(CASE WHEN status = "busy" THEN 1 ELSE 0 END)'), 'count']
+            ],
+            where: query,
+        });
+        result.total_empty = await RoomTableModel.findOne({
+            attributes: [
+                [sequelize.literal('SUM(CASE WHEN status = "empty" THEN 1 ELSE 0 END)'), 'count']
+            ],
+            where: query,
+        });
         res.send(result);
 
     };
 
     WorkReport = async (req, res, next) => {
-        let { user_id, client_id, sex_id, start_date, end_date } = req.body;
+        let { user_id, client_id, sex_id, range } = req.body;
         let query = {};
         let result = {
             total_ad_user: 0,
@@ -139,7 +173,7 @@ class ReportController extends BaseController {
             query.sex_id = sex_id;
         }
         query.createdAt = {
-            [Op.between]: [new Date(start_date * 1000), new Date(end_date * 1000)]
+            [Op.between]: [new Date(range[0]), new Date(range[1])]
         }
         result.data = await WorkTableModel.findAll({
             include: [
@@ -208,8 +242,8 @@ class ReportController extends BaseController {
     };
 
     TicketReport = async (req, res, next) => {
-        
-        let { user_id, client_id, start_date, end_date } = req.body;
+
+        let { user_id, client_id, range } = req.body;
         let query = {};
         let result = {
             total_uzs: 0,
@@ -225,10 +259,10 @@ class ReportController extends BaseController {
         }
 
         query.date = {
-            [Op.gte]: new Date(start_date * 1000)
+            [Op.gte]: new Date(range[0])
         };
         query.end_date = {
-            [Op.lte]: new Date(end_date * 1000)
+            [Op.lte]: new Date(range[1])
         };
 
         result.data = await TicketModel.findAll({

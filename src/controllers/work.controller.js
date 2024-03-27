@@ -338,7 +338,7 @@ class WorkController extends BaseController {
 
   create = async (req, res, next) => {
     let { work_table, work_id } = req.body;
-    const currentUser = req.currentUser
+    const currentUser = req.currentUser;
     let t = await sequelize.transaction();
 
     try {
@@ -479,7 +479,7 @@ class WorkController extends BaseController {
   update = async (req, res, next) => {
     let { work_table } = req.body;
     const model = await WorkModel.findOne({ where: { id: req.params.id } });
-
+    const currentUser = req.currentUser
     if (!model) {
       throw new HttpException(404, req.mf("data not found"));
     }
@@ -537,7 +537,7 @@ class WorkController extends BaseController {
   updateProduct = async (req, res, next) => {
     let { ...work_table } = req.body;
     let model = await WorkTableModel.findOne({ where: { id: req.params.id } });
-
+    const currentUser = req.currentUser
     if (!model) {
       throw new HttpException(404, req.mf("data not found"));
     }
@@ -566,7 +566,7 @@ class WorkController extends BaseController {
       model.end_date = work_table.end_date / 1000;
       model.start_age = work_table.start_age;
       model.end_age = work_table.end_age;
-
+      if(!model.user_id) model.user_id = currentUser.id;
       await model.save();
 
 

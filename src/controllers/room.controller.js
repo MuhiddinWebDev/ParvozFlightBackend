@@ -483,23 +483,25 @@ class ServicesController extends BaseController {
     let { images, ...room_table } = req.body;
     // let images = room_table.images;
     let t = await sequelize.transaction();
+    let currentUser = req.currentUser;
+    
+    const model = await RoomModel.findOne({
+      where: { id: req.body.parent_id },
+    });
+
+    const model_table = await RoomTableModel.findOne({
+      where: { id: req.params.id },
+    });
+
+    if (!model || !model_table) {
+      throw new HttpException(500, req.mf("room or room table not found"));
+    }
 
     try {
-      const model = await RoomModel.findOne({
-        where: { id: req.body.parent_id },
-      });
-
-      const model_table = await RoomTableModel.findOne({
-        where: { id: req.params.id },
-      });
-
-      if (!model || !model_table) {
-        throw new HttpException(500, req.mf("room or room table not found"));
-      }
 
       model_table.parent_id = room_table.parent_id;
       (model_table.address_id = room_table.address_id),
-        (model_table.address_uz = room_table.address_uz);
+      (model_table.address_uz = room_table.address_uz);
       model_table.address_ru = room_table.address_ru;
       model_table.address_ka = room_table.address_ka;
       model_table.price = room_table.price;
@@ -512,7 +514,7 @@ class ServicesController extends BaseController {
       model_table.lat = room_table.lat;
       model_table.long = room_table.long;
       model_table.sex_id = room_table.sex_id;
-
+      if(!model_table.user_id) model_table.user_id = currentUser.id;
       await model_table.save();
       await this.#deleteRelatedImage(model_table.id);
       for (let i = 0; i < images.length; i++) {

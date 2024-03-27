@@ -121,85 +121,49 @@ class ServicesController extends BaseController {
   getAllWebTable = async (req, res, next) => {
     let filter = req.body;
     let currentUser = req.currentUser;
-    const query = {};
+    let query = {};
     if (currentUser.role == 'User') {
       query.user_id = currentUser.id;
     }
     if (filter.user_id) {
       query.user_id = filter.user_id;
     }
-    let sql = ` 
-    SELECT 
-        rt.id, rt.parent_id, 
-        r.name_uz AS name_uz, r.name_ru AS name_ru, r.name_ka AS name_ka,
-        rt.price, rt.phone_number, 
-        rt.comment_uz, rt.comment_ru, 
-        rt.comment_ka, rt.area, rt.status, 
-        ad.name_uz AS address_uz, rt.sex_id
-    FROM room_table rt 
-        LEFT JOIN room r ON rt.parent_id = r.id
-        LEFT JOIN address ad ON rt.address_id = ad.id`;
-
-    if (filter.status || filter.sex_id) {
-      sql += " WHERE ";
-      if (filter.status) {
-        sql += `rt.status = '${filter.status}'`;
-      }
-      if (filter.status && filter.sex_id) {
-        sql += " AND ";
-      }
-      if (filter.sex_id) {
-        sql += `rt.sex_id = ${filter.sex_id}`;
-      }
-      if (query?.user_id) {
-        sql += ` AND rt.user_id = ${query.user_id}`
-      }
-    } else {
-      if (query.user_id) {
-        sql += ` WHERE  rt.user_id = ${query.user_id}`
-      }
+    if (filter.client_id) {
+      query.client_id = filter.client_id;
     }
-
-    sql += " ORDER BY rt.id DESC";
-
-    let result = await sequelize.query(sql, {
-      type: sequelize.QueryTypes.SELECT,
-      raw: true,
-    });
-    let sexOption = [
-      {
-        id: 1,
-        name_uz: "Umumiy",
-        name_ru: "Общий",
-        name_ka: "Генерал",
-      },
-      {
-        id: 2,
-        name_uz: "Erkak",
-        name_ru: "Мужской",
-        name_ka: "Мард",
-      },
-      {
-        id: 3,
-        name_uz: "Ayol",
-        name_ru: "Женский",
-        name_ka: "Зан",
-      },
-    ];
-
-    for (let i = 0; i < result.length; i++) {
-      const model = await RoomImageModel.findAll({
-        where: {
-          parent_id: result[i].id,
+    if(filter.status){
+      query.status = filter.status
+    }
+    if(filter.sex_id){
+      query.sex_id = filter.sex_id;
+    }
+    let result = await RoomTableModel.findAll({
+      attributes: [
+        'id', 'parent_id', 'phone_number', 'price', 'status', 'comment_uz',
+        [sequelize.literal("CASE WHEN RoomTableModel.sex_id = 1 THEN 'Umumiy' WHEN RoomTableModel.sex_id = 2 THEN 'Erkak' ELSE 'Ayol' END"), 'sex_name']
+      ],
+      include: [
+        {
+          model: RoomModel,
+          as: 'room',
+          attributes: ['id', 'name_uz'],
+          required: false
         },
-      });
-      let sexObject = sexOption.find((sex) => sex.id === result[i].sex_id);
-
-      if (sexObject) {
-        result[i].sex_name = sexObject.name_uz;
-      }
-      result[i].images = model;
-    }
+        {
+          model: RoomImageModel,
+          as: 'images',
+          required: false
+        },
+        {
+          model: AddressModel,
+          as: 'address',
+          attributes: ['id', 'name_uz'],
+          required: false
+        }
+      ],
+      where: query,
+      order:[['id', 'DESC']]
+    })
 
     res.send(result);
   };
@@ -410,14 +374,15 @@ class ServicesController extends BaseController {
     const currentClient = req.currentClient
     let t = await sequelize.transaction();
 
-    try {
-      const model = await RoomModel.findOne({
-        where: { id: req.body.parent_id },
-      });
+    const model = await RoomModel.findOne({
+      where: { id: req.body.parent_id },
+    });
 
-      if (!model) {
-        throw new HttpException(500, req.mf("room not found"));
-      }
+    if (!model) {
+      throw new HttpException(500, req.mf("room not found"));
+    }
+
+    try {
 
       const model_table = await RoomTableModel.create(
         {
@@ -484,7 +449,7 @@ class ServicesController extends BaseController {
     // let images = room_table.images;
     let t = await sequelize.transaction();
     let currentUser = req.currentUser;
-    
+
     const model = await RoomModel.findOne({
       where: { id: req.body.parent_id },
     });
@@ -501,7 +466,7 @@ class ServicesController extends BaseController {
 
       model_table.parent_id = room_table.parent_id;
       (model_table.address_id = room_table.address_id),
-      (model_table.address_uz = room_table.address_uz);
+        (model_table.address_uz = room_table.address_uz);
       model_table.address_ru = room_table.address_ru;
       model_table.address_ka = room_table.address_ka;
       model_table.price = room_table.price;
@@ -514,7 +479,7 @@ class ServicesController extends BaseController {
       model_table.lat = room_table.lat;
       model_table.long = room_table.long;
       model_table.sex_id = room_table.sex_id;
-      if(!model_table.user_id) model_table.user_id = currentUser.id;
+      if (!model_table.user_id) model_table.user_id = currentUser.id;
       await model_table.save();
       await this.#deleteRelatedImage(model_table.id);
       for (let i = 0; i < images.length; i++) {

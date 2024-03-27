@@ -52,7 +52,7 @@ router.get('/id/:id', auth(), awaitHandlerFactory(roomController.getById));
 router.post('/',  auth(), upload, joiMiddleware(roomSchemas.room), awaitHandlerFactory(roomController.create));
 router.patch('/id/:id', upload,  auth(), joiMiddleware(roomSchemas.room), awaitHandlerFactory(roomController.update));
 router.post('/table',  auth(), upload, joiMiddleware(roomSchemas.roomTable), awaitHandlerFactory(roomController.createTable));
-router.post('/house', joiMiddleware(roomSchemas.roomTable), awaitHandlerFactory(roomController.createTableMobil));
+router.post('/house', clientAuth(), joiMiddleware(roomSchemas.roomTable), awaitHandlerFactory(roomController.createTableMobil));
 router.patch('/table/id/:id', upload,  auth(), joiMiddleware(roomSchemas.roomTable), awaitHandlerFactory(roomController.updateTable));
 router.delete('/id/:id',  auth(), awaitHandlerFactory(roomController.delete));
 router.delete('/table/:id',  auth(), awaitHandlerFactory(roomController.deleteTable));

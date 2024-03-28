@@ -137,6 +137,9 @@ class ServicesController extends BaseController {
     if(filter.sex_id){
       query.sex_id = filter.sex_id;
     }
+    if(filter.parent_id){
+      query.parent_id = filter.parent_id;
+    }
     let result = await RoomTableModel.findAll({
       attributes: [
         'id', 'parent_id', 'phone_number', 'price', 'status', 'comment_uz',
@@ -479,7 +482,6 @@ class ServicesController extends BaseController {
       model_table.lat = room_table.lat;
       model_table.long = room_table.long;
       model_table.sex_id = room_table.sex_id;
-      if (!model_table.user_id) model_table.user_id = currentUser.id;
       await model_table.save();
       await this.#deleteRelatedImage(model_table.id);
       for (let i = 0; i < images.length; i++) {

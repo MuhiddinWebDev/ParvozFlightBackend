@@ -204,6 +204,7 @@ class WorkController extends BaseController {
     if (filter.user_id) {
       query.user_id = filter.user_id;
     }
+
     let sql = `
         SELECT 
             w.id AS cat_id, w.title_uz AS cat_name,
@@ -224,7 +225,7 @@ class WorkController extends BaseController {
         LEFT JOIN client ON wt.client_id = client.id
         LEFT JOIN user ON wt.user_id = user.id
         `;
-    if (filter.status || query.user_id) {
+    if (filter.status || query.user_id || filter.client_id) {
       sql += " WHERE ";
       if (filter.status) {
         sql += ` wt.status = '${filter.status}' `
@@ -234,6 +235,9 @@ class WorkController extends BaseController {
       }
       if (query.user_id) {
         sql += ` wt.user_id = ${query.user_id} OR wt.client_id IS NOT NULL  `
+      }
+      if(filter.client_id){
+        sql += `wt.client_id = ${filter.client_id}`
       }
     }
     sql += " ORDER BY wt.createdAt DESC";
@@ -566,7 +570,6 @@ class WorkController extends BaseController {
       model.end_date = work_table.end_date / 1000;
       model.start_age = work_table.start_age;
       model.end_age = work_table.end_age;
-      if(!model.user_id) model.user_id = currentUser.id;
       await model.save();
 
 

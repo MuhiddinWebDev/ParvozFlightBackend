@@ -236,7 +236,7 @@ class WorkController extends BaseController {
       if (query.user_id) {
         sql += ` wt.user_id = ${query.user_id} OR wt.client_id IS NOT NULL  `
       }
-      if(filter.client_id){
+      if (filter.client_id) {
         sql += `wt.client_id = ${filter.client_id}`
       }
     }

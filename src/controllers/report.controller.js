@@ -38,7 +38,7 @@ class ReportController extends BaseController {
 
     RoomReport = async (req, res, next) => {
         let currentUser = req.currentUser;
-        let { user_id, client_id, sex_id, range, } = req.body;
+        let { user_id, client_id, sex_id, range, parent_id } = req.body;
         let query = {};
         let result = {
             total_ad_user: 0,
@@ -62,6 +62,12 @@ class ReportController extends BaseController {
         }
         if (currentUser.role == 'User') {
             query.user_id = currentUser.id;
+        }
+        if(parent_id){
+            query.parent_id = parent_id;
+        }
+        if(sex_id){
+            query.sex_id = sex_id;
         }
         query.createdAt = {
             [Op.between]: [new Date(range[0]), new Date(range[1])]

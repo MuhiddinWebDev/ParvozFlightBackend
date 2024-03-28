@@ -159,7 +159,7 @@ class ReportController extends BaseController {
     };
 
     WorkReport = async (req, res, next) => {
-        let { user_id, client_id, sex_id, range } = req.body;
+        let { user_id, client_id, sex_id, range, parent_id } = req.body;
         let query = {};
         let result = {
             total_ad_user: 0,
@@ -178,9 +178,13 @@ class ReportController extends BaseController {
         if (sex_id) {
             query.sex_id = sex_id;
         }
+        if(parent_id){
+            query.parent_id = parent_id
+        }
         query.createdAt = {
             [Op.between]: [new Date(range[0]), new Date(range[1])]
         }
+        console.log(query.createdAt)
         result.data = await WorkTableModel.findAll({
             include: [
                 {

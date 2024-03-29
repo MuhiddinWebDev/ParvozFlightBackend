@@ -20,34 +20,32 @@ let mt = new JSMTRand();
 class ClientController extends BaseController {
 
   getAll = async (req, res, next) => {
+    const filter = req.query;
+    let query = {};
+    if (filter.text) {
+      query = {
+        [Op.or]: [
+          {
+            fullname: {
+              [Op.substring]: filter.text
+            }
+          },
+          {
+            phone: {
+              [Op.substring]: filter.text
+            }
+          },
+        ]
+      }
+    };
     let modelList = await ClientModel.findAll({
       attributes: [
         'id', 'fullname', 'phone', 'bonus', 'age', 'sex_id', 'code', 'lang',
+        [sequelize.literal("CASE WHEN ClientModel.sex_id = 2 THEN 'Erkak'  ELSE 'Ayol' END"), 'sex_name'],
       ],
+      where: query,
       order: [["id", "DESC"]],
     });
-    let sexOption = [
-      {
-        id: 2,
-        name_uz: "Erkak",
-        name_ru: "Мужской",
-        name_ka: "Мард",
-      },
-      {
-        id: 3,
-        name_uz: "Ayol",
-        name_ru: "Женский",
-        name_ka: "Зан",
-      },
-    ];
-    for (let i = 0; i < modelList.length; i++) {
-      let sexObject = sexOption.find(
-        (sex) => sex.id === modelList[i].dataValues.sex_id
-      );
-      if (sexObject) {
-        modelList[i].dataValues.sex_name = sexObject.name_uz;
-      }
-    }
     res.send(modelList);
   };
 

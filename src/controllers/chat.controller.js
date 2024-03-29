@@ -36,7 +36,7 @@ class ChatController extends BaseController {
         try {
 
             let modelList = await ChatModel.findAll({
-                where: { order_id:  order_id},
+                where: { order_id: order_id },
                 include: [
                     {
                         model: OrderModel,
@@ -47,7 +47,7 @@ class ChatController extends BaseController {
                                 model: ServicesModel,
                                 as: 'services',
                                 required: false
-        
+
                             }
                         ],
 
@@ -76,8 +76,8 @@ class ChatController extends BaseController {
         try {
 
             let modelList = await ChatModel.findAll({
-                where: { order_id:  order_id},
-                attributes: [ 'id','order_id','user_id','datetime', 'text', 'voice'],
+                where: { order_id: order_id },
+                attributes: ['id', 'order_id', 'user_id', 'datetime', 'text', 'voice'],
                 order: [
                     ['id', 'ASC']
                 ]
@@ -101,8 +101,8 @@ class ChatController extends BaseController {
         try {
 
             let modelList = await ChatModel.findAll({
-                where: { order_id:  order_id},
-                attributes: [ 'id','order_id','user_id','datetime', 'text', 'voice', 'is_voice'],
+                where: { order_id: order_id },
+                attributes: ['id', 'order_id', 'user_id', 'datetime', 'text', 'voice', 'is_voice'],
                 order: [
                     ['id', 'ASC']
                 ]
@@ -158,7 +158,7 @@ class ChatController extends BaseController {
         });
 
         result = _.map(result, (value) => {
-            if(value.chat_id == null){
+            if (value.chat_id == null) {
                 value.chat_id = 0;
                 value.datetime = '';
                 value.text = '';
@@ -173,7 +173,7 @@ class ChatController extends BaseController {
 
     // for web last message, new message count by order
     getOrderByChatListWeb = async (req, res, next) => {
-
+        console.log('Chatttt____________________________________')
         let sql = `
             SELECT 
                 t1.id as order_id,
@@ -209,16 +209,34 @@ class ChatController extends BaseController {
             raw: true
         });
 
-        result = _.map(result, (value) => {
-            if(value.chat_id == null){
+        result = await Promise.all(result.map(async (value) => {
+            let order = await OrderModel.findOne({
+                include: [
+                    {
+                        model: ClientModel,
+                        as: 'client',
+                        attributes: ['id', 'fullname', 'phone'],
+                        required: false
+                    }
+                ],
+                where: { id: value.order_id }
+            });
+
+            if (value.chat_id == null) {
                 value.chat_id = 0;
                 value.datetime = '';
                 value.text = '';
                 value.voice = '';
                 value.is_voice = '';
             }
+            if (order) {
+                value.client = order.dataValues.client;
+            }
+            else {
+                value.client = null
+            }
             return value;
-        })
+        }))
 
         res.send(result);
     };
@@ -226,7 +244,7 @@ class ChatController extends BaseController {
 
     getById = async (req, res, next) => {
         const model = await ChatModel.findOne({
-            where:{ id: req.params.id }
+            where: { id: req.params.id }
         });
 
         if (!model) {
@@ -244,12 +262,12 @@ class ChatController extends BaseController {
             order_id,
             text
         } = req.body;
-        
+
         const chats = await ChatModel.findAll({
             where: {
                 order_id: order_id,
-                 view: 0,
-                 seen: 1
+                view: 0,
+                seen: 1
             },
             order: [
                 ['id', 'DESC']
@@ -257,13 +275,13 @@ class ChatController extends BaseController {
         });
         // console.log('chats ', chats);
         // console.log('order_id ', order_id);
-        
+
         let datetime = Math.floor(new Date().getTime())
         // datetime = datetime * 1000;
-        if(chats){
+        if (chats) {
             for (let i = 0; i < chats.length; i++) {
                 const chat = chats[i];
-                if(chat.user_id > 0){
+                if (chat.user_id > 0) {
                     const chat_model = await ChatModel.findOne({
                         where: { id: chat.id }
                     })
@@ -275,7 +293,7 @@ class ChatController extends BaseController {
         }
 
         const model = await ChatModel.create({
-            datetime, 
+            datetime,
             order_id,
             view: true,
             seen: false,
@@ -306,10 +324,10 @@ class ChatController extends BaseController {
         order_id = parseInt(order_id);
         user_id = parseInt(user_id);
         // console.log('file ', file);
-        
+
 
         // console.log('client fcm token ' + client.fcm_token);
-        if( user_id > 0){
+        if (user_id > 0) {
             view = false;
             seen = true;
             const chats = await ChatModel.findAll({
@@ -322,20 +340,20 @@ class ChatController extends BaseController {
                     ['id', 'DESC']
                 ]
             });
-    
-            if(chats){
+
+            if (chats) {
                 for (let i = 0; i < chats.length; i++) {
                     const chat = chats[i];
                     const chat_model = await ChatModel.findOne({
                         where: { id: chat.id }
                     })
                     chat_model.seen = true;
-                    
+
                     await chat_model.save();
-    
+
                 }
             }
-    
+
             const order = await OrderModel.findOne({
                 where: { id: req.body.order_id }
             });
@@ -344,23 +362,23 @@ class ChatController extends BaseController {
             let client = await ClientModel.findOne({
                 where: { id: client_id }
             });
-    
+
             let fcm_token = client.fcm_token;
             let title = "Sizga yangi ovozli xabar keldi";
             let type = "chat";
             var message = {
                 to: fcm_token,
-                notification:{
-                  title: title,
-                  body: file,
-                  type: type,
-                  data: order.id
+                notification: {
+                    title: title,
+                    body: file,
+                    type: type,
+                    data: order.id
                 }
-              };
+            };
             await this.notification(message);
-        }else {
+        } else {
             user_id = 0;
-    
+
             const chats = await ChatModel.findAll({
                 where: {
                     order_id: order_id,
@@ -373,22 +391,22 @@ class ChatController extends BaseController {
             });
             // console.log('chat ', chats);
 
-            if(chats){
+            if (chats) {
                 for (let i = 0; i < chats.length; i++) {
                     const chat = chats[i];
                     const chat_model = await ChatModel.findOne({
                         where: { id: chat.id }
                     })
                     chat_model.view = true;
-                    
+
                     await chat_model.save();
-                    
+
                 }
             }
         }
 
         const model = await ChatModel.create({
-            datetime, 
+            datetime,
             order_id,
             user_id,
             view,
@@ -417,67 +435,67 @@ class ChatController extends BaseController {
 
         let datetime = Math.floor(new Date().getTime())
         // datetime = datetime * 1000;
-        
-            const chats = await ChatModel.findAll({
-                where: {
-                    order_id: order_id,
-                    view: 1,
-                    seen: 0
-                },
-                order: [
-                    ['id', 'DESC']
-                ]
-            });
-    
-            if(chats){
-                for (let i = 0; i < chats.length; i++) {
-                    const chat = chats[i];
-                    const chat_model = await ChatModel.findOne({
-                        where: { id: chat.id }
-                    })
-                    chat_model.seen = true;
-                    
-                    await chat_model.save();
-    
-                }
+
+        const chats = await ChatModel.findAll({
+            where: {
+                order_id: order_id,
+                view: 1,
+                seen: 0
+            },
+            order: [
+                ['id', 'DESC']
+            ]
+        });
+
+        if (chats) {
+            for (let i = 0; i < chats.length; i++) {
+                const chat = chats[i];
+                const chat_model = await ChatModel.findOne({
+                    where: { id: chat.id }
+                })
+                chat_model.seen = true;
+
+                await chat_model.save();
+
             }
-            const order = await OrderModel.findOne({
-                where: { id: req.body.order_id }
-            });
-    
-            // console.log('order client id', order.client_id);
-            
-            let client = await ClientModel.findOne({
-                where: { id:order.client_id }
-            });
-            const model = await ChatModel.create({
-                datetime, 
-                order_id,
-                user_id,
-                seen: true,
-                view: false,
-                text
-            });
-    
-            if (!model) {
-                throw new HttpException(500, req.mf('Something went wrong'));
+        }
+        const order = await OrderModel.findOne({
+            where: { id: req.body.order_id }
+        });
+
+        // console.log('order client id', order.client_id);
+
+        let client = await ClientModel.findOne({
+            where: { id: order.client_id }
+        });
+        const model = await ChatModel.create({
+            datetime,
+            order_id,
+            user_id,
+            seen: true,
+            view: false,
+            text
+        });
+
+        if (!model) {
+            throw new HttpException(500, req.mf('Something went wrong'));
+        }
+        // console.log('token ', client.fcm_token);
+        const fcm_token = client.fcm_token;
+        const title = "Sizga yangi xabar keldi";
+        const type = "chat";
+        var message = {
+            to: fcm_token,
+            notification: {
+                title: title,
+                body: model.text,
+                type: type,
+                data: model.order_id
             }
-            // console.log('token ', client.fcm_token);
-            const fcm_token = client.fcm_token;
-            const title = "Sizga yangi xabar keldi";
-            const type = "chat";
-            var message = {
-                to: fcm_token,
-                notification:{
-                  title: title,
-                  body: model.text,
-                  type: type,
-                  data: model.order_id
-                }
-              };
-            await this.notification(message);
-            // await this.notification(model, client.fcm_token, title, type);
-    
+        };
+        await this.notification(message);
+        // await this.notification(model, client.fcm_token, title, type);
+
         res.status(201).send(model);
     };
 
@@ -485,18 +503,18 @@ class ChatController extends BaseController {
     update = async (req, res, next) => {
 
         let {
-            datetime, 
+            datetime,
             order_id,
             user_id,
             text
         } = req.body;
 
-        const model = await ChatModel.findOne({ where: { id: req.params.id }} );
+        const model = await ChatModel.findOne({ where: { id: req.params.id } });
 
         if (!model) {
             throw new HttpException(404, req.mf('data not found'));
         }
-        
+
         model.datetime = datetime;
         model.order_id = order_id;
         model.user_id = user_id;
@@ -506,10 +524,10 @@ class ChatController extends BaseController {
         res.send(model);
     };
 
-    
+
     delete = async (req, res, next) => {
-        const model = await ChatModel.findOne({ where : { id: req.params.id } })
-        
+        const model = await ChatModel.findOne({ where: { id: req.params.id } })
+
         if (!model) {
             throw new HttpException(404, req.mf('data not found'));
         }
@@ -523,7 +541,7 @@ class ChatController extends BaseController {
         res.send(req.mf('data has been deleted'));
     };
 
-    
+
 }
 
 

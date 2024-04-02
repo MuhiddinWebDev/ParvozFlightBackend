@@ -80,7 +80,7 @@ class ServicesController extends BaseController {
           required: false
         }
       ],
-      order: [["id", "DESC"]],
+      order: [["user_id", "DESC"], ["updatedAt", "DESC"]],
     });
 
     if (!modelList) {

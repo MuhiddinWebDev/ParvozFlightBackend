@@ -22,8 +22,9 @@ class AddressController extends BaseController {
                 [sequelize.literal(`text_${lang}`), 'text']
             ],
             order: [
-                ['id', 'ASC']
-            ]
+                ['id', 'DESC']
+            ],
+            limit: 4
         });
         res.send(modelList);
     };
@@ -31,7 +32,7 @@ class AddressController extends BaseController {
 
     getAllWeb = async (req, res, next) => {
         let modelList = await AdvertisementModel.findAll({
-            attributes:['id','title_uz','title_ru','title_ka','image'],
+            attributes:['id','title_uz','title_ru','title_ka','image','status'],
             order: [
                 ['id', 'ASC']
             ]
@@ -60,7 +61,7 @@ class AddressController extends BaseController {
             where: { id: req.params.id }
         });
 
-        if (!user) {
+        if (!model) {
             throw new HttpException(404, req.mf('data not found'));
         }
 

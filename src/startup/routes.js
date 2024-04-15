@@ -23,6 +23,7 @@ const bookedTicketRouter = require('../routes/bookedTicket.route');
 const bonusRouter = require("../routes/bonus.route");
 const menuTableRouter = require("../routes/menuTable.route");
 const reportRouter = require("../routes/report.route");
+const advertisementRouter = require("../routes/advertisement.route");
 
 const HttpException = require('../utils/HttpException.utils');
 
@@ -98,6 +99,7 @@ module.exports = async function (app) {
     app.use(`/api/v1/uploads/room`, express.static('uploads/room'));
     app.use(`/api/v1/uploads/category`, express.static('uploads/category'));
     app.use(`/api/v1/uploads/client`, express.static('uploads/client'));
+    app.use(`/api/v1/uploads/advertisement`, express.static('uploads/advertisement'));
 
     app.use(`/api/v1/users`, userRouter);
     app.use(`/api/v1/banner`, bannerRouter);
@@ -118,6 +120,7 @@ module.exports = async function (app) {
     app.use(`/api/v1/bonus`, bonusRouter);
     app.use(`/api/v1/menu-table`, menuTableRouter);
     app.use(`/api/v1/report`, reportRouter);
+    app.use(`/api/v1/advertisement`, advertisementRouter);
     // 404 error
     app.all('*', (req, res, next) => {
         const err = new HttpException(404, req.mf('Endpoint not found'));

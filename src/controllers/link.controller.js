@@ -34,7 +34,7 @@ class LinkController extends BaseController {
 
     getAllWeb = async (req, res, next) => {
         let modelList = await LinkModel.findAll({
-            attributes: ['id', 'title_uz', 'title_ru', 'title_ka', 'image', 'status'],
+            attributes: ['id', 'title_uz', 'title_ru', 'title_ka', 'image', 'status','url'],
             order: [
                 ['id', 'ASC']
             ]
@@ -47,6 +47,7 @@ class LinkController extends BaseController {
         let { image } = req.body;
 
         try {
+            
             if (!image) {
                 throw new HttpException(405, req.mf("file type is invalid"));
             }

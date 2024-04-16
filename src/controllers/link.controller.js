@@ -1,4 +1,4 @@
-const AdvertisementModel = require('../models/advertisement.model');
+const LinkModel = require('../models/link.model');
 const HttpException = require('../utils/HttpException.utils');
 const BaseController = require('./BaseController');
 const { Op } = require('sequelize');
@@ -7,21 +7,21 @@ const fs = require('fs');
 /******************************************************************************
  *                              User Controller
  ******************************************************************************/
-class AdvertisementController extends BaseController {
+class LinkController extends BaseController {
 
     getAllMobile = async (req, res, next) => {
 
         let lang = req.get('Accept-Language');
         lang = lang ? lang : 'uz';
 
-        let modelList = await AdvertisementModel.findAll({
+        let modelList = await LinkModel.findAll({
             attributes: [
                 'id',
                 'image',
+                'url',
                 [sequelize.literal(`title_${lang}`), 'title'],
-                [sequelize.literal(`text_${lang}`), 'text']
             ],
-            where:{
+            where: {
                 status: true,
             },
             order: [
@@ -34,8 +34,8 @@ class AdvertisementController extends BaseController {
 
 
     getAllWeb = async (req, res, next) => {
-        let modelList = await AdvertisementModel.findAll({
-            attributes:['id','title_uz','title_ru','title_ka','image','status'],
+        let modelList = await LinkModel.findAll({
+            attributes: ['id', 'title_uz', 'title_ru', 'title_ka', 'image', 'status'],
             order: [
                 ['id', 'ASC']
             ]
@@ -60,7 +60,7 @@ class AdvertisementController extends BaseController {
 
 
     getById = async (req, res, next) => {
-        const model = await AdvertisementModel.findOne({
+        const model = await LinkModel.findOne({
             where: { id: req.params.id }
         });
 
@@ -78,20 +78,17 @@ class AdvertisementController extends BaseController {
             title_uz,
             title_ru,
             title_ka,
-            text_uz,
-            text_ru,
-            text_ka,
+            url,
             image,
             status,
         } = req.body;
 
-        const model = await AdvertisementModel.create({
+        const model = await LinkModel.create({
             title_uz,
             title_ru,
             title_ka,
-            text_uz,
-            text_ru,
-            text_ka,
+            url,
+
             image,
             status,
         });
@@ -106,8 +103,8 @@ class AdvertisementController extends BaseController {
 
     update = async (req, res, next) => {
 
-        let { title_uz, title_ru, title_ka, text_uz, text_ru, text_ka, image, status } = req.body;
-        const model = await AdvertisementModel.findOne({ where: { id: req.params.id } });
+        let { title_uz, title_ru, title_ka, url, image, status } = req.body;
+        const model = await LinkModel.findOne({ where: { id: req.params.id } });
 
         if (!model) {
             throw new HttpException(404, req.mf('data not found'));
@@ -116,9 +113,7 @@ class AdvertisementController extends BaseController {
         model.title_uz = title_uz;
         model.title_ru = title_ru;
         model.title_ka = title_ka;
-        model.text_uz = text_uz;
-        model.text_ru = text_ru;
-        model.text_ka = text_ka;
+        model.url = url;
         model.image = image;
         model.status = status;
         model.save();
@@ -128,7 +123,7 @@ class AdvertisementController extends BaseController {
 
 
     delete = async (req, res, next) => {
-        const model = await AdvertisementModel.findOne({ where: { id: req.params.id } })
+        const model = await LinkModel.findOne({ where: { id: req.params.id } })
 
         if (!model) {
             throw new HttpException(404, req.mf('data not found'));
@@ -154,4 +149,4 @@ class AdvertisementController extends BaseController {
 /******************************************************************************
  *                               Export
  ******************************************************************************/
-module.exports = new AdvertisementController;
+module.exports = new LinkController;

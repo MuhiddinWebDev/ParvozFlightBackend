@@ -24,6 +24,7 @@ const bonusRouter = require("../routes/bonus.route");
 const menuTableRouter = require("../routes/menuTable.route");
 const reportRouter = require("../routes/report.route");
 const advertisementRouter = require("../routes/advertisement.route");
+const linkRouter = require("../routes/link.route");
 
 const HttpException = require('../utils/HttpException.utils');
 
@@ -121,6 +122,7 @@ module.exports = async function (app) {
     app.use(`/api/v1/menu-table`, menuTableRouter);
     app.use(`/api/v1/report`, reportRouter);
     app.use(`/api/v1/advertisement`, advertisementRouter);
+    app.use(`/api/v1/link`, linkRouter);
     // 404 error
     app.all('*', (req, res, next) => {
         const err = new HttpException(404, req.mf('Endpoint not found'));

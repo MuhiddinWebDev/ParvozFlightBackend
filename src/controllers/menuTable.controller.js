@@ -95,16 +95,15 @@ class MenuTableController extends BaseController {
 
         for (let i = 0; i < user_model.length; i++) {
             const element = user_model[i];
-            if(element.role =='Admin' || element.role =='Programmer') {
-                const user_table = await UserTableModel.create({
-                    title: model.title,
-                    name: model.name,
-                    icon: model.icon,
-                    status: model.status,
-                    menu_id: model.id,
-                    user_id: element.id
-                });
-            }
+            const user_table = await UserTableModel.create({
+                title: model.title,
+                name: model.name,
+                icon: model.icon,
+                status: model.status,
+                menu_id: model.id,
+                user_id: element.id
+            });
+           
         };
 
     }

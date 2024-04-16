@@ -11,7 +11,7 @@ const { addressSchemas } = require('../middleware/validators/addressValidator.mi
 
 
 router.get('/', auth(), awaitHandlerFactory(addressController.getAll));
-router.get('/all', clientAuth(), awaitHandlerFactory(addressController.getAll));
+router.get('/all', awaitHandlerFactory(addressController.getAll));
 router.get('/all-address', agentAuth(), awaitHandlerFactory(addressController.getAll));
 router.get('/id/:id', auth(), awaitHandlerFactory(addressController.getById));
 router.get('/one/id/:id', clientAuth(), awaitHandlerFactory(addressController.getById));

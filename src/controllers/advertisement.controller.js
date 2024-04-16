@@ -21,10 +21,13 @@ class AddressController extends BaseController {
                 [sequelize.literal(`title_${lang}`), 'title'],
                 [sequelize.literal(`text_${lang}`), 'text']
             ],
+            where:{
+                status: true,
+            },
             order: [
                 ['id', 'DESC']
             ],
-            limit: 4
+            limit: 4,
         });
         res.send(modelList);
     };

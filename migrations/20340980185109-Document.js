@@ -32,7 +32,10 @@ module.exports = {
           type: Sequelize.DataTypes.BOOLEAN,
           allowNull: true,
         },
-
+        type:{
+          type: Sequelize.DataTypes.STRING(256),
+          allowNull: true,
+        },
         createdAt: {
           type: Sequelize.DataTypes.DATE
         },

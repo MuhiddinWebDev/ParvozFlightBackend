@@ -33,6 +33,10 @@ DocumentModel.init({
     type: DataTypes.STRING(256),
     allowNull: true,
   },
+  type: {
+    type: DataTypes.STRING(256),
+    allowNull: true,
+  },
   status: {
     type: DataTypes.BOOLEAN,
     allowNull: true,

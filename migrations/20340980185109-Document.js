@@ -28,6 +28,10 @@ module.exports = {
           type: Sequelize.DataTypes.STRING(256),
           allowNull: true,
         },
+        url: {
+          type: Sequelize.DataTypes.TEXT,
+          allowNull: true,
+        },
         status: {
           type: Sequelize.DataTypes.BOOLEAN,
           allowNull: true,

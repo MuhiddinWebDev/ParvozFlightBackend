@@ -37,6 +37,10 @@ DocumentModel.init({
     type: DataTypes.STRING(256),
     allowNull: true,
   },
+  url: {
+    type: DataTypes.TEXT,
+    allowNull: true,
+  },
   status: {
     type: DataTypes.BOOLEAN,
     allowNull: true,

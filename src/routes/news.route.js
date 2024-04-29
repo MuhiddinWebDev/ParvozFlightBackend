@@ -16,7 +16,7 @@ const storage = multer.diskStorage({
     filename: function (req, file, cb) {
         const time = Math.floor(new Date().getTime());
         req.body.image = "news_" + time + "_" + UniqueStringGenerator.UniqueString() + path.extname(file.originalname);
-        cb(null, req.body.file);
+        cb(null, req.body.image);
     }
 })
 

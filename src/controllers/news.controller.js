@@ -1,4 +1,4 @@
-const DocumentModel = require('../models/document.model');
+const NewsModel = require('../models/news.model');
 const HttpException = require('../utils/HttpException.utils');
 const BaseController = require('./BaseController');
 const { Op } = require('sequelize');
@@ -13,13 +13,10 @@ class AdvertisementController extends BaseController {
         let lang = req.get('Accept-Language');
         lang = lang ? lang : 'uz';
 
-        let modelList = await DocumentModel.findAll({
+        let modelList = await NewsModel.findAll({
             attributes: [
-                'id',
-                'type',
-                'file',
-                "url",
-                [sequelize.literal(`title_${lang}`), 'title'],
+                'id', 'network', 'image', 'datetime',
+                [sequelize.literal(`text_${lang}`), 'text'],
             ],
             where: {
                 status: true,
@@ -34,7 +31,7 @@ class AdvertisementController extends BaseController {
 
 
     getAllWeb = async (req, res, next) => {
-        let modelList = await DocumentModel.findAll({
+        let modelList = await NewsModel.findAll({
             order: [
                 ['id', 'ASC']
             ]
@@ -44,13 +41,13 @@ class AdvertisementController extends BaseController {
 
 
     getUploadFile = async (req, res, next) => {
-        let { file } = req.body;
+        let { image } = req.body;
 
         try {
-            if (!file) {
+            if (!image) {
                 throw new HttpException(405, req.mf("file type is invalid"));
             }
-            const model = { file: file };
+            const model = { image: image };
             res.send(model);
         } catch (error) {
             throw new HttpException(500, error.message);
@@ -59,7 +56,7 @@ class AdvertisementController extends BaseController {
 
 
     getById = async (req, res, next) => {
-        const model = await DocumentModel.findOne({
+        const model = await NewsModel.findOne({
             where: { id: req.params.id }
         });
 
@@ -74,49 +71,50 @@ class AdvertisementController extends BaseController {
     create = async (req, res, next) => {
 
         let {
-            title_uz,
-            title_ru,
-            title_ka,
-            file,
+            text_uz,
+            text_ru,
+            text_ka,
+            image,
             status,
-            type,
-            url
+            datetime,
+            network
         } = req.body;
 
-        const model = await DocumentModel.create({
-            title_uz,
-            title_ru,
-            title_ka,
-            file,
+        const model = await NewsModel.create({
+            text_uz,
+            text_ru,
+            text_ka,
+            image,
             status,
-            type,
-            url
+            datetime,
+            network
         });
 
         if (!model) {
             throw new HttpException(500, req.mf('Something went wrong'));
         }
 
-        res.status(201).send(model);
+        res.send(model);
     };
 
 
     update = async (req, res, next) => {
 
-        let { title_uz, title_ru, title_ka, type, file, status, url } = req.body;
-        const model = await DocumentModel.findOne({ where: { id: req.params.id } });
+        let { text_uz, text_ru, text_ka, image, network, datetime, status } = req.body;
+        const model = await NewsModel.findOne({ where: { id: req.params.id } });
 
         if (!model) {
             throw new HttpException(404, req.mf('data not found'));
         }
 
-        model.title_uz = title_uz;
-        model.title_ru = title_ru;
-        model.title_ka = title_ka;
-        model.file = file;
+        model.text_uz = text_uz;
+        model.text_ru = text_ru;
+        model.text_ka = text_ka;
+        model.image = image;
         model.status = status;
-        model.type = type;
-        model.url = url;
+        model.datetime = datetime;
+        model.network = network;
+      
         model.save();
 
         res.send(model);
@@ -124,7 +122,7 @@ class AdvertisementController extends BaseController {
 
 
     delete = async (req, res, next) => {
-        const model = await DocumentModel.findOne({ where: { id: req.params.id } })
+        const model = await NewsModel.findOne({ where: { id: req.params.id } })
 
         if (!model) {
             throw new HttpException(404, req.mf('data not found'));

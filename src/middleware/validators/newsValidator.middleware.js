@@ -6,6 +6,7 @@ exports.newSchemas = {
     text_ru: Joi.string().required(),
     text_ka: Joi.string().required(),
     network: Joi.string().required(),
+    datetime: Joi.number().required(),
     image: Joi.string().allow("", null),
     status: Joi.boolean()
   }),

@@ -107,13 +107,13 @@ class AdvertisementController extends BaseController {
         if (!model) {
             throw new HttpException(404, req.mf('data not found'));
         }
-
+        const format_date = datetime / 1000;
         model.text_uz = text_uz;
         model.text_ru = text_ru;
         model.text_ka = text_ka;
         model.image = image;
         model.status = status;
-        model.datetime = datetime;
+        model.datetime = format_date;
         model.network = network;
       
         model.save();

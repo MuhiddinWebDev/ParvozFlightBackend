@@ -131,7 +131,7 @@ class AdvertisementController extends BaseController {
 
         try {
             if (model.file) {
-                fs.unlinkSync('./uploads/adverstisement/' + model.file);
+                fs.unlinkSync('./uploads/image/' + model.file);
             }
             await model.destroy({ force: true });
         } catch (error) {

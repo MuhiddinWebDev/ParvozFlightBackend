@@ -1,4 +1,4 @@
-const DocumentModel = require('../models/document.model');
+const ClientServiceModel = require('../models/clientService.model');
 const HttpException = require('../utils/HttpException.utils');
 const BaseController = require('./BaseController');
 const { Op } = require('sequelize');
@@ -13,12 +13,9 @@ class AdvertisementController extends BaseController {
         let lang = req.get('Accept-Language');
         lang = lang ? lang : 'uz';
 
-        let modelList = await DocumentModel.findAll({
+        let modelList = await ClientServiceModel.findAll({
             attributes: [
-                'id',
-                'type',
-                'file',
-                "url",
+                "summa", "required",
                 [sequelize.literal(`title_${lang}`), 'title'],
             ],
             where: {
@@ -34,7 +31,7 @@ class AdvertisementController extends BaseController {
 
 
     getAllWeb = async (req, res, next) => {
-        let modelList = await DocumentModel.findAll({
+        let modelList = await ClientServiceModel.findAll({
             order: [
                 ['id', 'ASC']
             ]
@@ -43,23 +40,8 @@ class AdvertisementController extends BaseController {
     };
 
 
-    getUploadFile = async (req, res, next) => {
-        let { file } = req.body;
-
-        try {
-            if (!file) {
-                throw new HttpException(405, req.mf("file type is invalid"));
-            }
-            const model = { file: file };
-            res.send(model);
-        } catch (error) {
-            throw new HttpException(500, error.message);
-        }
-    };
-
-
     getById = async (req, res, next) => {
-        const model = await DocumentModel.findOne({
+        const model = await ClientServiceModel.findOne({
             where: { id: req.params.id }
         });
 
@@ -77,20 +59,18 @@ class AdvertisementController extends BaseController {
             title_uz,
             title_ru,
             title_ka,
-            file,
-            status,
-            type,
-            url
+            summa,
+            required,
+            status
         } = req.body;
 
-        const model = await DocumentModel.create({
+        const model = await ClientServiceModel.create({
             title_uz,
             title_ru,
             title_ka,
-            file,
-            status,
-            type,
-            url
+            summa,
+            required,
+            status
         });
 
         if (!model) {
@@ -103,8 +83,8 @@ class AdvertisementController extends BaseController {
 
     update = async (req, res, next) => {
 
-        let { title_uz, title_ru, title_ka, type, file, status, url } = req.body;
-        const model = await DocumentModel.findOne({ where: { id: req.params.id } });
+        let { title_uz, title_ru, title_ka, summa, required, status } = req.body;
+        const model = await ClientServiceModel.findOne({ where: { id: req.params.id } });
 
         if (!model) {
             throw new HttpException(404, req.mf('data not found'));
@@ -113,10 +93,10 @@ class AdvertisementController extends BaseController {
         model.title_uz = title_uz;
         model.title_ru = title_ru;
         model.title_ka = title_ka;
-        model.file = file;
+        model.summa = summa;
+        model.required = required;
         model.status = status;
-        model.type = type;
-        model.url = url;
+        
         model.save();
 
         res.send(model);
@@ -124,16 +104,13 @@ class AdvertisementController extends BaseController {
 
 
     delete = async (req, res, next) => {
-        const model = await DocumentModel.findOne({ where: { id: req.params.id } })
+        const model = await ClientServiceModel.findOne({ where: { id: req.params.id } })
 
         if (!model) {
             throw new HttpException(404, req.mf('data not found'));
         }
 
         try {
-            if (model.file) {
-                fs.unlinkSync('./uploads/document/' + model.file);
-            }
             await model.destroy({ force: true });
         } catch (error) {
             await model.destroy();

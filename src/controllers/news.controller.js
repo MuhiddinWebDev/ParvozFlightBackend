@@ -4,6 +4,7 @@ const BaseController = require('./BaseController');
 const { Op } = require('sequelize');
 const sequelize = require('../db/db-sequelize');
 const fs = require('fs');
+const { date } = require('joi');
 /******************************************************************************
  *                              User Controller
  ******************************************************************************/
@@ -79,14 +80,14 @@ class AdvertisementController extends BaseController {
             datetime,
             network
         } = req.body;
-
+        const format_date = datetime / 1000;
         const model = await NewsModel.create({
             text_uz,
             text_ru,
             text_ka,
             image,
             status,
-            datetime,
+            format_date,
             network
         });
 

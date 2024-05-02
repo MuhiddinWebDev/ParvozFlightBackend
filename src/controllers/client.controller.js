@@ -208,7 +208,8 @@ class ClientController extends BaseController {
     let title = "Ваш смс-код: " + code;
     let type = "login";
     let data = {
-      check: false
+      check: false,
+      code: code
     }
     if (!model) {
       data.check = false;

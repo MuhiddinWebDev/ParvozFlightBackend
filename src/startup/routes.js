@@ -29,6 +29,7 @@ const newsRouter = require("../routes/news.route");
 const clientServiceRouter = require("../routes/clientService.route");
 const workAddressRouter = require("../routes/work_address.route");
 const clientSalaryRouter = require("../routes/client_salary.route");
+const clientResumeRouter = require("../routes/client_resume.route");
 
 const HttpException = require('../utils/HttpException.utils');
 
@@ -132,6 +133,7 @@ module.exports = async function (app) {
     app.use(`/api/v1/client-service`, clientServiceRouter);
     app.use(`/api/v1/work-address`, workAddressRouter);
     app.use(`/api/v1/client-salary`, clientSalaryRouter);
+    app.use(`/api/v1/client-resume`, clientResumeRouter);
     // 404 error
     app.all('*', (req, res, next) => {
         const err = new HttpException(404, req.mf('Endpoint not found'));

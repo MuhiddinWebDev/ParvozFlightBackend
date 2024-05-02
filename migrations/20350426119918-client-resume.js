@@ -24,6 +24,10 @@ module.exports = {
           type: Sequelize.DataTypes.INTEGER,
           allowNull: true
         },
+        client_id: {
+          type: Sequelize.DataTypes.INTEGER,
+          allowNull: true
+        },
         phone: {
           type: Sequelize.DataTypes.STRING(20),
           allowNull: true,

@@ -1,9 +1,6 @@
 const AddressModel = require('../models/address.model');
 const HttpException = require('../utils/HttpException.utils');
 const BaseController = require('./BaseController');
-const { Op } = require('sequelize');
-const moment = require('moment');
-const fs = require('fs')
 const sequelize = require('../db/db-sequelize');
 /******************************************************************************
  *                              User Controller

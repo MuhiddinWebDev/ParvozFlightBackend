@@ -1,4 +1,4 @@
-const WorkAdressModel = require('../models/work_address.model');
+const ClientSalaryModel = require('../models/client_salary.model');
 const HttpException = require('../utils/HttpException.utils');
 const BaseController = require('./BaseController');
 
@@ -13,7 +13,7 @@ class AddressController extends BaseController {
         let lang = req.get('Accept-Language');
         lang = lang? lang: 'uz';
 
-        let modelList = await WorkAdressModel.findAll({ 
+        let modelList = await ClientSalaryModel.findAll({ 
             attributes: [
                 'id',
                 [ sequelize.literal(`name_${lang}`), 'name' ]
@@ -27,7 +27,7 @@ class AddressController extends BaseController {
 
 
     getById = async (req, res, next) => {
-        const user = await WorkAdressModel.findOne({
+        const user = await ClientSalaryModel.findOne({
             where:{ id: req.params.id }
         });
 
@@ -47,7 +47,7 @@ class AddressController extends BaseController {
             name_ka
         } = req.body;
 
-        const model = await WorkAdressModel.create({
+        const model = await ClientSalaryModel.create({
             name_uz,
             name_ru,
             name_ka
@@ -64,7 +64,7 @@ class AddressController extends BaseController {
     update = async (req, res, next) => {
 
         let { name_uz, name_ru, name_ka } = req.body;
-        const model = await WorkAdressModel.findOne({ where: { id: req.params.id }} );
+        const model = await ClientSalaryModel.findOne({ where: { id: req.params.id }} );
 
         if (!model) {
             throw new HttpException(404, req.mf('data not found'));
@@ -80,7 +80,7 @@ class AddressController extends BaseController {
 
 
     delete = async (req, res, next) => {
-        const model = await WorkAdressModel.findOne({ where : { id: req.params.id } })
+        const model = await ClientSalaryModel.findOne({ where : { id: req.params.id } })
         
         if (!model) {
             throw new HttpException(404, req.mf('data not found'));

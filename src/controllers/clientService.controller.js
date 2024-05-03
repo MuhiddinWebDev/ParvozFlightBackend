@@ -1,9 +1,7 @@
 const ClientServiceModel = require('../models/clientService.model');
 const HttpException = require('../utils/HttpException.utils');
 const BaseController = require('./BaseController');
-const { Op } = require('sequelize');
 const sequelize = require('../db/db-sequelize');
-const fs = require('fs');
 /******************************************************************************
  *                              User Controller
  ******************************************************************************/
@@ -15,7 +13,7 @@ class AdvertisementController extends BaseController {
 
         let modelList = await ClientServiceModel.findAll({
             attributes: [
-                "summa", "required","id",
+                "summa", "required", "id",
                 [sequelize.literal(`title_${lang}`), 'title'],
             ],
             where: {
@@ -24,7 +22,6 @@ class AdvertisementController extends BaseController {
             order: [
                 ['id', 'DESC']
             ],
-            limit: 4,
         });
         res.send(modelList);
     };
@@ -96,7 +93,7 @@ class AdvertisementController extends BaseController {
         model.summa = summa;
         model.required = required;
         model.status = status;
-        
+
         model.save();
 
         res.send(model);

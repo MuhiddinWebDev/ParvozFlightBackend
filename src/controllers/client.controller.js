@@ -4,14 +4,12 @@ const BonusModel = require("../models/bonus.model")
 const HttpException = require("../utils/HttpException.utils");
 const BaseController = require("./BaseController");
 const bcrypt = require("bcryptjs");
-const jwt = require("jsonwebtoken");
-const { secret_jwt } = require("../startup/config");
 const { Op } = require("sequelize");
 let JSMTRand = require("js_mt_rand");
 const UniqueStringGenerator = require("unique-string-generator");
 const { text } = require("express");
 const fs = require('fs').promises;
-var axios = require("axios");
+let axios = require("axios");
 const sequelize = require("../db/db-sequelize");
 let mt = new JSMTRand();
 /******************************************************************************

@@ -6,7 +6,7 @@ const sequelize = require('../db/db-sequelize');
 /******************************************************************************
  *                              resume Controller
  ******************************************************************************/
-class AddressController extends BaseController {
+class ClientResumeController extends BaseController {
 
     getAll = async (req, res, next) => {
         let modelList = await ClientResumeModel.findAll({
@@ -138,4 +138,4 @@ class AddressController extends BaseController {
 /******************************************************************************
  *                               Export
  ******************************************************************************/
-module.exports = new AddressController;
+module.exports = new ClientResumeController;

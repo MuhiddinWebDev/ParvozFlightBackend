@@ -1,4 +1,6 @@
 const ClientServiceModel = require('../models/clientService.model');
+const ClientServiceTableModel = require("../models/client_service_table.model")
+const ClientServiceChildModel = require("../models/client_service_child.model")
 const HttpException = require('../utils/HttpException.utils');
 const BaseController = require('./BaseController');
 const sequelize = require('../db/db-sequelize');
@@ -116,7 +118,31 @@ class AdvertisementController extends BaseController {
         res.send(req.mf('data has been deleted'));
     };
 
+    orderByClient = async (req, res, next) => {
+        const currentClient = req.currentClient;
+        const { client_service } = req.body;
+        let t = await sequelize.transaction();
+        try {
+            let model = await ClientServiceTableModel.create({
+                client_id: currentClient.id,
+                datetime: new Date().getTime() / 1000,
+            },)
 
+            client_service.forEach(async (item) => {
+                if (item.required) {
+                    let model_child = await ClientServiceChildModel.create({
+                        doc_id: model.id,
+                        client_service_id: item.id,
+                        summa: item.summa
+                    })
+                }
+            })
+
+            res.send(model)
+        } catch (err) {
+            throw new HttpException(404, err.message);
+        }
+    }
 }
 
 

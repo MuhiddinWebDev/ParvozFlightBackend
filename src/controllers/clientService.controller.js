@@ -69,7 +69,8 @@ class AdvertisementController extends BaseController {
             title_ka,
             summa,
             required,
-            status
+            status,
+            disabled: required
         });
 
         if (!model) {
@@ -94,6 +95,7 @@ class AdvertisementController extends BaseController {
         model.title_ka = title_ka;
         model.summa = summa;
         model.required = required;
+        model.disabled = required;
         model.status = status;
 
         model.save();

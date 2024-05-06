@@ -37,6 +37,10 @@ ClientServiceModel.init({
     type: DataTypes.BOOLEAN,
     allowNull: true
   },
+  disabled: {
+    type: DataTypes.BOOLEAN,
+    allowNull: true
+  },
   status: {
     type: DataTypes.BOOLEAN,
     allowNull: true

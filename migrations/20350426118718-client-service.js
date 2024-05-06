@@ -32,6 +32,10 @@ module.exports = {
           type: Sequelize.DataTypes.BOOLEAN,
           allowNull: true
         },
+        disabled: {
+          type: Sequelize.DataTypes.BOOLEAN,
+          allowNull: true
+        },
         status: {
           type: Sequelize.DataTypes.BOOLEAN,
           allowNull: true

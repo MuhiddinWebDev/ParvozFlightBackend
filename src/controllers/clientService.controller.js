@@ -15,7 +15,7 @@ class AdvertisementController extends BaseController {
 
         let modelList = await ClientServiceModel.findAll({
             attributes: [
-                "summa", "required", "id",
+                "summa", "required", "id", 'disabled',
                 [sequelize.literal(`title_${lang}`), 'title'],
             ],
             where: {

@@ -18,7 +18,11 @@ module.exports = {
         type: Sequelize.DataTypes.INTEGER,
         allowNull: true,
       });
-      await queryInterface.addColumn('client', 'country', {
+      await queryInterface.addColumn('client', 'address', {
+        type: Sequelize.DataTypes.STRING(256),
+        allowNull: true,
+      });
+      await queryInterface.addColumn('client', 'name', {
         type: Sequelize.DataTypes.STRING(256),
         allowNull: true,
       });
@@ -36,7 +40,7 @@ module.exports = {
       await queryInterface.removeColumn('chat', 'file');
       await queryInterface.removeColumn('chat', 'image');
       await queryInterface.removeColumn('client', 'region_id');
-      await queryInterface.removeColumn('client', 'country');
+      await queryInterface.removeColumn('client', 'address');
       transaction.commit();
     } catch (errors) {
       transaction.rollback();

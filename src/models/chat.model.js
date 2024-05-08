@@ -41,6 +41,16 @@ ChatModel.init({
       allowNull: true,
       defaultValue: ''
     },
+    file: {
+      type: DataTypes.STRING(128),
+      allowNull: true,
+      defaultValue: ''
+    },
+    image: {
+      type: DataTypes.STRING(128),
+      allowNull: true,
+      defaultValue: ''
+    },
     view: {
       type: DataTypes.BOOLEAN,
         allowNull: false,

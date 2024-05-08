@@ -102,7 +102,7 @@ class ChatController extends BaseController {
 
             let modelList = await ChatModel.findAll({
                 where: { order_id: order_id },
-                attributes: ['id', 'order_id', 'user_id', 'datetime', 'text', 'voice', 'is_voice'],
+                attributes: ['id', 'order_id', 'user_id', 'datetime', 'text', 'voice', 'is_voice','file','image'],
                 order: [
                     ['id', 'ASC']
                 ]
@@ -423,6 +423,233 @@ class ChatController extends BaseController {
         res.status(201).send(model);
     };
 
+    uploadFile = async (req, res, next) => {
+
+        let {
+            order_id,
+            user_id,
+            file
+        } = req.body;
+        let view = true;
+        let seen = false;
+        // console.log('user id ' + user_id);
+        let datetime = Math.floor(new Date().getTime())
+        order_id = parseInt(order_id);
+        user_id = parseInt(user_id);
+        // console.log('file ', file);
+
+
+        // console.log('client fcm token ' + client.fcm_token);
+        if (user_id > 0) {
+            view = false;
+            seen = true;
+            const chats = await ChatModel.findAll({
+                where: {
+                    order_id: order_id,
+                    view: 1,
+                    seen: 0
+                },
+                order: [
+                    ['id', 'DESC']
+                ]
+            });
+
+            if (chats) {
+                for (let i = 0; i < chats.length; i++) {
+                    const chat = chats[i];
+                    const chat_model = await ChatModel.findOne({
+                        where: { id: chat.id }
+                    })
+                    chat_model.seen = true;
+
+                    await chat_model.save();
+
+                }
+            }
+
+            const order = await OrderModel.findOne({
+                where: { id: req.body.order_id }
+            });
+
+            let client_id = parseInt(order.client_id)
+            let client = await ClientModel.findOne({
+                where: { id: client_id }
+            });
+
+            let fcm_token = client.fcm_token;
+            let title = "Sizga yangi faylli xabar keldi";
+            let type = "chat";
+            var message = {
+                to: fcm_token,
+                notification: {
+                    title: title,
+                    body: file,
+                    type: type,
+                    data: order.id
+                }
+            };
+            await this.notification(message);
+        } else {
+            user_id = 0;
+
+            const chats = await ChatModel.findAll({
+                where: {
+                    order_id: order_id,
+                    view: 0,
+                    seen: 1
+                },
+                order: [
+                    ['id', 'DESC']
+                ]
+            });
+            // console.log('chat ', chats);
+
+            if (chats) {
+                for (let i = 0; i < chats.length; i++) {
+                    const chat = chats[i];
+                    const chat_model = await ChatModel.findOne({
+                        where: { id: chat.id }
+                    })
+                    chat_model.view = true;
+
+                    await chat_model.save();
+
+                }
+            }
+        }
+        console.log('fileeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee');
+        console.log(req.body)
+        const model = await ChatModel.create({
+            datetime,
+            order_id,
+            user_id,
+            view,
+            seen,
+            text: "",
+            voice: "",
+            image: "",
+            file: file,
+            is_voice: false
+        });
+
+        if (!model) {
+            throw new HttpException(500, req.mf('Something went wrong'));
+        }
+
+        res.status(201).send(model);
+    };
+
+    uploadImage = async (req, res, next) => {
+        let {
+            order_id,
+            user_id,
+            file
+        } = req.body;
+        let view = true;
+        let seen = false;
+        // console.log('user id ' + user_id);
+        let datetime = Math.floor(new Date().getTime())
+        order_id = parseInt(order_id);
+        user_id = parseInt(user_id);
+
+
+        // console.log('client fcm token ' + client.fcm_token);
+        if (user_id > 0) {
+            view = false;
+            seen = true;
+            const chats = await ChatModel.findAll({
+                where: {
+                    order_id: order_id,
+                    view: 1,
+                    seen: 0
+                },
+                order: [
+                    ['id', 'DESC']
+                ]
+            });
+
+            if (chats) {
+                for (let i = 0; i < chats.length; i++) {
+                    const chat = chats[i];
+                    const chat_model = await ChatModel.findOne({
+                        where: { id: chat.id }
+                    })
+                    chat_model.seen = true;
+
+                    await chat_model.save();
+
+                }
+            }
+
+            const order = await OrderModel.findOne({
+                where: { id: req.body.order_id }
+            });
+
+            let client_id = parseInt(order.client_id)
+            let client = await ClientModel.findOne({
+                where: { id: client_id }
+            });
+
+            let fcm_token = client.fcm_token;
+            let title = "Sizga yangi rasmli xabar keldi";
+            let type = "chat";
+            var message = {
+                to: fcm_token,
+                notification: {
+                    title: title,
+                    body: file,
+                    type: type,
+                    data: order.id
+                }
+            };
+            await this.notification(message);
+        } else {
+            user_id = 0;
+
+            const chats = await ChatModel.findAll({
+                where: {
+                    order_id: order_id,
+                    view: 0,
+                    seen: 1
+                },
+                order: [
+                    ['id', 'DESC']
+                ]
+            });
+            // console.log('chat ', chats);
+
+            if (chats) {
+                for (let i = 0; i < chats.length; i++) {
+                    const chat = chats[i];
+                    const chat_model = await ChatModel.findOne({
+                        where: { id: chat.id }
+                    })
+                    chat_model.view = true;
+
+                    await chat_model.save();
+
+                }
+            }
+        }
+        const model = await ChatModel.create({
+            datetime,
+            order_id,
+            user_id,
+            view,
+            seen,
+            text: "",
+            voice: "",
+            file:"",
+            image: file,
+            is_voice: false
+        });
+
+        if (!model) {
+            throw new HttpException(500, req.mf('Something went wrong'));
+        }
+
+        res.status(201).send(model);
+    };
 
     // for web chat
     created = async (req, res, next) => {

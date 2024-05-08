@@ -7,6 +7,8 @@ exports.chatSchemas = Joi.object({
   text: Joi.string().empty(),
   order_id: Joi.number().integer().required(),
   user_id: Joi.number().integer().required(),
-  voice: Joi.string().empty('')
+  voice: Joi.string().empty(''),
+  file: Joi.string().empty(''),
+  image: Joi.string().empty('')
   // view: Joi.string().empty('')
 })

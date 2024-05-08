@@ -19,19 +19,15 @@ const storage = multer.diskStorage({
     },
     filename: function (req, file, cb) {
         const time = Math.floor(new Date().getTime());
-        req.body.file = "voice_" + time + "_" + UniqueStringGenerator.UniqueString() + path.extname(file.originalname);
+        req.body.file = "voice_file_image" + time + "_" + UniqueStringGenerator.UniqueString() + path.extname(file.originalname);
         cb(null, req.body.file);
     }
 })
 
 const fileFilter = (req, file, cb) => {
-    if (file.mimetype == 'audio/mp4' || file.mimetype == 'audio/mp3' || file.mimetype == 'audio/mpeg') {
-        cb(null, true);
-    } else {
-        // cb(new Error('file_only'));
-        return cb(new Error('bunday type mavjud emas ' + (file.mimetype)))
-        //return cb(new Error('Only images are allowed'))
-    }
+    console.log('file mime type => ',file.mimetype);
+    console.log('extra name => ',path.extname(file.originalname));
+    cb(null, true);
 }
 
 let upload = multer({
@@ -54,6 +50,13 @@ router.get('/chat-list', clientAuth(), awaitHandlerFactory(chatController.getOrd
 router.post('/', awaitHandlerFactory(chatController.create)); // mobildan create
 router.post('/voice', clientAuth(), upload, awaitHandlerFactory(chatController.voice)); // mobil
 router.post('/send-voice', auth(), upload, awaitHandlerFactory(chatController.voice)); // web
+
+router.post('/file', clientAuth(), upload, awaitHandlerFactory(chatController.uploadFile)); // mobil
+router.post('/send-file', auth(), upload, awaitHandlerFactory(chatController.uploadFile));
+
+router.post('/image', clientAuth(), upload, awaitHandlerFactory(chatController.uploadImage)); // mobil
+router.post('/send-image', auth(), upload, awaitHandlerFactory(chatController.uploadImage));
+
 router.post('/create', auth(), joiMiddleware(chatSchemas), awaitHandlerFactory(chatController.created)); // webdan
 router.patch('/id/:id', auth(), joiMiddleware(chatSchemas), awaitHandlerFactory(chatController.update));
 router.delete('/id/:id', auth(), awaitHandlerFactory(chatController.delete));

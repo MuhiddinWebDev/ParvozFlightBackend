@@ -37,10 +37,11 @@ module.exports = {
     const transaction = await queryInterface.sequelize.transaction();
     try {
 
-      await queryInterface.removeColumn('chat', 'file');
-      await queryInterface.removeColumn('chat', 'image');
-      await queryInterface.removeColumn('client', 'region_id');
-      await queryInterface.removeColumn('client', 'address');
+      // await queryInterface.removeColumn('chat', 'file');
+      // await queryInterface.removeColumn('chat', 'image');
+      // await queryInterface.removeColumn('client', 'region_id');
+      // await queryInterface.removeColumn('client', 'address');
+      // await queryInterface.removeColumn('client', 'name');
       transaction.commit();
     } catch (errors) {
       transaction.rollback();

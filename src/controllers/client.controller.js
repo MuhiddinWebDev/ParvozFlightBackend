@@ -201,6 +201,7 @@ class ClientController extends BaseController {
     // const phone1 = "71112222333";
     // const phone2 = "74445555666";
     let phone = req.body.phone;
+    
     let fcm = req.body.fcm;
     let model = await ClientModel.findOne({ where: { phone: phone } });
     let fcm_token = fcm;

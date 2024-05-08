@@ -26,6 +26,16 @@ ClientModel.init(
       allowNull: true,
       defaultValue: "",
     },
+    name: {
+      type: DataTypes.STRING(256),
+      allowNull: true,
+      defaultValue: "",
+    },
+    address: {
+      type: DataTypes.STRING(256),
+      allowNull: true,
+      defaultValue: "",
+    },
     phone: {
       type: DataTypes.STRING(16),
       allowNull: false,
@@ -52,6 +62,10 @@ ClientModel.init(
       defaultValue: "uz",
     },
     age: {
+      type: DataTypes.INTEGER,
+      allowNull: true,
+    },
+    region_id: {
       type: DataTypes.INTEGER,
       allowNull: true,
     },

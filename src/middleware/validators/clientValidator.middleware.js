@@ -12,13 +12,14 @@ exports.clientSchemas = {
   }),
   update: Joi.object({
     fullname: Joi.string().required().min(3).max(64),
+    name: Joi.string().required().min(3).max(256),
     lang: Joi.string().max(2),
     phone: Joi.string().max(16).required(),
     age: Joi.number().allow(null),
     password: Joi.string().allow('', null),
     sex_id: Joi.number().allow(null),
-    file_front: Joi.string().allow('', null),
-    file_back: Joi.string().allow('', null),
+    region_id: Joi.number().required(),
+    address: Joi.string().allow('', null),
     client_table: Joi.array().items(
       Joi.object().keys({
         file: Joi.string().required().max(200)

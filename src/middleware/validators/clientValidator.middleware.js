@@ -11,8 +11,8 @@ exports.clientSchemas = {
     fcm: Joi.string().allow(null, "")
   }),
   update: Joi.object({
-    fullname: Joi.string().required().min(3).max(64),
-    name: Joi.string().required().min(3).max(256),
+    fullname: Joi.string().required().max(64),
+    name: Joi.string().required().max(256),
     lang: Joi.string().max(2),
     phone: Joi.string().max(16).required(),
     age: Joi.number().allow(null),

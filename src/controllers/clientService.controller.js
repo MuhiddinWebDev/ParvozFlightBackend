@@ -1,6 +1,7 @@
 const ClientServiceModel = require('../models/clientService.model');
 const ClientServiceTableModel = require("../models/client_service_table.model")
-const ClientServiceChildModel = require("../models/client_service_child.model")
+const ClientServiceChildModel = require("../models/client_service_child.model");
+const WorkAddressModel = require('../models/work_address.model')
 const HttpException = require('../utils/HttpException.utils');
 const BaseController = require('./BaseController');
 const sequelize = require('../db/db-sequelize');
@@ -31,6 +32,13 @@ class AdvertisementController extends BaseController {
 
     getAllWeb = async (req, res, next) => {
         let modelList = await ClientServiceModel.findAll({
+            include: [
+                {
+                    model: WorkAddressModel,
+                    as: 'work_address',
+                    required: false
+                }
+            ],
             order: [
                 ['id', 'ASC']
             ]
@@ -40,6 +48,9 @@ class AdvertisementController extends BaseController {
 
 
     getById = async (req, res, next) => {
+        let lang = req.get('Accept-Language');
+        lang = lang ? lang : 'uz';
+
         const model = await ClientServiceModel.findOne({
             where: { id: req.params.id }
         });
@@ -52,15 +63,23 @@ class AdvertisementController extends BaseController {
     };
 
     getByRegion = async (req, res, next) => {
-        const model = await ClientServiceModel.findAll({
-            where: { region_id: req.params.id }
+        let lang = req.get('Accept-Language');
+        lang = lang ? lang : 'uz';
+
+        let modelList = await ClientServiceModel.findAll({
+            attributes: [
+                "summa", "required", "id", 'disabled',
+                [sequelize.literal(`title_${lang}`), 'title'],
+            ],
+            where: {
+                status: true,
+                region_id:req.params.id
+            },
+            order: [
+                ['id', 'DESC']
+            ],
         });
-
-        if (!model) {
-            throw new HttpException(404, req.mf('data not found'));
-        }
-
-        res.send(model);
+        res.send(modelList);
     };
 
 

@@ -10,6 +10,7 @@ const { clientServiceSchemas } = require('../middleware/validators/clientService
 router.get('/all', auth(), awaitHandlerFactory(clientServiceController.getAllWeb));
 router.get('/', awaitHandlerFactory(clientServiceController.getAllMobile));
 router.get('/id/:id', auth(), awaitHandlerFactory(clientServiceController.getById));
+router.get('/region/:id', clientAuth(), awaitHandlerFactory(clientServiceController.getByRegion));
 router.post('/', auth(), joiMiddleware(clientServiceSchemas.create), awaitHandlerFactory(clientServiceController.create));
 router.post('/order-by-client', clientAuth(), joiMiddleware(clientServiceSchemas.order), awaitHandlerFactory(clientServiceController.orderByClient));
 router.patch('/id/:id', auth(), joiMiddleware(clientServiceSchemas.create), awaitHandlerFactory(clientServiceController.update));

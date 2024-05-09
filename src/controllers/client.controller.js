@@ -134,7 +134,7 @@ class ClientController extends BaseController {
       model.name = name;
       model.phone = phone;
       model.lang = lang;
-      model.age = age / 1000;
+      model.age = parseInt(age / 1000);
       if (password) model.password = password;
       model.sex_id = sex_id;
       model.region_id = region_id;

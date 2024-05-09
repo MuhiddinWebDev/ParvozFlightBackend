@@ -1,4 +1,5 @@
 const { DataTypes, Model } = require('sequelize');
+const WorkAddressModel = require('./work_address.model')
 const sequelize = require('../db/db-sequelize');
 class ClientServiceModel extends Model {
   toJSON() {
@@ -57,4 +58,5 @@ ClientServiceModel.init({
   paranoid: true,
 });
 
+ClientServiceModel.belongsTo(WorkAddressModel, { as: 'work_address', foreignKey: 'region_id' })
 module.exports = ClientServiceModel;

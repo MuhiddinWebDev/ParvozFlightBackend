@@ -16,6 +16,10 @@ module.exports = {
           type: Sequelize.DataTypes.INTEGER,
           allowNull: true,
         },
+        region_id: {
+          type: Sequelize.DataTypes.INTEGER,
+          allowNull: true,
+        },
         datetime: {
           type: Sequelize.DataTypes.INTEGER,
           allowNull: true,

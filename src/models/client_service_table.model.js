@@ -21,6 +21,10 @@ ClientServiceTableModel.init({
     type: DataTypes.INTEGER,
     allowNull: true,
   },
+  region_id: {
+    type: DataTypes.INTEGER,
+    allowNull: true,
+  },
   datetime: {
     type: DataTypes.INTEGER,
     allowNull: true,

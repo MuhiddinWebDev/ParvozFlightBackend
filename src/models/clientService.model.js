@@ -45,6 +45,10 @@ ClientServiceModel.init({
     type: DataTypes.BOOLEAN,
     allowNull: true
   },
+  region_id: {
+    type: DataTypes.INTEGER,
+    allowNull: true
+  },
 }, {
   sequelize,
   modelName: 'ClientServiceModel',

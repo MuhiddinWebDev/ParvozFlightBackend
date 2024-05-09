@@ -51,6 +51,18 @@ class AdvertisementController extends BaseController {
         res.send(model);
     };
 
+    getByRegion = async (req, res, next) => {
+        const model = await ClientServiceModel.findAll({
+            where: { region_id: req.params.id }
+        });
+
+        if (!model) {
+            throw new HttpException(404, req.mf('data not found'));
+        }
+
+        res.send(model);
+    };
+
 
     create = async (req, res, next) => {
 
@@ -60,7 +72,8 @@ class AdvertisementController extends BaseController {
             title_ka,
             summa,
             required,
-            status
+            status,
+            region_id
         } = req.body;
 
         const model = await ClientServiceModel.create({
@@ -70,7 +83,8 @@ class AdvertisementController extends BaseController {
             summa,
             required,
             status,
-            disabled: required
+            disabled: required,
+            region_id
         });
 
         if (!model) {
@@ -83,7 +97,7 @@ class AdvertisementController extends BaseController {
 
     update = async (req, res, next) => {
 
-        let { title_uz, title_ru, title_ka, summa, required, status } = req.body;
+        let { title_uz, title_ru, title_ka, summa, required, status, region_id } = req.body;
         const model = await ClientServiceModel.findOne({ where: { id: req.params.id } });
 
         if (!model) {
@@ -97,6 +111,7 @@ class AdvertisementController extends BaseController {
         model.required = required;
         model.disabled = required;
         model.status = status;
+        model.region_id = region_id;
 
         model.save();
 
@@ -122,12 +137,14 @@ class AdvertisementController extends BaseController {
 
     orderByClient = async (req, res, next) => {
         const currentClient = req.currentClient;
-        const { client_service } = req.body;
+        const { client_service, region_id, total_sum } = req.body;
         let t = await sequelize.transaction();
         try {
             let model = await ClientServiceTableModel.create({
                 client_id: currentClient.id,
                 datetime: new Date().getTime() / 1000,
+                region_id: region_id,
+                total_sum: total_sum
             },)
 
             client_service.forEach(async (item) => {

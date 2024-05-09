@@ -40,6 +40,10 @@ module.exports = {
           type: Sequelize.DataTypes.BOOLEAN,
           allowNull: true
         },
+        region_id: {
+          type: Sequelize.DataTypes.INTEGER,
+          allowNull: true
+        },
         createdAt: {
           type: Sequelize.DataTypes.DATE
         },

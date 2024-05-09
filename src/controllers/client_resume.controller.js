@@ -1,4 +1,8 @@
 const ClientResumeModel = require('../models/clientResume.model');
+const ClientModel = require("../models/client.model");
+const ClientSalaryModel = require("../models/client_salary.model");
+const WorkModel = require("../models/work.model")
+const AddressModel = require("../models/address.model")
 const HttpException = require('../utils/HttpException.utils');
 const BaseController = require('./BaseController');
 
@@ -10,6 +14,36 @@ class ClientResumeController extends BaseController {
 
     getAll = async (req, res, next) => {
         let modelList = await ClientResumeModel.findAll({
+            attributes: [
+                "surname", "name", "phone", "job", "work_time",
+                [sequelize.literal(`CASE WHEN client.sex_id = 2 THEN 'Erkak' WHEN client.sex_id = 3 THEN 'Ayol' END`), 'sex_type']
+            ],                                    
+            include: [
+                {
+                    model: ClientModel,
+                    as: 'client',
+                    attributes: ['name', 'fullname'],
+                    required: false
+                },
+                {
+                    model: ClientSalaryModel,
+                    as: 'salary',
+                    attributes: ['name_uz'],
+                    required: false
+                },
+                {
+                    model: WorkModel,
+                    as: 'work',
+                    attributes: ['title_uz'],
+                    required: false
+                },
+                {
+                    model: AddressModel,
+                    as: 'address',
+                    attributes: ['name_uz'],
+                    required: false
+                }
+            ],
             order: [
                 ['id', 'ASC']
             ]

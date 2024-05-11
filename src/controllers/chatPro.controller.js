@@ -61,7 +61,7 @@ class ChatController extends BaseController {
 
             let modelList = await ChatProModel.findAll({
                 where: { order_id: order_id },
-                attributes: ['id', 'order_id', 'user_id', 'datetime', 'text', 'voice'],
+                attributes: ['id', 'order_id', 'user_id', 'datetime', 'text', 'voice', "file", "image"],
                 order: [
                     ['id', 'ASC']
                 ]
@@ -86,7 +86,7 @@ class ChatController extends BaseController {
 
             let modelList = await ChatProModel.findAll({
                 where: { order_id: order_id },
-                attributes: ['id', 'order_id', 'user_id', 'datetime', 'text', 'voice', 'is_voice','file','image'],
+                attributes: ['id', 'order_id', 'user_id', 'datetime', 'text', 'voice', 'is_voice', 'file', 'image'],
                 order: [
                     ['id', 'ASC']
                 ]
@@ -112,7 +112,9 @@ class ChatController extends BaseController {
                 t.id as chat_id,
                 t.datetime,
                 t.text,
-                t.voice
+                t.voice,
+                t.file,
+                t.image
             FROM 
                 (SELECT 
                     o.id,
@@ -128,6 +130,8 @@ class ChatController extends BaseController {
                     c.text,
                     c.voice,
                     c.order_id,
+                    c.file,
+                    c.image
                     @group_rank := IF(@current_group = c.order_id, @group_rank + 1, 1) as group_rank,
                     @current_group := c.order_id as current_group
                 FROM chat_pro c,
@@ -166,7 +170,9 @@ class ChatController extends BaseController {
                 t.datetime,
                 t.text,
                 t.voice,
-                t.is_voice
+                t.is_voice,
+                t.file,
+                t.image
             FROM 
                 (SELECT 
                     o.id,
@@ -182,6 +188,8 @@ class ChatController extends BaseController {
                     c.voice,
                     c.order_id,
                     c.is_voice,
+                    c.file,
+                    c.image
                     @group_rank := IF(@current_group = c.order_id, @group_rank + 1, 1) as group_rank,
                     @current_group := c.order_id as current_group
                 FROM chat_pro c,
@@ -501,7 +509,7 @@ class ChatController extends BaseController {
                 }
             }
         }
-        
+
         const model = await ChatProModel.create({
             datetime,
             order_id,
@@ -622,7 +630,7 @@ class ChatController extends BaseController {
             seen,
             text: "",
             voice: "",
-            file:"",
+            file: "",
             image: file,
             is_voice: false
         });

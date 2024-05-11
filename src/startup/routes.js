@@ -30,6 +30,8 @@ const clientServiceRouter = require("../routes/clientService.route");
 const workAddressRouter = require("../routes/work_address.route");
 const clientSalaryRouter = require("../routes/client_salary.route");
 const clientResumeRouter = require("../routes/client_resume.route");
+const staticOrderRouter = require("../routes/static_order.route");
+const chatProRouter = require("../routes/chatPro.route");
 
 const HttpException = require('../utils/HttpException.utils');
 
@@ -107,6 +109,7 @@ module.exports = async function (app) {
     app.use(`/api/v1/uploads/client`, express.static('uploads/client'));
     app.use(`/api/v1/uploads/advertisement`, express.static('uploads/advertisement'));
     app.use(`/api/v1/uploads/document`, express.static('uploads/document'));
+    app.use(`/api/v1/uploads/static`, express.static('uploads/static'));
 
     app.use(`/api/v1/users`, userRouter);
     app.use(`/api/v1/banner`, bannerRouter);
@@ -134,6 +137,8 @@ module.exports = async function (app) {
     app.use(`/api/v1/work-address`, workAddressRouter);
     app.use(`/api/v1/client-salary`, clientSalaryRouter);
     app.use(`/api/v1/client-resume`, clientResumeRouter);
+    app.use(`/api/v1/static-order`, staticOrderRouter);
+    app.use(`/api/v1/chat-pro`, chatProRouter);
     // 404 error
     app.all('*', (req, res, next) => {
         const err = new HttpException(404, req.mf('Endpoint not found'));

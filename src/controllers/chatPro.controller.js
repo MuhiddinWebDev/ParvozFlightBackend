@@ -1,11 +1,9 @@
-const ChatModel = require('../models/chat.model');
-const OrderModel = require('../models/order.model');
-const ServicesModel = require('../models/services.model');
+const ChatProModel = require('../models/chatPro.model');
+const StaticOrderModel = require('../models/static_order.model');
 const ClientModel = require('../models/client.model');
 const HttpException = require('../utils/HttpException.utils');
 const BaseController = require('./BaseController');
 const sequelize = require('../db/db-sequelize');
-const { Op } = require('sequelize');
 const _ = require('lodash');
 
 
@@ -15,7 +13,7 @@ const _ = require('lodash');
 class ChatController extends BaseController {
 
     getAll = async (req, res, next) => {
-        let modelList = await ChatModel.findAll({
+        let modelList = await ChatProModel.findAll({
             order: [
                 ['datetime', 'DESC']
             ]
@@ -26,30 +24,17 @@ class ChatController extends BaseController {
 
     // Clientlarning orderlar boyicha chati
     getAllByClient = async (req, res, next) => {
-
-        // const client_id = req.currentClient.id;
         const order_id = req.params.id;
-
-        // let t = await sequelize.transaction()
 
         try {
 
-            let modelList = await ChatModel.findAll({
+            let modelList = await ChatProModel.findAll({
                 where: { order_id: order_id },
                 include: [
                     {
-                        model: OrderModel,
-                        as: 'order',
+                        model: StaticOrderModel,
+                        as: 'static_order',
                         required: false,
-                        include: [
-                            {
-                                model: ServicesModel,
-                                as: 'services',
-                                required: false
-
-                            }
-                        ],
-
                     }
                 ],
                 order: [
@@ -74,7 +59,7 @@ class ChatController extends BaseController {
 
         try {
 
-            let modelList = await ChatModel.findAll({
+            let modelList = await ChatProModel.findAll({
                 where: { order_id: order_id },
                 attributes: ['id', 'order_id', 'user_id', 'datetime', 'text', 'voice'],
                 order: [
@@ -99,7 +84,7 @@ class ChatController extends BaseController {
 
         try {
 
-            let modelList = await ChatModel.findAll({
+            let modelList = await ChatProModel.findAll({
                 where: { order_id: order_id },
                 attributes: ['id', 'order_id', 'user_id', 'datetime', 'text', 'voice', 'is_voice','file','image'],
                 order: [
@@ -109,8 +94,9 @@ class ChatController extends BaseController {
             // await t.commit();
             res.send(modelList);
         } catch (error) {
+            console.log(error.message)
             // await t.rollback();
-            throw new HttpException(500, req.mf('Something went wrong'));
+            // throw new HttpException(500, req.mf('Something went wrong'));
         }
     };
 
@@ -131,8 +117,8 @@ class ChatController extends BaseController {
                 (SELECT 
                     o.id,
                     SUM(CASE WHEN c.view = 0 THEN 1 ELSE 0 END) as count
-                FROM \`order\` o
-                LEFT JOIN chat c ON c.order_id = o.id
+                FROM \`static_order\` o
+                LEFT JOIN chat_pro c ON c.order_id = o.id
                 WHERE o.client_id = :client_id and o.status != 'done'
                 GROUP BY o.id) t1
             LEFT JOIN (SELECT * FROM (
@@ -144,7 +130,7 @@ class ChatController extends BaseController {
                     c.order_id,
                     @group_rank := IF(@current_group = c.order_id, @group_rank + 1, 1) as group_rank,
                     @current_group := c.order_id as current_group
-                FROM chat c,
+                FROM chat_pro c,
                 (SELECT @current_group := 0, @group_rank := 0) init
                 ORDER BY c.order_id, c.datetime DESC, c.id DESC
             ) temp WHERE group_rank < 2) t ON t1.id = t.order_id`;
@@ -172,7 +158,6 @@ class ChatController extends BaseController {
 
     // for web last message, new message count by order
     getOrderByChatListWeb = async (req, res, next) => {
-        console.log('Chatttt____________________________________')
         let sql = `
             SELECT 
                 t1.id as order_id,
@@ -186,8 +171,8 @@ class ChatController extends BaseController {
                 (SELECT 
                     o.id,
                     SUM(CASE WHEN c.seen = 0 THEN 1 ELSE 0 END) as count
-                FROM \`order\` o
-                LEFT JOIN chat c ON c.order_id = o.id
+                FROM \`static_order\` o
+                LEFT JOIN chat_pro c ON c.order_id = o.id
                 GROUP BY o.id) t1
             LEFT JOIN (SELECT * FROM (
                 SELECT 
@@ -199,7 +184,7 @@ class ChatController extends BaseController {
                     c.is_voice,
                     @group_rank := IF(@current_group = c.order_id, @group_rank + 1, 1) as group_rank,
                     @current_group := c.order_id as current_group
-                FROM chat c,
+                FROM chat_pro c,
                 (SELECT @current_group := 0, @group_rank := 0) init
                 ORDER BY c.order_id, c.datetime DESC, c.id DESC
             ) temp WHERE group_rank < 2) t ON t1.id = t.order_id`;
@@ -209,7 +194,7 @@ class ChatController extends BaseController {
         });
 
         result = await Promise.all(result.map(async (value) => {
-            let order = await OrderModel.findOne({
+            let order = await StaticOrderModel.findOne({
                 include: [
                     {
                         model: ClientModel,
@@ -242,7 +227,7 @@ class ChatController extends BaseController {
 
 
     getById = async (req, res, next) => {
-        const model = await ChatModel.findOne({
+        const model = await ChatProModel.findOne({
             where: { id: req.params.id }
         });
 
@@ -262,7 +247,7 @@ class ChatController extends BaseController {
             text
         } = req.body;
 
-        const chats = await ChatModel.findAll({
+        const chats = await ChatProModel.findAll({
             where: {
                 order_id: order_id,
                 view: 0,
@@ -281,7 +266,7 @@ class ChatController extends BaseController {
             for (let i = 0; i < chats.length; i++) {
                 const chat = chats[i];
                 if (chat.user_id > 0) {
-                    const chat_model = await ChatModel.findOne({
+                    const chat_model = await ChatProModel.findOne({
                         where: { id: chat.id }
                     })
                     chat_model.view = true;
@@ -291,7 +276,7 @@ class ChatController extends BaseController {
             }
         }
 
-        const model = await ChatModel.create({
+        const model = await ChatProModel.create({
             datetime,
             order_id,
             view: true,
@@ -329,7 +314,7 @@ class ChatController extends BaseController {
         if (user_id > 0) {
             view = false;
             seen = true;
-            const chats = await ChatModel.findAll({
+            const chats = await ChatProModel.findAll({
                 where: {
                     order_id: order_id,
                     view: 1,
@@ -343,7 +328,7 @@ class ChatController extends BaseController {
             if (chats) {
                 for (let i = 0; i < chats.length; i++) {
                     const chat = chats[i];
-                    const chat_model = await ChatModel.findOne({
+                    const chat_model = await ChatProModel.findOne({
                         where: { id: chat.id }
                     })
                     chat_model.seen = true;
@@ -353,7 +338,7 @@ class ChatController extends BaseController {
                 }
             }
 
-            const order = await OrderModel.findOne({
+            const order = await StaticOrderModel.findOne({
                 where: { id: req.body.order_id }
             });
 
@@ -378,7 +363,7 @@ class ChatController extends BaseController {
         } else {
             user_id = 0;
 
-            const chats = await ChatModel.findAll({
+            const chats = await ChatProModel.findAll({
                 where: {
                     order_id: order_id,
                     view: 0,
@@ -393,7 +378,7 @@ class ChatController extends BaseController {
             if (chats) {
                 for (let i = 0; i < chats.length; i++) {
                     const chat = chats[i];
-                    const chat_model = await ChatModel.findOne({
+                    const chat_model = await ChatProModel.findOne({
                         where: { id: chat.id }
                     })
                     chat_model.view = true;
@@ -404,7 +389,7 @@ class ChatController extends BaseController {
             }
         }
 
-        const model = await ChatModel.create({
+        const model = await ChatProModel.create({
             datetime,
             order_id,
             user_id,
@@ -442,7 +427,7 @@ class ChatController extends BaseController {
         if (user_id > 0) {
             view = false;
             seen = true;
-            const chats = await ChatModel.findAll({
+            const chats = await ChatProModel.findAll({
                 where: {
                     order_id: order_id,
                     view: 1,
@@ -456,7 +441,7 @@ class ChatController extends BaseController {
             if (chats) {
                 for (let i = 0; i < chats.length; i++) {
                     const chat = chats[i];
-                    const chat_model = await ChatModel.findOne({
+                    const chat_model = await ChatProModel.findOne({
                         where: { id: chat.id }
                     })
                     chat_model.seen = true;
@@ -466,7 +451,7 @@ class ChatController extends BaseController {
                 }
             }
 
-            const order = await OrderModel.findOne({
+            const order = await StaticOrderModel.findOne({
                 where: { id: req.body.order_id }
             });
 
@@ -491,7 +476,7 @@ class ChatController extends BaseController {
         } else {
             user_id = 0;
 
-            const chats = await ChatModel.findAll({
+            const chats = await ChatProModel.findAll({
                 where: {
                     order_id: order_id,
                     view: 0,
@@ -506,7 +491,7 @@ class ChatController extends BaseController {
             if (chats) {
                 for (let i = 0; i < chats.length; i++) {
                     const chat = chats[i];
-                    const chat_model = await ChatModel.findOne({
+                    const chat_model = await ChatProModel.findOne({
                         where: { id: chat.id }
                     })
                     chat_model.view = true;
@@ -516,9 +501,8 @@ class ChatController extends BaseController {
                 }
             }
         }
-        console.log('fileeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee');
-        console.log(req.body)
-        const model = await ChatModel.create({
+        
+        const model = await ChatProModel.create({
             datetime,
             order_id,
             user_id,
@@ -556,7 +540,7 @@ class ChatController extends BaseController {
         if (user_id > 0) {
             view = false;
             seen = true;
-            const chats = await ChatModel.findAll({
+            const chats = await ChatProModel.findAll({
                 where: {
                     order_id: order_id,
                     view: 1,
@@ -570,7 +554,7 @@ class ChatController extends BaseController {
             if (chats) {
                 for (let i = 0; i < chats.length; i++) {
                     const chat = chats[i];
-                    const chat_model = await ChatModel.findOne({
+                    const chat_model = await ChatProModel.findOne({
                         where: { id: chat.id }
                     })
                     chat_model.seen = true;
@@ -580,7 +564,7 @@ class ChatController extends BaseController {
                 }
             }
 
-            const order = await OrderModel.findOne({
+            const order = await StaticOrderModel.findOne({
                 where: { id: req.body.order_id }
             });
 
@@ -605,7 +589,7 @@ class ChatController extends BaseController {
         } else {
             user_id = 0;
 
-            const chats = await ChatModel.findAll({
+            const chats = await ChatProModel.findAll({
                 where: {
                     order_id: order_id,
                     view: 0,
@@ -620,7 +604,7 @@ class ChatController extends BaseController {
             if (chats) {
                 for (let i = 0; i < chats.length; i++) {
                     const chat = chats[i];
-                    const chat_model = await ChatModel.findOne({
+                    const chat_model = await ChatProModel.findOne({
                         where: { id: chat.id }
                     })
                     chat_model.view = true;
@@ -630,7 +614,7 @@ class ChatController extends BaseController {
                 }
             }
         }
-        const model = await ChatModel.create({
+        const model = await ChatProModel.create({
             datetime,
             order_id,
             user_id,
@@ -662,7 +646,7 @@ class ChatController extends BaseController {
         let datetime = Math.floor(new Date().getTime())
         // datetime = datetime * 1000;
 
-        const chats = await ChatModel.findAll({
+        const chats = await ChatProModel.findAll({
             where: {
                 order_id: order_id,
                 view: 1,
@@ -676,7 +660,7 @@ class ChatController extends BaseController {
         if (chats) {
             for (let i = 0; i < chats.length; i++) {
                 const chat = chats[i];
-                const chat_model = await ChatModel.findOne({
+                const chat_model = await ChatProModel.findOne({
                     where: { id: chat.id }
                 })
                 chat_model.seen = true;
@@ -685,7 +669,7 @@ class ChatController extends BaseController {
 
             }
         }
-        const order = await OrderModel.findOne({
+        const order = await StaticOrderModel.findOne({
             where: { id: req.body.order_id }
         });
 
@@ -694,7 +678,7 @@ class ChatController extends BaseController {
         let client = await ClientModel.findOne({
             where: { id: order.client_id }
         });
-        const model = await ChatModel.create({
+        const model = await ChatProModel.create({
             datetime,
             order_id,
             user_id,
@@ -735,7 +719,7 @@ class ChatController extends BaseController {
             text
         } = req.body;
 
-        const model = await ChatModel.findOne({ where: { id: req.params.id } });
+        const model = await ChatProModel.findOne({ where: { id: req.params.id } });
 
         if (!model) {
             throw new HttpException(404, req.mf('data not found'));
@@ -752,7 +736,7 @@ class ChatController extends BaseController {
 
 
     delete = async (req, res, next) => {
-        const model = await ChatModel.findOne({ where: { id: req.params.id } })
+        const model = await ChatProModel.findOne({ where: { id: req.params.id } })
 
         if (!model) {
             throw new HttpException(404, req.mf('data not found'));

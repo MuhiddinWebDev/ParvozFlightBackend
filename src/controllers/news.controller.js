@@ -87,7 +87,7 @@ class AdvertisementController extends BaseController {
             text_ka,
             image,
             status,
-            format_date,
+            datetime: format_date,
             network
         });
 

@@ -157,7 +157,7 @@ class AdvertisementController extends BaseController {
     orderByClient = async (req, res, next) => {
         const currentClient = req.currentClient;
         const { client_service, region_id, total_sum } = req.body;
-        let t = await sequelize.transaction();
+        // let t = await sequelize.transaction();
         try {
             let model = await ClientServiceTableModel.create({
                 client_id: currentClient.id,

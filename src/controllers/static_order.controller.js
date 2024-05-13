@@ -1,5 +1,7 @@
 const StaticOrderModel = require('../models/static_order.model');
 const ChatModel = require("../models/chat.model");
+const WorkAddressModel = require("../models/work_address.model");
+const ClientModel = require("../models/client.model")
 const HttpException = require('../utils/HttpException.utils');
 const BaseController = require('./BaseController');
 const sequelize = require('../db/db-sequelize');
@@ -10,6 +12,20 @@ class AddressController extends BaseController {
 
     getAll = async (req, res, next) => {
         let modelList = await StaticOrderModel.findAll({
+            include: [
+                {
+                    model: WorkAddressModel,
+                    as: 'region',
+                    attributes: ['id', 'name_uz'],
+                    required: false
+                },
+                {
+                    model: ClientModel,
+                    as: 'client',
+                    attributes: ['id', 'fullname', 'phone', 'name'],
+                    required: false
+                }
+            ],
             order: [
                 ['id', 'ASC']
             ]
@@ -59,7 +75,7 @@ class AddressController extends BaseController {
             if (!model) {
                 throw new HttpException(500, req.mf('Something went wrong'));
             }
-             
+
             await t.commit();
             res.status(201).send(model);
         } catch (err) {

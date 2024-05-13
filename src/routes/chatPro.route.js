@@ -19,6 +19,8 @@ const storage = multer.diskStorage({
     },
     filename: function (req, file, cb) {
         const time = Math.floor(new Date().getTime());
+        console.log(req.body.file)
+        console.log("req.body.file___________________________________________-")
         req.body.file = "voice_file_image_" + time + "_" + UniqueStringGenerator.UniqueString() + path.extname(file.originalname);
         cb(null, req.body.file);
     }

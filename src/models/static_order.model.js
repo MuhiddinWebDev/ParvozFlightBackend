@@ -1,6 +1,7 @@
 const { DataTypes, Model } = require('sequelize');
 const ClientModel = require("./client.model");
-const ChatProModel = require("./chatPro.model")
+const ChatProModel = require("./chatPro.model");
+const WorkAddressModel = require("./work_address.model");
 const sequelize = require('../db/db-sequelize');
 class StaticOrderModel extends Model {
   toJSON() {
@@ -56,6 +57,7 @@ StaticOrderModel.init({
 });
 
 StaticOrderModel.belongsTo(ClientModel, { as: 'client', foreignKey: 'client_id' })
+StaticOrderModel.belongsTo(WorkAddressModel, { as: 'region', foreignKey: 'region_id' })
 StaticOrderModel.hasMany(ChatProModel, { as: 'chat', foreignKey: 'order_id' });
 ChatProModel.belongsTo(StaticOrderModel, { as: 'static_order', foreignKey: 'order_id' });
 module.exports = StaticOrderModel;

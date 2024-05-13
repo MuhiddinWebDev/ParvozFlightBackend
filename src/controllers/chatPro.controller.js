@@ -131,7 +131,7 @@ class ChatController extends BaseController {
                     c.voice,
                     c.order_id,
                     c.file,
-                    c.image
+                    c.image,
                     @group_rank := IF(@current_group = c.order_id, @group_rank + 1, 1) as group_rank,
                     @current_group := c.order_id as current_group
                 FROM chat_pro c,
@@ -189,7 +189,7 @@ class ChatController extends BaseController {
                     c.order_id,
                     c.is_voice,
                     c.file,
-                    c.image
+                    c.image,
                     @group_rank := IF(@current_group = c.order_id, @group_rank + 1, 1) as group_rank,
                     @current_group := c.order_id as current_group
                 FROM chat_pro c,

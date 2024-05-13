@@ -1,6 +1,6 @@
 const { DataTypes, Model } = require('sequelize');
 const sequelize = require('../db/db-sequelize');
-class ClientServiceTableModel extends Model {
+class ClientServiceRegister extends Model {
   toJSON() {
     let values = Object.assign({}, this.get());
     delete values.createdAt;
@@ -10,14 +10,18 @@ class ClientServiceTableModel extends Model {
   }
 }
 
-ClientServiceTableModel.init({
+ClientServiceRegister.init({
   id: {
     autoIncrement: true,
     type: DataTypes.INTEGER,
     allowNull: false,
     primaryKey: true
   },
-  client_id: {
+  datetime: {
+    type: DataTypes.INTEGER,
+    allowNull: false,
+  },
+  doc_id: {
     type: DataTypes.INTEGER,
     allowNull: true,
   },
@@ -25,20 +29,36 @@ ClientServiceTableModel.init({
     type: DataTypes.INTEGER,
     allowNull: true,
   },
-  datetime: {
+  client_service_id: {
     type: DataTypes.INTEGER,
     allowNull: true,
   },
-  total_sum: {
+  client_id: {
+    type: DataTypes.INTEGER,
+    allowNull: true,
+  },
+  type: {
+    type: DataTypes.INTEGER,
+    allowNull: false,
+  },
+  summa: {
     type: DataTypes.DECIMAL(17, 3),
+    allowNull: true,
+  },
+  doc_type: {
+    type: DataTypes.STRING(100),
+    allowNull: true,
+  },
+  place: {
+    type: DataTypes.STRING(100),
     allowNull: true,
   },
 }, {
   sequelize,
-  modelName: 'ClientServiceTableModel',
-  tableName: 'client_service_table',
+  modelName: 'ClientServiceRegister',
+  tableName: 'client_service_register',
   timestamps: true,
   paranoid: true,
 });
 
-module.exports = ClientServiceTableModel;
+module.exports = ClientServiceRegister;

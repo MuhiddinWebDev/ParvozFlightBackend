@@ -1,6 +1,6 @@
 const ClientServiceModel = require('../models/clientService.model');
-const ClientServiceTableModel = require("../models/client_service_table.model")
 const ClientServiceChildModel = require("../models/client_service_child.model");
+const ClientServiceRegisterModel = require("../models/client_service_register.model")
 const StaticOrderModel = require("../models/static_order.model")
 const WorkAddressModel = require('../models/work_address.model')
 const HttpException = require('../utils/HttpException.utils');
@@ -158,7 +158,7 @@ class AdvertisementController extends BaseController {
     orderByClient = async (req, res, next) => {
         const currentClient = req.currentClient;
         const { client_service, region_id, total_sum, passport, migrant_carta, phone } = req.body;
-        // let t = await sequelize.transaction();
+        let t = await sequelize.transaction();
         try {
 
             let model = await StaticOrderModel.create({
@@ -169,18 +169,32 @@ class AdvertisementController extends BaseController {
                 total_sum: total_sum,
                 phone: phone,
                 status:'checking'
-            })
-            client_service.forEach(async (item) => {
+            },{ transaction: t})
+           await client_service.forEach(async (item) => {
                 if (item.required) {
                     let model_child = await ClientServiceChildModel.create({
                         doc_id: model.id,
                         client_service_id: item.id,
                         summa: item.summa
+                    });
+                    let register = await ClientServiceRegisterModel.create({
+                        datetime: (new Date().getTime()) / 1000,
+                        doc_id: model.id,
+                        client_service_id: item.id,
+                        client_id: currentClient.id,
+                        region_id: region_id,
+                        type: 0,
+                        summa: item.summa,
+                        doc_type:'Chiqim',
+                        place:"Mijozga xizmat"
                     })
                 }
-            })
+            });
+
+            await t.commit();
             res.send(model)
         } catch (err) {
+            await t.rollback();
             throw new HttpException(404, err.message);
         }
     }

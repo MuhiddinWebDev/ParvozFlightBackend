@@ -22,6 +22,10 @@ module.exports = {
             type: Sequelize.DataTypes.INTEGER,
             allowNull: true,
           },
+          region_id: {
+            type: Sequelize.DataTypes.INTEGER,
+            allowNull: true,
+          },
           client_service_id: {
             type: Sequelize.DataTypes.INTEGER,
             allowNull: true,

@@ -23,6 +23,10 @@ StaticOrderModel.init({
     type: DataTypes.INTEGER,
     allowNull: true,
   },
+  region_id: {
+    type: DataTypes.INTEGER,
+    allowNull: true,
+  },
   passport: {
     type: DataTypes.STRING(128),
     allowNull: true,
@@ -34,6 +38,10 @@ StaticOrderModel.init({
   phone: {
     type: DataTypes.STRING(20),
     allowNull: true,
+  },
+  total_sum: {
+    type: DataTypes.DECIMAL(17, 2),
+    allowNull: true
   },
   status: {
     type: DataTypes.STRING(120),

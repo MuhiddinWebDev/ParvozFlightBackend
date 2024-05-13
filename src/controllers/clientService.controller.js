@@ -1,6 +1,7 @@
 const ClientServiceModel = require('../models/clientService.model');
 const ClientServiceTableModel = require("../models/client_service_table.model")
 const ClientServiceChildModel = require("../models/client_service_child.model");
+const StaticOrderModel = require("../models/static_order.model")
 const WorkAddressModel = require('../models/work_address.model')
 const HttpException = require('../utils/HttpException.utils');
 const BaseController = require('./BaseController');
@@ -73,7 +74,7 @@ class AdvertisementController extends BaseController {
             ],
             where: {
                 status: true,
-                region_id:req.params.id
+                region_id: req.params.id
             },
             order: [
                 ['id', 'DESC']
@@ -156,16 +157,19 @@ class AdvertisementController extends BaseController {
 
     orderByClient = async (req, res, next) => {
         const currentClient = req.currentClient;
-        const { client_service, region_id, total_sum } = req.body;
+        const { client_service, region_id, total_sum, passport, migrant_carta, phone } = req.body;
         // let t = await sequelize.transaction();
         try {
-            let model = await ClientServiceTableModel.create({
-                client_id: currentClient.id,
-                datetime: new Date().getTime() / 1000,
-                region_id: region_id,
-                total_sum: total_sum
-            },)
 
+            let model = await StaticOrderModel.create({
+                client_id: currentClient.id,
+                passport: passport,
+                migrant_carta: migrant_carta,
+                region_id: region_id,
+                total_sum: total_sum,
+                phone: phone,
+                status:'checking'
+            })
             client_service.forEach(async (item) => {
                 if (item.required) {
                     let model_child = await ClientServiceChildModel.create({
@@ -175,7 +179,6 @@ class AdvertisementController extends BaseController {
                     })
                 }
             })
-
             res.send(model)
         } catch (err) {
             throw new HttpException(404, err.message);

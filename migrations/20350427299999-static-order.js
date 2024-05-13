@@ -18,6 +18,10 @@ module.exports = {
             type: Sequelize.DataTypes.INTEGER,
             allowNull: true,
           },
+          region_id: {
+            type: Sequelize.DataTypes.INTEGER,
+            allowNull: true,
+          },
           passport: {
             type: Sequelize.DataTypes.STRING(128),
             allowNull: true,
@@ -29,6 +33,10 @@ module.exports = {
           phone: {
             type: Sequelize.DataTypes.STRING(20),
             allowNull: true,
+          },
+          total_sum:{
+            type: Sequelize.DataTypes.DECIMAL(17,2),
+            allowNull: true
           },
           status: {
             type: Sequelize.DataTypes.STRING(120),

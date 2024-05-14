@@ -534,7 +534,7 @@ class ChatController extends BaseController {
         let {
             order_id,
             user_id,
-            file
+            file,
         } = req.body;
         let view = true;
         let seen = false;

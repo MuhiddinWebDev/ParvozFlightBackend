@@ -137,6 +137,20 @@ class AdvertisementController extends BaseController {
 
         res.send(model);
     };
+    UploadFile = async (req, res, next) => {
+        let { image } = req.body;
+    
+        try {
+          if (!image) {
+            throw new HttpException(405, req.mf("file type is invalid"));
+          }
+    
+          const model = { image: image };
+          res.send(model);
+        } catch (error) {
+          throw new HttpException(500, error.message);
+        }
+      };
 
 
     delete = async (req, res, next) => {

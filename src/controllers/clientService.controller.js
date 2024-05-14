@@ -145,7 +145,7 @@ class AdvertisementController extends BaseController {
             throw new HttpException(405, req.mf("file type is invalid"));
           }
     
-          const model = { image: image };
+          const model = { image_name: image };
           res.send(model);
         } catch (error) {
           throw new HttpException(500, error.message);
@@ -172,7 +172,6 @@ class AdvertisementController extends BaseController {
     orderByClient = async (req, res, next) => {
         const currentClient = req.currentClient;
         const { client_service, region_id, total_sum, passport, migrant_carta, phone } = req.body;
-        let t = await sequelize.transaction();
         try {
 
             let model = await StaticOrderModel.create({
@@ -183,7 +182,7 @@ class AdvertisementController extends BaseController {
                 total_sum: total_sum,
                 phone: phone,
                 status:'checking'
-            },{ transaction: t})
+            })
            await client_service.forEach(async (item) => {
                 if (item.required) {
                     let model_child = await ClientServiceChildModel.create({
@@ -205,10 +204,8 @@ class AdvertisementController extends BaseController {
                 }
             });
 
-            await t.commit();
             res.send(model)
         } catch (err) {
-            await t.rollback();
             throw new HttpException(404, err.message);
         }
     }

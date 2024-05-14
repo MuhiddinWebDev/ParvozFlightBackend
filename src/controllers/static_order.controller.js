@@ -36,7 +36,21 @@ class AddressController extends BaseController {
 
     getById = async (req, res, next) => {
         const order = await StaticOrderModel.findOne({
-            where: { id: req.params.id }
+            where: { id: req.params.id },
+            include: [
+                {
+                    model: WorkAddressModel,
+                    as: 'region',
+                    attributes: ['id', 'name_uz'],
+                    required: false
+                },
+                {
+                    model: ClientModel,
+                    as: 'client',
+                    attributes: ['id', 'fullname', 'phone', 'name'],
+                    required: false
+                }
+            ],
         });
 
         if (!order) {

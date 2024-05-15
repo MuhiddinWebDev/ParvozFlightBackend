@@ -62,9 +62,27 @@ class AddressController extends BaseController {
 
 
     getByClient = async (req, res, next) => {
-        const currentClient = req.currentClient.id;
-        const order = await StaticOrderModel.findOne({
-            where: { client_id: currentClient }
+        const currentClient = req.currentClient;
+        let lang = req.get("Accept-Language");
+        lang = lang ? lang : "uz";
+        const order = await StaticOrderModel.findAll({
+            where: { client_id: currentClient.id },
+            include: [
+                {
+                    model: WorkAddressModel,
+                    as: 'region',
+                    attributes: ['id', 
+                        [sequelize.literal(`name_${lang}`),'name']
+                    ],
+                    required: false
+                },
+                {
+                    model: ClientModel,
+                    as: 'client',
+                    attributes: ['id', 'fullname', 'phone', 'name'],
+                    required: false
+                }
+            ],
         });
 
         if (!order) {

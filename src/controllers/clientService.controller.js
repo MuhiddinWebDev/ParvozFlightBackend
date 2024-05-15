@@ -83,6 +83,8 @@ class AdvertisementController extends BaseController {
         res.send(modelList);
     };
 
+    
+
 
     create = async (req, res, next) => {
 
@@ -209,6 +211,7 @@ class AdvertisementController extends BaseController {
             throw new HttpException(404, err.message);
         }
     }
+
 }
 
 

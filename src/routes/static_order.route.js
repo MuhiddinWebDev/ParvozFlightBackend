@@ -40,7 +40,6 @@ let uploadFile = multer({
 router.get('/all', auth(), awaitHandlerFactory(staticOrderController.getAll));
 router.get('/client-order', clientAuth(), awaitHandlerFactory(staticOrderController.getByClient));
 router.get('/id/:id', auth(), awaitHandlerFactory(staticOrderController.getById));
-router.post('/', clientAuth(), joiMiddleware(orderSchemas.byClient), awaitHandlerFactory(staticOrderController.create));
 router.patch('/id/:id', auth(), joiMiddleware(orderSchemas.byAdmin), awaitHandlerFactory(staticOrderController.update));
 router.post('/image', uploadFile, awaitHandlerFactory(staticOrderController.uploadImage));
 router.delete('/id/:id', auth(), awaitHandlerFactory(staticOrderController.delete));

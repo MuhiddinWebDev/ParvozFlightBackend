@@ -92,30 +92,7 @@ class AddressController extends BaseController {
         res.send(order);
     };
 
-    create = async (req, res, next) => {
-        const currentClient = req.currentClient.id;
-        const t = await sequelize.transaction();
-        const form_data = req.body;
-        try {
-            const model = await StaticOrderModel.create({
-                client_id: currentClient,
-                passport: form_data.passport,
-                migrant_carta: form_data.migrant_carta,
-                phone: form_data.phone,
-                status: 'checking'
-            }, { transaction: t });
-            if (!model) {
-                throw new HttpException(500, req.mf('Something went wrong'));
-            }
-
-            await t.commit();
-            res.status(201).send(model);
-        } catch (err) {
-            await t.rollback();
-            throw new HttpException(500, err.message);
-        }
-
-    };
+    
 
 
     update = async (req, res, next) => {

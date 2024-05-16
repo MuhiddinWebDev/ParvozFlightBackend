@@ -106,9 +106,6 @@ class AddressController extends BaseController {
         let t = await sequelize.transaction();
 
         try {
-            model.passport = form_data.passport;
-            model.migrant_carta = form_data.migrant_carta;
-            model.phone = form_data.phone;
             model.status = form_data.status;
             model.save();
             await t.commit();

@@ -15,7 +15,7 @@ class ClientResumeController extends BaseController {
     getAll = async (req, res, next) => {
         let modelList = await ClientResumeModel.findAll({
             attributes: [
-                "surname", "name", "phone", "job", "work_time",
+                "surname", "name", "phone", "job", "work_time",'id',
                 [sequelize.literal(`CASE WHEN client.sex_id = 2 THEN 'Erkak' WHEN client.sex_id = 3 THEN 'Ayol' END`), 'sex_type']
             ],                                    
             include: [

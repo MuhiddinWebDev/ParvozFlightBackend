@@ -6,10 +6,10 @@ exports.clientResumeSchemas = {
     name: Joi.string().required(),
     sex_id: Joi.number().required(),
     phone: Joi.string().required().max(20),
-    work_type_id: Joi.number().required(),
-    job: Joi.string().required(),
+    job_id: Joi.number().required(),
+    job_type_id: Joi.number().required(),
     address_id: Joi.number().required(),
-    salary_id: Joi.number().required(),
+    salary: Joi.number().required(),
     work_time: Joi.string().required().max(10),
   }),
 };

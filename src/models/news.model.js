@@ -41,6 +41,14 @@ NewsModel.init({
     type: DataTypes.STRING(256),
     allowNull: true,
   },
+  type: {
+    type: DataTypes.STRING(20),
+    allowNull: true,
+  },
+  video: {
+    type: DataTypes.STRING(256),
+    allowNull: true,
+  },
   status: {
     type: DataTypes.BOOLEAN,
     allowNull: true,

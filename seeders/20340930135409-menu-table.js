@@ -127,6 +127,7 @@ module.exports = {
               name: "banner",
               status: true,
               user_id:1,
+              menu_id:1,
           },
           {
               title: "Xizmat turlari",
@@ -134,6 +135,7 @@ module.exports = {
               name: "service-type",
               status: true,
               user_id:1,
+              menu_id:2,
           },
           {
               title: "Xizmatlar",
@@ -141,6 +143,7 @@ module.exports = {
               name: "service",
               status: true,
               user_id:1,
+              menu_id:3,
           },
           {
               title: "Buyurtma berish",
@@ -148,6 +151,7 @@ module.exports = {
               name: "Order",
               status: true,
               user_id:1,
+              menu_id:4,
           },
           {
               title: "Buyurtmalar",
@@ -155,6 +159,7 @@ module.exports = {
               name: "OrderList",
               status: true,
               user_id:1,
+              menu_id:5,
           },
           {
               title: "Agentlar",
@@ -162,6 +167,7 @@ module.exports = {
               name: "promocode",
               status: true,
               user_id:1,
+              menu_id:6,
           },
           {
               title: "Foydalanuvchi",
@@ -169,6 +175,7 @@ module.exports = {
               name: "users",
               status: true,
               user_id:1,
+              menu_id:7,
           },
           {
               title: "Katigoriya",
@@ -176,6 +183,7 @@ module.exports = {
               name: "works",
               status: true,
               user_id:1,
+              menu_id:8,
           },
           {
               title: "Vakansiya",
@@ -183,6 +191,7 @@ module.exports = {
               name: "Vakansiya",
               status: true,
               user_id:1,
+              menu_id:9,
           },
           {
               title: "Bron bilet",
@@ -190,6 +199,7 @@ module.exports = {
               name: "booked-tickets",
               status: true,
               user_id:1,
+              menu_id:10,
           },
           {
               title: "Manzil bilet",
@@ -197,6 +207,7 @@ module.exports = {
               name: "address-ticket",
               status: true,
               user_id:1,
+              menu_id:11,
           },
           {
               title: "Bilet",
@@ -204,6 +215,7 @@ module.exports = {
               name: "Bilet",
               status: true,
               user_id:1,
+              menu_id:12,
           },
           {
               title: "Transport",
@@ -211,6 +223,7 @@ module.exports = {
               name: "Transport",
               status: true,
               user_id:1,
+              menu_id:13,
           },
           {
               title: "Manzil",
@@ -218,6 +231,7 @@ module.exports = {
               name: "Manzil",
               status: true,
               user_id:1,
+              menu_id:14,
           },
           {
               title: "Uylar",
@@ -225,6 +239,7 @@ module.exports = {
               name: "houses",
               status: true,
               user_id:1,
+              menu_id:15,
           },
           {
               title: "Ijaraga uy",
@@ -232,6 +247,7 @@ module.exports = {
               name: "Hotel",
               status: true,
               user_id:1,
+              menu_id:16,
           },
           {
               title: "Mijozlarimiz",
@@ -239,6 +255,7 @@ module.exports = {
               name: "clients",
               status: true,
               user_id:1,
+              menu_id:17,
           },
       
           {
@@ -247,6 +264,7 @@ module.exports = {
               name: "reviews",
               status: true,
               user_id:1,
+              menu_id:18,
           },
           {
               title: "Suhbatlar",
@@ -254,6 +272,7 @@ module.exports = {
               name: "chat",
               status: true,
               user_id:1,
+              menu_id:19,
           },
           ], {});
         

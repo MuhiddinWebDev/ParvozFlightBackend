@@ -1,6 +1,5 @@
 const ClientResumeModel = require('../models/clientResume.model');
 const ClientModel = require("../models/client.model");
-const ClientSalaryModel = require("../models/client_salary.model");
 const WorkModel = require("../models/work.model")
 const AddressModel = require("../models/address.model")
 const HttpException = require('../utils/HttpException.utils');
@@ -15,7 +14,7 @@ class ClientResumeController extends BaseController {
     getAll = async (req, res, next) => {
         let modelList = await ClientResumeModel.findAll({
             attributes: [
-                "surname", "name", "phone", "job", "work_time",'id',
+                "surname", "name", "phone", "job_id","job_type_id", "work_time",'id',
                 [sequelize.literal(`CASE WHEN client.sex_id = 2 THEN 'Erkak' WHEN client.sex_id = 3 THEN 'Ayol' END`), 'sex_type']
             ],                                    
             include: [
@@ -23,18 +22,6 @@ class ClientResumeController extends BaseController {
                     model: ClientModel,
                     as: 'client',
                     attributes: ['name', 'fullname'],
-                    required: false
-                },
-                {
-                    model: ClientSalaryModel,
-                    as: 'salary',
-                    attributes: ['name_uz'],
-                    required: false
-                },
-                {
-                    model: WorkModel,
-                    as: 'work',
-                    attributes: ['title_uz'],
                     required: false
                 },
                 {
@@ -86,10 +73,10 @@ class ClientResumeController extends BaseController {
             name,
             sex_id,
             phone,
-            work_type_id,
-            job,
+            job_id,
+            job_type_id,
             address_id,
-            salary_id,
+            salary,
             work_time
         } = req.body;
 
@@ -98,10 +85,10 @@ class ClientResumeController extends BaseController {
             name: name,
             sex_id: sex_id,
             phone: phone,
-            work_type_id: work_type_id,
-            job: job,
+            job_id: job_id,
+            job_type_id: job_type_id,
             address_id: address_id,
-            salary_id: salary_id,
+            salary: salary,
             work_time: work_time,
             client_id: currentClient
         });
@@ -121,10 +108,10 @@ class ClientResumeController extends BaseController {
             name,
             sex_id,
             phone,
-            work_type_id,
-            job,
+            job_id,
+            job_type_id,
             address_id,
-            salary_id,
+            salary,
             work_time
         } = req.body;
         const model = await ClientResumeModel.findOne({ where: { id: req.params.id } });
@@ -137,10 +124,10 @@ class ClientResumeController extends BaseController {
         model.name = name;
         model.sex_id = sex_id;
         model.phone = phone;
-        model.work_type_id = work_type_id;
-        model.job = job;
+        model.job_id = job_id;
+        model.job_type_id = job_type_id;
         model.address_id = address_id;
-        model.salary_id = salary_id;
+        model.salary = salary;
         model.work_time = work_time;
         model.save();
 

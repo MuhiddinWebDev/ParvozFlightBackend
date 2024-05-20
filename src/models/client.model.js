@@ -80,6 +80,7 @@ ClientModel.init(
     password: {
       type: DataTypes.STRING(120),
       allowNull: true,
+      defaultValue:""
     },
     sex_id: {
       type: DataTypes.INTEGER,

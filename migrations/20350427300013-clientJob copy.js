@@ -1,56 +1,27 @@
 'use strict';
-
 /** @type {import('sequelize-cli').Migration} */
 module.exports = {
   async up(queryInterface, Sequelize) {
     const transaction = await queryInterface.sequelize.transaction();
     try {
-      await queryInterface.createTable('client_resume', {
+      await queryInterface.createTable('client_job', {
         id: {
           autoIncrement: true,
           type: Sequelize.DataTypes.INTEGER,
           allowNull: false,
           primaryKey: true
         },
-        surname: {
+        name_uz:{
           type: Sequelize.DataTypes.STRING(256),
-          allowNull: true,
+          allowNull:true
         },
-        name: {
+        name_ru:{
           type: Sequelize.DataTypes.STRING(256),
-          allowNull: true,
+          allowNull:true
         },
-        sex_id: {
-          type: Sequelize.DataTypes.INTEGER,
-          allowNull: true
-        },
-        client_id: {
-          type: Sequelize.DataTypes.INTEGER,
-          allowNull: true
-        },
-        phone: {
-          type: Sequelize.DataTypes.STRING(20),
-          allowNull: true,
-        },
-        job_id: {
-          type: Sequelize.DataTypes.INTEGER,
-          allowNull: true
-        },
-        job_type_id: {
-          type: Sequelize.DataTypes.INTEGER,
-          allowNull: true,
-        },
-        address_id: {
-          type: Sequelize.DataTypes.INTEGER,
-          allowNull: true
-        },
-        salary: {
-          type: Sequelize.DataTypes.INTEGER,
-          allowNull: true
-        },
-        work_time: {
-          type: Sequelize.DataTypes.STRING(10),
-          allowNull: true,
+        name_ka:{
+          type: Sequelize.DataTypes.STRING(256),
+          allowNull:true
         },
         createdAt: {
           type: Sequelize.DataTypes.DATE
@@ -74,7 +45,8 @@ module.exports = {
   async down(queryInterface, Sequelize) {
     const transaction = await queryInterface.sequelize.transaction();
     try {
-      await queryInterface.dropTable('client_resume', { transaction });
+      await queryInterface.dropTable('client_job', { transaction });
+
       transaction.commit();
     } catch (errors) {
       transaction.rollback();

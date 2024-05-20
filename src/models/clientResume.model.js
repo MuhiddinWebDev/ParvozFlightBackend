@@ -1,6 +1,5 @@
 const { DataTypes, Model } = require('sequelize');
 const ClientModel = require("./client.model");
-const ClientSalaryModel = require("./client_salary.model");
 const AddressModel = require("./address.model")
 const WorkModel = require("./work.model")
 const sequelize = require('../db/db-sequelize');
@@ -41,19 +40,19 @@ ClientResumeModel.init({
     type: DataTypes.STRING(20),
     allowNull: true,
   },
-  work_type_id: {
+  job_id: {
     type: DataTypes.INTEGER,
     allowNull: true
   },
-  job: {
-    type: DataTypes.STRING(256),
+  job_type_id: {
+    type: DataTypes.INTEGER,
     allowNull: true,
   },
   address_id: {
     type: DataTypes.INTEGER,
     allowNull: true
   },
-  salary_id: {
+  salary: {
     type: DataTypes.INTEGER,
     allowNull: true
   },
@@ -70,7 +69,5 @@ ClientResumeModel.init({
 });
 
 ClientResumeModel.belongsTo(ClientModel, { as: 'client', foreignKey: 'client_id' })
-ClientResumeModel.belongsTo(ClientSalaryModel, { as: 'salary', foreignKey: 'salary_id' })
-ClientResumeModel.belongsTo(WorkModel, { as: 'work', foreignKey: 'work_type_id' })
 ClientResumeModel.belongsTo(AddressModel, { as: 'address', foreignKey: 'address_id' })
 module.exports = ClientResumeModel;

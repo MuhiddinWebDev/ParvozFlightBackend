@@ -32,6 +32,7 @@ const clientSalaryRouter = require("../routes/client_salary.route");
 const clientResumeRouter = require("../routes/client_resume.route");
 const staticOrderRouter = require("../routes/static_order.route");
 const chatProRouter = require("../routes/chatPro.route");
+const clietJobRouter = require("../routes/clientJob.route");
 
 const HttpException = require('../utils/HttpException.utils');
 
@@ -139,6 +140,7 @@ module.exports = async function (app) {
     app.use(`/api/v1/client-resume`, clientResumeRouter);
     app.use(`/api/v1/static-order`, staticOrderRouter);
     app.use(`/api/v1/chat-pro`, chatProRouter);
+    app.use(`/api/v1/client-job`, clietJobRouter);
     // 404 error
     app.all('*', (req, res, next) => {
         const err = new HttpException(404, req.mf('Endpoint not found'));

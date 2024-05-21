@@ -9,10 +9,8 @@ const sequelize = require('../db/db-sequelize');
 class ClientJobController extends BaseController {
 
     getAll = async (req, res, next) => {
-
         let lang = req.get('Accept-Language');
         lang = lang ? lang : 'uz';
-
         let modelList = await ClientJobModel.findAll({
             attributes: [
                 'id',
@@ -33,12 +31,27 @@ class ClientJobController extends BaseController {
         let modelList = await ClientJobChildModel.findAll({
             attributes: [
                 'id',
-                [sequelize.literal(`name_${lang}`), 'title']
+                [sequelize.literal(`name_${lang}`), 'title'],
+                'parent_id'
             ],
             order: [
                 ['id', 'ASC']
             ]
         });
+        for (let i = 0; i < modelList.length; i++) {
+            let el = modelList[i];
+            let modelx = await ClientJobModel.findOne({
+                where: { id: el.parent_id },
+                attributes: [
+                    'id',
+                    [sequelize.literal(`name_${lang}`), 'title'],
+                ],
+            })
+            modelList[i].dataValues.job = {
+                id: modelx.dataValues.id,
+                title: modelx.dataValues.title
+            }
+        }
         res.send(modelList);
     };
 

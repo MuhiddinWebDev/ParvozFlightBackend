@@ -1,5 +1,6 @@
 const { DataTypes, Model } = require('sequelize');
 const sequelize = require('../db/db-sequelize');
+const ClientJobChildModel = require('./clientJobChild.model')
 class ClientJobModel extends Model {
   toJSON() {
     let values = Object.assign({}, this.get());
@@ -36,5 +37,6 @@ ClientJobModel.init({
   timestamps: true,
   paranoid: true,
 });
-
+ClientJobModel.hasMany(ClientJobChildModel, { as: 'job_table', foreignKey: 'parent_id' });
+ClientJobChildModel.belongsTo(ClientJobModel, { as: 'job', foreignKey: 'parent_id' });
 module.exports = ClientJobModel;

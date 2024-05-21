@@ -5,6 +5,7 @@ const clientJobController = require('../controllers/clientJob.controller');
 const awaitHandlerFactory = require('../middleware/awaitHandlerFactory.middleware');
 const joiMiddleware = require('../middleware/joi.middleware');
 const { clientJobSchema } = require('../middleware/validators/clientJobValidator.middleware');
+const auth = require('../middleware/auth.middleware');
 
 
 router.get('/', awaitHandlerFactory(clientJobController.getAll));

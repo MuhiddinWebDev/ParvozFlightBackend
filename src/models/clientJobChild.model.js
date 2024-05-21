@@ -18,15 +18,15 @@ ClientJobChildModel.init({
     primaryKey: true
   },
   name_uz: {
-    type: DataTypes.STRING(128),
+    type: DataTypes.STRING(256),
     allowNull: true,
   },
   name_ru: {
-    type: DataTypes.STRING(128),
+    type: DataTypes.STRING(256),
     allowNull: true,
   },
   name_ka: {
-    type: DataTypes.STRING(128),
+    type: DataTypes.STRING(256),
     allowNull: true,
   },
   parent_id: {

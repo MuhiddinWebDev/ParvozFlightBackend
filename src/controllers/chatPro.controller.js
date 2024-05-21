@@ -5,13 +5,16 @@ const HttpException = require('../utils/HttpException.utils');
 const BaseController = require('./BaseController');
 const sequelize = require('../db/db-sequelize');
 const _ = require('lodash');
-
-
 /******************************************************************************
- *                              User Controller
+ *                              Chat Pro Controller
  ******************************************************************************/
 class ChatController extends BaseController {
-
+    io;
+    socket;
+    socketConnect = (io, socket) => {
+        this.io = io;
+        this.socket = socket;
+    };
     getAll = async (req, res, next) => {
         let modelList = await ChatProModel.findAll({
             order: [
@@ -295,6 +298,13 @@ class ChatController extends BaseController {
 
         if (!model) {
             throw new HttpException(500, req.mf('Something went wrong'));
+        }
+        const sockets = await this.io.fetchSockets();
+        for (const soc of sockets) {
+            if (soc.dataUser.type == "User") {
+                this.io.to(soc.id).emit("user_text", model)
+                
+            }
         }
 
         res.status(201).send(model);
@@ -712,6 +722,14 @@ class ChatController extends BaseController {
             }
         };
         await this.notification(message);
+        console.log('chat pro ')
+        const sockets = await this.io.fetchSockets();
+        for (const soc of sockets) {
+            if (soc.dataUser.type == "User") {
+                this.io.to(soc.id).emit("user_text", 'test')
+                
+            }
+        }
         // await this.notification(model, client.fcm_token, title, type);
 
         res.status(201).send(model);

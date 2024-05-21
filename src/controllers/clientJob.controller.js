@@ -16,7 +16,7 @@ class ClientJobController extends BaseController {
         let modelList = await ClientJobModel.findAll({
             attributes: [
                 'id',
-                [sequelize.literal(`name_${lang}`), 'name']
+                [sequelize.literal(`name_${lang}`), 'title']
             ],
             order: [
                 ['id', 'ASC']
@@ -33,7 +33,7 @@ class ClientJobController extends BaseController {
         let modelList = await ClientJobChildModel.findAll({
             attributes: [
                 'id',
-                [sequelize.literal(`name_${lang}`), 'name']
+                [sequelize.literal(`name_${lang}`), 'title']
             ],
             order: [
                 ['id', 'ASC']
@@ -61,7 +61,7 @@ class ClientJobController extends BaseController {
         let model = await ClientJobChildModel.findAll({
             attributes: [
                 'id',
-                [sequelize.literal(`name_${lang}`), 'name']
+                [sequelize.literal(`name_${lang}`), 'title']
             ],
             order: [
                 ['id', 'ASC']

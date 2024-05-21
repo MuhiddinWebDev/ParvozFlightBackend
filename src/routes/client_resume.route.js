@@ -8,7 +8,7 @@ const joiMiddleware = require('../middleware/joi.middleware');
 const { clientResumeSchemas } = require('../middleware/validators/clientResumeValidator.middleware');
 
 
-router.get('/', auth(), awaitHandlerFactory(ClientResumeController.getAll));
+router.post('/search', auth(), awaitHandlerFactory(ClientResumeController.getAll));
 router.get('/all', awaitHandlerFactory(ClientResumeController.getAll));
 router.get('/id/:id', auth(), awaitHandlerFactory(ClientResumeController.getById));
 router.get('/one/id/:id', clientAuth(), awaitHandlerFactory(ClientResumeController.getById));

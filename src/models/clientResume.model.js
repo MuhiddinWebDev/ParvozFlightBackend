@@ -1,7 +1,8 @@
 const { DataTypes, Model } = require('sequelize');
 const ClientModel = require("./client.model");
-const AddressModel = require("./address.model")
-const WorkModel = require("./work.model")
+const AddressModel = require("./address.model");
+const ClientJobModel = require('./clientJob.model');
+const ClientJobChildModel = require('./clientJobChild.model');
 const sequelize = require('../db/db-sequelize');
 class ClientResumeModel extends Model {
   toJSON() {
@@ -70,4 +71,6 @@ ClientResumeModel.init({
 
 ClientResumeModel.belongsTo(ClientModel, { as: 'client', foreignKey: 'client_id' })
 ClientResumeModel.belongsTo(AddressModel, { as: 'address', foreignKey: 'address_id' })
+ClientResumeModel.belongsTo(ClientJobModel, { as: 'job', foreignKey: 'job_id' })
+ClientResumeModel.belongsTo(ClientJobChildModel, { as: 'job_child', foreignKey: 'job_type_id' })
 module.exports = ClientResumeModel;

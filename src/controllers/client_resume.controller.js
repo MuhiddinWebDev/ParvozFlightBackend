@@ -1,7 +1,8 @@
 const ClientResumeModel = require('../models/clientResume.model');
 const ClientModel = require("../models/client.model");
-const WorkModel = require("../models/work.model")
-const AddressModel = require("../models/address.model")
+const AddressModel = require("../models/address.model");
+const ClientJobModel = require("../models/clientJob.model");
+const ClientJobChildModel = require("../models/clientJobChild.model")
 const HttpException = require('../utils/HttpException.utils');
 const BaseController = require('./BaseController');
 
@@ -12,11 +13,22 @@ const sequelize = require('../db/db-sequelize');
 class ClientResumeController extends BaseController {
 
     getAll = async (req, res, next) => {
+        let { job_id, job_type_id, sex_id } = req.body;
+        let query = {};
+        if (job_id) {
+            query.job_id = job_id
+        }
+        if (job_type_id) {
+            query.job_type_id = job_type_id
+        }
+        if (sex_id) {
+            query.sex_id = sex_id
+        }
         let modelList = await ClientResumeModel.findAll({
             attributes: [
-                "surname", "name", "phone", "job_id","job_type_id", "work_time",'id',
+                "surname", "name", "phone", "job_id", "job_type_id", "work_time", 'id', "salary",
                 [sequelize.literal(`CASE WHEN client.sex_id = 2 THEN 'Erkak' WHEN client.sex_id = 3 THEN 'Ayol' END`), 'sex_type']
-            ],                                    
+            ],
             include: [
                 {
                     model: ClientModel,
@@ -29,8 +41,21 @@ class ClientResumeController extends BaseController {
                     as: 'address',
                     attributes: ['name_uz'],
                     required: false
+                },
+                {
+                    model: ClientJobModel,
+                    as: 'job',
+                    attributes: ['name_uz'],
+                    required: false
+                },
+                {
+                    model: ClientJobChildModel,
+                    as: 'job_child',
+                    attributes: ['name_uz'],
+                    required: false
                 }
             ],
+            where: query,
             order: [
                 ['id', 'ASC']
             ]

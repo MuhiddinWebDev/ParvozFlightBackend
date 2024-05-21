@@ -42,8 +42,7 @@ io.use(async (socket, next) => {
   
       if (socket.handshake.query.client_token) {
         const token_client = socket.handshake.query.client_token;
-        const payload = jwt.verify(token_client, secret_jwt);
-        const model = await ClientModel.findOne({ where: { id: payload.user_id } });
+        const model = await ClientModel.findOne({ where: { token: token_client } });
         obj.userId = model.id;
         obj.type = "Client";
         obj.userName = model.number;

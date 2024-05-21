@@ -7,7 +7,7 @@ const bcrypt = require("bcryptjs");
 const { Op } = require("sequelize");
 let JSMTRand = require("js_mt_rand");
 const UniqueStringGenerator = require("unique-string-generator");
-const { text } = require("express");
+
 const fs = require('fs').promises;
 let axios = require("axios");
 const sequelize = require("../db/db-sequelize");

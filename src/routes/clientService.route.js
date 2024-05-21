@@ -22,11 +22,12 @@ const storage = multer.diskStorage({
 })
 
 const fileFilter = (req, file, cb) => {
-    console.log('file mime type => ',file.mimetype);
-    console.log('extra name => ',path.extname(file.originalname));
-    cb(null, true);
+    if (file.mimetype === 'image/jpeg' || file.mimetype === 'image/png') {
+        cb(null, true);
+    } else {
+        cb(null, false);
+    }
 }
-
 let uploadFile = multer({
     storage: storage,
     limits: {

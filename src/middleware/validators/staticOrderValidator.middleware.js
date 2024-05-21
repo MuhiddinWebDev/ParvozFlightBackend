@@ -7,6 +7,10 @@ exports.orderSchemas = {
     phone: Joi.string().required()
   }),
   byAdmin: Joi.object({
-    status: Joi.string().required()
+    status: Joi.string().required(),
+    region_id: Joi.number().required(),
+    passport: Joi.string().required(),
+    migrant_carta: Joi.string().required(),
+    phone: Joi.string().required(),
   })
 };

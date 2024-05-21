@@ -12,11 +12,11 @@ const path = require('path')
 
 const storage = multer.diskStorage({
     destination: function (req, file, cb) {
-        cb(null, './uploads/staticOrder/');
+        cb(null, './uploads/image/');
     },
     filename: function (req, file, cb) {
         const time = Math.floor(new Date().getTime());
-        req.body.image = "order_" + time + "_" + UniqueStringGenerator.UniqueString() + path.extname(file.originalname);
+        req.body.image = "client_" + time + "_" + UniqueStringGenerator.UniqueString() + path.extname(file.originalname);
         cb(null, req.body.image);
     }
 })

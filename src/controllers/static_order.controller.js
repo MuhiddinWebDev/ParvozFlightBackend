@@ -71,8 +71,8 @@ class AddressController extends BaseController {
                 {
                     model: WorkAddressModel,
                     as: 'region',
-                    attributes: ['id', 
-                        [sequelize.literal(`name_${lang}`),'name']
+                    attributes: ['id',
+                        [sequelize.literal(`name_${lang}`), 'name']
                     ],
                     required: false
                 },
@@ -92,7 +92,7 @@ class AddressController extends BaseController {
         res.send(order);
     };
 
-    
+
 
 
     update = async (req, res, next) => {
@@ -107,6 +107,10 @@ class AddressController extends BaseController {
 
         try {
             model.status = form_data.status;
+            model.region_id = form_data.region_id;
+            model.passport = form_data.passport;
+            model.migrant_carta = form_data.migrant_carta;
+            model.phone = form_data.phone;
             model.save();
             await t.commit();
             res.send(model);

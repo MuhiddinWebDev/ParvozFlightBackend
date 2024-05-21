@@ -23,8 +23,6 @@ class BaseController {
             if (err) {
                 console.log("Something has gone wrong!" + err);
                 console.log("Respponse:! " + response);
-            } else {
-                console.log("Successfully sent with response: ", response);
             }
         });
         

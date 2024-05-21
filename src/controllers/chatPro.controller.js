@@ -98,8 +98,7 @@ class ChatController extends BaseController {
             res.send(modelList);
         } catch (error) {
             console.log(error.message)
-            // await t.rollback();
-            // throw new HttpException(500, req.mf('Something went wrong'));
+           
         }
     };
 
@@ -268,8 +267,6 @@ class ChatController extends BaseController {
                 ['id', 'DESC']
             ]
         });
-        // console.log('chats ', chats);
-        // console.log('order_id ', order_id);
 
         let datetime = Math.floor(new Date().getTime())
         // datetime = datetime * 1000;
@@ -282,7 +279,6 @@ class ChatController extends BaseController {
                     })
                     chat_model.view = true;
                     await chat_model.save();
-                    // console.log('chat ', chat.id);
                 }
             }
         }
@@ -314,14 +310,11 @@ class ChatController extends BaseController {
         } = req.body;
         let view = true;
         let seen = false;
-        // console.log('user id ' + user_id);
         let datetime = Math.floor(new Date().getTime())
         order_id = parseInt(order_id);
         user_id = parseInt(user_id);
-        // console.log('file ', file);
 
 
-        // console.log('client fcm token ' + client.fcm_token);
         if (user_id > 0) {
             view = false;
             seen = true;
@@ -384,7 +377,6 @@ class ChatController extends BaseController {
                     ['id', 'DESC']
                 ]
             });
-            // console.log('chat ', chats);
 
             if (chats) {
                 for (let i = 0; i < chats.length; i++) {
@@ -428,14 +420,10 @@ class ChatController extends BaseController {
         } = req.body;
         let view = true;
         let seen = false;
-        // console.log('user id ' + user_id);
         let datetime = Math.floor(new Date().getTime())
         order_id = parseInt(order_id);
         user_id = parseInt(user_id);
-        // console.log('file ', file);
 
-
-        // console.log('client fcm token ' + client.fcm_token);
         if (user_id > 0) {
             view = false;
             seen = true;
@@ -498,7 +486,6 @@ class ChatController extends BaseController {
                     ['id', 'DESC']
                 ]
             });
-            // console.log('chat ', chats);
 
             if (chats) {
                 for (let i = 0; i < chats.length; i++) {
@@ -542,13 +529,10 @@ class ChatController extends BaseController {
         } = req.body;
         let view = true;
         let seen = false;
-        // console.log('user id ' + user_id);
         let datetime = Math.floor(new Date().getTime())
         order_id = parseInt(order_id);
         user_id = parseInt(user_id);
 
-
-        // console.log('client fcm token ' + client.fcm_token);
         if (user_id > 0) {
             view = false;
             seen = true;
@@ -611,7 +595,6 @@ class ChatController extends BaseController {
                     ['id', 'DESC']
                 ]
             });
-            // console.log('chat ', chats);
 
             if (chats) {
                 for (let i = 0; i < chats.length; i++) {
@@ -685,7 +668,6 @@ class ChatController extends BaseController {
             where: { id: req.body.order_id }
         });
 
-        // console.log('order client id', order.client_id);
 
         let client = await ClientModel.findOne({
             where: { id: order.client_id }
@@ -702,7 +684,6 @@ class ChatController extends BaseController {
         if (!model) {
             throw new HttpException(500, req.mf('Something went wrong'));
         }
-        // console.log('token ', client.fcm_token);
         const fcm_token = client.fcm_token;
         const title = "Sizga yangi xabar keldi";
         const type = "chat";

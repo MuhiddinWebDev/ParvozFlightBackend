@@ -13,7 +13,6 @@ const middleware = (schema, property) => {
       console.log(`Validation error: ${ message }`);
       next(error);
     }else{
-      console.log(value);
       req.body = value;
       next();
     }

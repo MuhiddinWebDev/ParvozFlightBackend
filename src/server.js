@@ -2,13 +2,12 @@ const express = require("express");
 const app = express();
 const { port } = require('./startup/config');
 const jwt = require("jsonwebtoken");
+const https = require('https');
+const socketIo = require('socket.io');
 const { secret_jwt } = require("./startup/config");
-const { createProxyMiddleware } = require('http-proxy-middleware');
-const ChatProModel = require("./models/chatPro.model");
 const UserModel = require("./models/user.model");
 const ClientModel = require("./models/client.model");
-const cors = require('cors');
-
+const fs = require('fs');
 require('./startup/cron')();
 require('./startup/logging')();
 require('./startup/db')();
@@ -21,33 +20,26 @@ const server = app.listen(port, () => console.log(`🚀 Server running on port $
     console.log('Error happened: ', e.message)
 
   });
-const io = require("socket.io")(server, {
-  allowEIO3: true,
-  cors: {
-    origin: true,
-    methods: ["GET", "POST"],
-    credentials: true,
-  },
-});
 
-app.use('/socket.io', createProxyMiddleware({
-  target: 'https://api.dom-m.uz/',
-  changeOrigin: true,
-  pathRewrite: {
-    '^/socket.io': '/socket.io', // Remove /socket.io from the path when forwarding the request
-  },
-  onProxyReq: (proxyReq, req, res) => {
-    // Add custom headers if necessary
-    proxyReq.setHeader('origin', 'https://api.dom-m.uz/');
-  },
-  onError: (err, req, res) => {
-    res.status(500).json({ error: 'Proxy error', details: err.message });
-  }
-}));
-app.use(cors({
-  origin: 'https://api.dom-m.uz/', // Replace with your client's URL
-  methods: ['GET', 'POST']
-}));
+// const io = require("socket.io")(server, {
+//   allowEIO3: true,
+//   cors: {
+//     origin: true,
+//     methods: ["GET", "POST"],
+//     credentials: true,
+//   },
+// });
+const privateKey = fs.readFileSync('/etc/letsencrypt/live/dom-m.com/privkey.pem', 'utf8');
+const certificate = fs.readFileSync('/etc/letsencrypt/live/dom-m.com/fullchain.pem', 'utf8');
+const ca = fs.readFileSync('/etc/letsencrypt/live/dom-m.com/chain.pem', 'utf8');
+
+const credentials = {
+  key: privateKey,
+  cert: certificate,
+  ca: ca
+};
+const httpsServer = https.createServer(credentials, app);
+const io = socketIo(httpsServer);
 io.use(async (socket, next) => {
   var obj = {};
   try {

@@ -28,7 +28,7 @@ class AddressController extends BaseController {
                 }
             ],
             order: [
-                ['id', 'ASC']
+                ['id', 'DESC']
             ]
         });
         res.send(modelList);

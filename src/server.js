@@ -39,7 +39,8 @@ io.use(async (socket, next) => {
         obj.type = "User";
         obj.userName = model.fullname;
       }
-  
+      console.log("socket.handshake.query.client_token___________________________")
+      console.log(socket.handshake.query.client_token)
       if (socket.handshake.query.client_token) {
         const token_client = socket.handshake.query.client_token;
         console.log(token_client)

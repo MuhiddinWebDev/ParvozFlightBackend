@@ -2,12 +2,12 @@ const express = require("express");
 const app = express();
 const { port } = require('./startup/config');
 const jwt = require("jsonwebtoken");
-const https = require('https');
-const socketIo = require('socket.io');
+const { createServer } = require("https");
+const { Server } = require("socket.io");
 const { secret_jwt } = require("./startup/config");
 const UserModel = require("./models/user.model");
 const ClientModel = require("./models/client.model");
-const fs = require('fs');
+const { readFileSync } = require('fs');
 require('./startup/cron')();
 require('./startup/logging')();
 require('./startup/db')();
@@ -15,11 +15,7 @@ require('./startup/db')();
 require('./startup/routes')(app);
 require('./startup/migration')();
 
-const server = app.listen(port, () => console.log(`🚀 Server running on port ${port}!`))
-  .on('error', (e) => {
-    console.log('Error happened: ', e.message)
 
-  });
 
 // const io = require("socket.io")(server, {
 //   allowEIO3: true,
@@ -29,18 +25,25 @@ const server = app.listen(port, () => console.log(`🚀 Server running on port $
 //     credentials: true,
 //   },
 // });
-const privateKey = fs.readFileSync('/etc/letsencrypt/live/api.dom-m.uz/privkey.pem', 'utf8');
-const certificate = fs.readFileSync('/etc/letsencrypt/live/api.dom-m.uz/fullchain.pem', 'utf8');
-const ca = fs.readFileSync('/etc/letsencrypt/live/api.dom-m.uz/chain.pem', 'utf8');
 
-const credentials = {
-  key: privateKey,
-  cert: certificate,
-  ca: ca
-};
-const httpsServer = https.createServer(credentials, app);
-console.log(httpsServer)
-const io = socketIo(httpsServer);
+const httpsServer = createServer({
+  key: readFileSync("/etc/letsencrypt/live/api.dom-m.uz/privkey.pem"),
+  cert: readFileSync("/etc/letsencrypt/live/api.dom-m.uz/fullchain.pem")
+});
+const io = new Server(httpsServer, {
+  cors: {
+    origin: "https://dom-m.uz",
+    methods: ["GET", "POST"],
+    allowedHeaders: ["my-custom-header"],
+    credentials: true
+  },
+  path: "/socket.io",
+  pingInterval: 25000,
+  pingTimeout: 5000,
+  maxHttpBufferSize: 1e6,  // 1 MB
+  allowEIO3: true
+});
+
 io.use(async (socket, next) => {
   var obj = {};
   try {
@@ -80,4 +83,14 @@ const onConnection = (socket) => {
 };
 
 io.on("connection", onConnection);
+// const server = app.listen(port, () => console.log(`🚀 Server running on port ${port}!`))
+//   .on('error', (e) => {
+//     console.log('Error happened: ', e.message)
+
+//   });
+httpsServer.listen(port, () => console.log(`🚀 Server running on port ${port}!`))
+  .on('error', (e) => {
+    console.log('Error happened: ', e.message)
+
+  });
 module.exports = app;

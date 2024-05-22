@@ -28,10 +28,11 @@ const io = require("socket.io")(server, {
         credentials: true,
     },
 });
+
 io.use(async (socket, next) => {
     var obj = {};
     try {
-      console.log(socket.handshake)
+      console.log(socket.handshake.query)
       if (socket.handshake.query.token_user) {
         const token_user = socket.handshake.query.token_user;
         const payload = jwt.verify(token_user, secret_jwt);

@@ -745,6 +745,7 @@ class ChatController extends BaseController {
     };
 
     #sendSocket = async(model) =>{
+        console.log(model)
         const sockets = await this.io;
         console.log(sockets)
         // for (const soc of sockets) {

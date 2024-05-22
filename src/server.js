@@ -27,8 +27,8 @@ require('./startup/migration')();
 // });
 
 const httpsServer = createServer({
-  key: readFileSync("/etc/letsencrypt/live/api.dom-m.uz/privkey.pem"),
-  cert: readFileSync("/etc/letsencrypt/live/api.dom-m.uz/fullchain.pem")
+  key: readFileSync("/etc/letsencrypt/live/dom-m.uz/privkey.pem"),
+  cert: readFileSync("/etc/letsencrypt/live/dom-m.uz/fullchain.pem")
 });
 const io = new Server(httpsServer, {
   cors: {

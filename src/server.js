@@ -42,7 +42,9 @@ io.use(async (socket, next) => {
   
       if (socket.handshake.query.client_token) {
         const token_client = socket.handshake.query.client_token;
+        console.log(token_client)
         const model = await ClientModel.findOne({ where: { token: token_client } });
+        console.log(model)
         obj.userId = model.id;
         obj.type = "Client";
         obj.userName = model.number;

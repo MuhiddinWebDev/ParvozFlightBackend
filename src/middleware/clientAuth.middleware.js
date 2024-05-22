@@ -22,7 +22,6 @@ const auth = () => {
 
             // if the client has permissions
             req.currentClient = client;
-            console.log(client)
             next();
 
         } catch (e) {

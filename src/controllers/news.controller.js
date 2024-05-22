@@ -16,7 +16,7 @@ class AdvertisementController extends BaseController {
 
         let modelList = await NewsModel.findAll({
             attributes: [
-                'id', 'network', 'image', 'datetime',
+                'id', 'network', 'image', 'datetime','type','video',
                 [sequelize.literal(`text_${lang}`), 'text'],
             ],
             where: {
@@ -76,6 +76,8 @@ class AdvertisementController extends BaseController {
             text_ru,
             text_ka,
             image,
+            type,
+            video,
             status,
             datetime,
             network
@@ -86,6 +88,8 @@ class AdvertisementController extends BaseController {
             text_ru,
             text_ka,
             image,
+            type,
+            video,
             status,
             datetime: format_date,
             network
@@ -101,7 +105,7 @@ class AdvertisementController extends BaseController {
 
     update = async (req, res, next) => {
 
-        let { text_uz, text_ru, text_ka, image, network, datetime, status } = req.body;
+        let { text_uz, text_ru, text_ka, image, network, datetime, status, type, video } = req.body;
         const model = await NewsModel.findOne({ where: { id: req.params.id } });
 
         if (!model) {
@@ -112,6 +116,8 @@ class AdvertisementController extends BaseController {
         model.text_ru = text_ru;
         model.text_ka = text_ka;
         model.image = image;
+        model.video = video;
+        model.type = type;
         model.status = status;
         model.datetime = format_date;
         model.network = network;

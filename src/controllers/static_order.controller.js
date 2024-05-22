@@ -5,6 +5,7 @@ const ClientModel = require("../models/client.model")
 const HttpException = require('../utils/HttpException.utils');
 const BaseController = require('./BaseController');
 const sequelize = require('../db/db-sequelize');
+const fs = require('fs')
 /******************************************************************************
  *                              order Controller
  ******************************************************************************/
@@ -149,6 +150,18 @@ class AddressController extends BaseController {
             await model.destroy();
         }
 
+        res.send(req.mf('data has been deleted'));
+    };
+
+    deleteImage = async (req, res, next) => {
+        let { image } = req.body;
+        try {
+            if(image){
+                fs.unlinkSync('./uploads/image/' + image);
+            }
+        } catch (error) {
+            console.log(error.message)
+        }
         res.send(req.mf('data has been deleted'));
     };
 

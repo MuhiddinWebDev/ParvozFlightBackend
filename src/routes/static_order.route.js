@@ -43,5 +43,6 @@ router.get('/id/:id', auth(), awaitHandlerFactory(staticOrderController.getById)
 router.patch('/id/:id', auth(), joiMiddleware(orderSchemas.byAdmin), awaitHandlerFactory(staticOrderController.update));
 router.post('/image', uploadFile, awaitHandlerFactory(staticOrderController.uploadImage));
 router.delete('/id/:id', auth(), awaitHandlerFactory(staticOrderController.delete));
+router.post('/del-image', auth(), awaitHandlerFactory(staticOrderController.deleteImage));
 
 module.exports = router;

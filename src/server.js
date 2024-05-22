@@ -40,7 +40,7 @@ io.use(async (socket, next) => {
         obj.userName = model.fullname;
       }
       console.log("socket.handshake.query.client_token___________________________")
-      console.log(socket.handshake.query.client_token)
+      console.log(socket.handshake.query)
       if (socket.handshake.query.client_token) {
         const token_client = socket.handshake.query.client_token;
         console.log(token_client)

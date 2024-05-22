@@ -39,6 +39,7 @@ const credentials = {
   ca: ca
 };
 const httpsServer = https.createServer(credentials, app);
+console.log(httpsServer)
 const io = socketIo(httpsServer);
 io.use(async (socket, next) => {
   var obj = {};

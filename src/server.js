@@ -16,7 +16,7 @@ require('./startup/db')();
 
 require('./startup/routes')(app);
 require('./startup/migration')();
-const server = http.createServer(app);
+let server = http.createServer(app);
 
 const io = socketIo(server, {
   allowEIO3: true,

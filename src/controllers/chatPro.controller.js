@@ -12,9 +12,10 @@ const { currentClient } = require('./client.controller');
 class ChatController extends BaseController {
     io;
     socket;
-    socketConnect = (io, socket) => {
+    socketConnect = (io, socket, token) => {
         this.io = io;
         this.socket = socket;
+        this.token = token
     };
     getAll = async (req, res, next) => {
         let modelList = await ChatProModel.findAll({
@@ -408,8 +409,12 @@ class ChatController extends BaseController {
         }
         const client_token = req.currentClient;
         const user_token = req.currentUser;
-        console.log(client_token)
-        console.log(user_token)
+        if(client_token){
+            await this.#sendSocket(model, 'client', client_token.token)
+        }
+        if(user_token){
+            await this.#sendSocket(model,'user', user_token.token)
+        }
         res.status(201).send(model);
     };
 
@@ -519,7 +524,14 @@ class ChatController extends BaseController {
         if (!model) {
             throw new HttpException(500, req.mf('Something went wrong'));
         }
-        await this.#sendSocket(model)
+        const client_token = req.currentClient;
+        const user_token = req.currentUser;
+        if(client_token){
+            await this.#sendSocket(model, 'client', client_token.token)
+        }
+        if(user_token){
+            await this.#sendSocket(model,'user', user_token.token)
+        }
         res.status(201).send(model);
     };
 
@@ -627,7 +639,14 @@ class ChatController extends BaseController {
         if (!model) {
             throw new HttpException(500, req.mf('Something went wrong'));
         }
-        await this.#sendSocket(model)
+        const client_token = req.currentClient;
+        const user_token = req.currentUser;
+        if(client_token){
+            await this.#sendSocket(model, 'client', client_token.token)
+        }
+        if(user_token){
+            await this.#sendSocket(model,'user', user_token.token)
+        }
         res.status(201).send(model);
     };
 
@@ -699,8 +718,10 @@ class ChatController extends BaseController {
             }
         };
         await this.notification(message);
-        await this.#sendSocket(model)
-        // await this.notification(model, client.fcm_token, title, type);
+        const user_token = req.currentUser;
+        if(user_token){
+            await this.#sendSocket(model,'user', user_token.token)
+        }
 
         res.status(201).send(model);
     };

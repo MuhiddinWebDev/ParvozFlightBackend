@@ -49,7 +49,6 @@ const sockets = require('./socket/socket')
 const onConnection = (socket) => {
     chatProController.socketConnect(io, socket);
     sockets.connects(io, socket);
-    console.log('User connect ' + socket.dataUser.userId)
     socket.on("disconnect", () => {
       console.log('User disconnet')
     });

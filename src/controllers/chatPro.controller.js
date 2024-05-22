@@ -5,6 +5,7 @@ const HttpException = require('../utils/HttpException.utils');
 const BaseController = require('./BaseController');
 const sequelize = require('../db/db-sequelize');
 const _ = require('lodash');
+const { currentClient } = require('./client.controller');
 /******************************************************************************
  *                              Chat Pro Controller
  ******************************************************************************/
@@ -251,7 +252,7 @@ class ChatController extends BaseController {
 
     // for mobile chat
     create = async (req, res, next) => {
-
+        const client_token = req.currentClient.token
         let {
             order_id,
             text
@@ -295,7 +296,7 @@ class ChatController extends BaseController {
         if (!model) {
             throw new HttpException(500, req.mf('Something went wrong'));
         }
-        await this.#sendSocket(model)
+        await this.#sendSocket(model, 'client',client_token)
         res.status(201).send(model);
     };
 
@@ -366,7 +367,6 @@ class ChatController extends BaseController {
             await this.notification(message);
         } else {
             user_id = 0;
-
             const chats = await ChatProModel.findAll({
                 where: {
                     order_id: order_id,
@@ -406,8 +406,10 @@ class ChatController extends BaseController {
         if (!model) {
             throw new HttpException(500, req.mf('Something went wrong'));
         }
-        await this.#sendSocket(model)
-
+        const client_token = req.currentClient;
+        const user_token = req.currentUser;
+        console.log(client_token)
+        console.log(user_token)
         res.status(201).send(model);
     };
 
@@ -744,14 +746,14 @@ class ChatController extends BaseController {
         res.send(req.mf('data has been deleted'));
     };
 
-    #sendSocket = async(model) =>{
+    #sendSocket = async(model, role, token) =>{
         const sockets = await this.io.fetchSockets();
         for (const soc of sockets) {
-            if (soc.dataUser.type == "Client") {
-                this.io.to(soc.id).emit("client_text", model)
+            if(role == 'client'){
+                this.io.to(soc.id).emit("client_text", model, token)
             }
-            if(soc.dataUser.type == "User"){
-                this.io.to(soc.id).emit("user_text", model)
+            if(role == 'user'){
+                this.io.to(soc.id).emit("user_text", model, token)
             }
         }
     }

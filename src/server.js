@@ -6,7 +6,8 @@ const { secret_jwt } = require("./startup/config");
 const { createProxyMiddleware } = require('http-proxy-middleware');
 const ChatProModel = require("./models/chatPro.model");
 const UserModel = require("./models/user.model");
-const ClientModel = require("./models/client.model")
+const ClientModel = require("./models/client.model");
+const cors = require('cors');
 
 require('./startup/cron')();
 require('./startup/logging')();
@@ -28,19 +29,24 @@ const io = require("socket.io")(server, {
     credentials: true,
   },
 });
+
 app.use('/socket.io', createProxyMiddleware({
-  target: 'https://api.dom-m.uz',
+  target: 'https://api.dom-m.uz/',
   changeOrigin: true,
   pathRewrite: {
     '^/socket.io': '/socket.io', // Remove /socket.io from the path when forwarding the request
   },
   onProxyReq: (proxyReq, req, res) => {
     // Add custom headers if necessary
-    proxyReq.setHeader('origin', 'https://api.dom-m.uz');
+    proxyReq.setHeader('origin', 'https://api.dom-m.uz/');
   },
   onError: (err, req, res) => {
     res.status(500).json({ error: 'Proxy error', details: err.message });
   }
+}));
+app.use(cors({
+  origin: 'https://api.dom-m.uz/', // Replace with your client's URL
+  methods: ['GET', 'POST']
 }));
 io.use(async (socket, next) => {
   var obj = {};

@@ -29,9 +29,9 @@ const server = app.listen(port, () => console.log(`🚀 Server running on port $
 //     credentials: true,
 //   },
 // });
-const privateKey = fs.readFileSync('/etc/letsencrypt/live/dom-m.com/privkey.pem', 'utf8');
-const certificate = fs.readFileSync('/etc/letsencrypt/live/dom-m.com/fullchain.pem', 'utf8');
-const ca = fs.readFileSync('/etc/letsencrypt/live/dom-m.com/chain.pem', 'utf8');
+const privateKey = fs.readFileSync('/etc/letsencrypt/live/dom-m.uz/privkey.pem', 'utf8');
+const certificate = fs.readFileSync('/etc/letsencrypt/live/dom-m.uz/fullchain.pem', 'utf8');
+const ca = fs.readFileSync('/etc/letsencrypt/live/dom-m.uz/chain.pem', 'utf8');
 
 const credentials = {
   key: privateKey,

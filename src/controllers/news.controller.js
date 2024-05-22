@@ -25,7 +25,6 @@ class AdvertisementController extends BaseController {
             order: [
                 ['id', 'DESC']
             ],
-            limit: 4,
         });
         res.send(modelList);
     };

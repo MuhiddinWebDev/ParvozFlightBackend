@@ -5,17 +5,15 @@ const HttpException = require('../utils/HttpException.utils');
 const BaseController = require('./BaseController');
 const sequelize = require('../db/db-sequelize');
 const _ = require('lodash');
-const { currentClient } = require('./client.controller');
 /******************************************************************************
  *                              Chat Pro Controller
  ******************************************************************************/
 class ChatController extends BaseController {
     io;
     socket;
-    socketConnect = (io, socket, token) => {
+    socketConnect = (io, socket) => {
         this.io = io;
         this.socket = socket;
-        this.token = token
     };
     getAll = async (req, res, next) => {
         let modelList = await ChatProModel.findAll({
@@ -253,7 +251,7 @@ class ChatController extends BaseController {
 
     // for mobile chat
     create = async (req, res, next) => {
-        const client_token = req.currentClient.token
+
         let {
             order_id,
             text
@@ -297,7 +295,7 @@ class ChatController extends BaseController {
         if (!model) {
             throw new HttpException(500, req.mf('Something went wrong'));
         }
-        await this.#sendSocket(model, 'client',client_token)
+        await this.#sendSocket(model)
         res.status(201).send(model);
     };
 
@@ -368,6 +366,7 @@ class ChatController extends BaseController {
             await this.notification(message);
         } else {
             user_id = 0;
+
             const chats = await ChatProModel.findAll({
                 where: {
                     order_id: order_id,
@@ -407,14 +406,8 @@ class ChatController extends BaseController {
         if (!model) {
             throw new HttpException(500, req.mf('Something went wrong'));
         }
-        const client_token = req.currentClient;
-        const user_token = req.currentUser;
-        if(client_token){
-            await this.#sendSocket(model, 'client', client_token.token)
-        }
-        if(user_token){
-            await this.#sendSocket(model,'user', user_token.token)
-        }
+        await this.#sendSocket(model)
+
         res.status(201).send(model);
     };
 
@@ -524,14 +517,7 @@ class ChatController extends BaseController {
         if (!model) {
             throw new HttpException(500, req.mf('Something went wrong'));
         }
-        const client_token = req.currentClient;
-        const user_token = req.currentUser;
-        if(client_token){
-            await this.#sendSocket(model, 'client', client_token.token)
-        }
-        if(user_token){
-            await this.#sendSocket(model,'user', user_token.token)
-        }
+        await this.#sendSocket(model)
         res.status(201).send(model);
     };
 
@@ -639,14 +625,7 @@ class ChatController extends BaseController {
         if (!model) {
             throw new HttpException(500, req.mf('Something went wrong'));
         }
-        const client_token = req.currentClient;
-        const user_token = req.currentUser;
-        if(client_token){
-            await this.#sendSocket(model, 'client', client_token.token)
-        }
-        if(user_token){
-            await this.#sendSocket(model,'user', user_token.token)
-        }
+        await this.#sendSocket(model)
         res.status(201).send(model);
     };
 
@@ -718,10 +697,8 @@ class ChatController extends BaseController {
             }
         };
         await this.notification(message);
-        const user_token = req.currentUser;
-        if(user_token){
-            await this.#sendSocket(model,'user', user_token.token)
-        }
+        await this.#sendSocket(model)
+        // await this.notification(model, client.fcm_token, title, type);
 
         res.status(201).send(model);
     };
@@ -767,14 +744,14 @@ class ChatController extends BaseController {
         res.send(req.mf('data has been deleted'));
     };
 
-    #sendSocket = async(model, role, token) =>{
+    #sendSocket = async(model, role) =>{
         const sockets = await this.io.fetchSockets();
         for (const soc of sockets) {
-            if(role == 'client'){
-                this.io.to(soc.id).emit("client_text", model, token)
+            if (soc.dataUser.type == "Client") {
+                this.io.to(soc.id).emit("client_text", model)
             }
-            if(role == 'user'){
-                this.io.to(soc.id).emit("user_text", model, token)
+            if(soc.dataUser.type == "User"){
+                this.io.to(soc.id).emit("user_text", model)
             }
         }
     }

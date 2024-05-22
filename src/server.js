@@ -31,13 +31,24 @@ const io = require("socket.io")(server, {
 io.use(async (socket, next) => {
     var obj = {};
     try {
+      if (socket.handshake.query.token_user) {
+        const token_user = socket.handshake.query.token_user;
+        const payload = jwt.verify(token_user, secret_jwt);
+        const model = await UserModel.findOne({ where: { id: payload.user_id } });
+        obj.userId = model.id;
+        obj.type = "User";
+        obj.userName = model.fullname;
+      }
+  
       if (socket.handshake.query.client_token) {
         const token_client = socket.handshake.query.client_token;
         const model = await ClientModel.findOne({ where: { token: token_client } });
         obj.userId = model.id;
         obj.type = "Client";
         obj.userName = model.number;
-      }      
+      }
+  
+      
       socket.dataUser = obj;
       next();
     } catch (err) {
@@ -49,6 +60,7 @@ const sockets = require('./socket/socket')
 const onConnection = (socket) => {
     chatProController.socketConnect(io, socket);
     sockets.connects(io, socket);
+    console.log('User connect ' + socket.dataUser.userId)
     socket.on("disconnect", () => {
       console.log('User disconnet')
     });

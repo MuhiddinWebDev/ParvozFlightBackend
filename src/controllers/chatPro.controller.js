@@ -745,15 +745,16 @@ class ChatController extends BaseController {
     };
 
     #sendSocket = async(model) =>{
-        const sockets = await this.io.fetchSockets();
-        for (const soc of sockets) {
-            if (soc.dataUser.type == "Client") {
-                this.io.to(soc.id).emit("client_text", model)
-            }
-            if(soc.dataUser.type == "User"){
-                this.io.to(soc.id).emit("user_text", model)
-            }
-        }
+        const sockets = await this.io;
+        console.log(sockets)
+        // for (const soc of sockets) {
+        //     if (soc.dataUser.type == "Client") {
+        //         this.io.to(soc.id).emit("client_text", model)
+        //     }
+        //     if(soc.dataUser.type == "User"){
+        //         this.io.to(soc.id).emit("user_text", model)
+        //     }
+        // }
     }
 }
 

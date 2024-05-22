@@ -10,7 +10,12 @@ const sequelize = require('../db/db-sequelize');
  *                              User Controller
  ******************************************************************************/
 class AdvertisementController extends BaseController {
-
+    io;
+    socket;
+    socketConnect = (io, socket) => {
+        this.io = io;
+        this.socket = socket;
+    };
     getAllMobile = async (req, res, next) => {
         let lang = req.get('Accept-Language');
         lang = lang ? lang : 'uz';
@@ -83,9 +88,6 @@ class AdvertisementController extends BaseController {
         res.send(modelList);
     };
 
-    
-
-
     create = async (req, res, next) => {
 
         let {
@@ -116,7 +118,6 @@ class AdvertisementController extends BaseController {
         res.status(201).send(model);
     };
 
-
     update = async (req, res, next) => {
 
         let { title_uz, title_ru, title_ka, summa, required, status, region_id } = req.body;
@@ -139,21 +140,21 @@ class AdvertisementController extends BaseController {
 
         res.send(model);
     };
+
     UploadFile = async (req, res, next) => {
         let { image } = req.body;
-    
-        try {
-          if (!image) {
-            throw new HttpException(405, req.mf("file type is invalid"));
-          }
-    
-          const model = { image_name: image };
-          res.send(model);
-        } catch (error) {
-          throw new HttpException(500, error.message);
-        }
-      };
 
+        try {
+            if (!image) {
+                throw new HttpException(405, req.mf("file type is invalid"));
+            }
+
+            const model = { image_name: image };
+            res.send(model);
+        } catch (error) {
+            throw new HttpException(500, error.message);
+        }
+    };
 
     delete = async (req, res, next) => {
         const model = await ClientServiceModel.findOne({ where: { id: req.params.id } })
@@ -175,7 +176,6 @@ class AdvertisementController extends BaseController {
         const currentClient = req.currentClient;
         const { client_service, region_id, total_sum, passport, migrant_carta, phone } = req.body;
         try {
-
             let model = await StaticOrderModel.create({
                 client_id: currentClient.id,
                 passport: passport,
@@ -183,9 +183,9 @@ class AdvertisementController extends BaseController {
                 region_id: region_id,
                 total_sum: total_sum,
                 phone: phone,
-                status:'checking'
+                status: 'checking'
             })
-           await client_service.forEach(async (item) => {
+            await client_service.forEach(async (item) => {
                 if (item.required) {
                     let model_child = await ClientServiceChildModel.create({
                         doc_id: model.id,
@@ -200,12 +200,17 @@ class AdvertisementController extends BaseController {
                         region_id: region_id,
                         type: 0,
                         summa: item.summa,
-                        doc_type:'Chiqim',
-                        place:"Mijozga xizmat"
+                        doc_type: 'Chiqim',
+                        place: "Mijozga xizmat"
                     })
                 }
             });
-
+            const sockets = await this.io.fetchSockets();
+            for (const soc of sockets) {
+                if (soc.dataUser.type == "User") {
+                    this.io.to(soc.id).emit("user_order", model)
+                }
+            }
             res.send(model)
         } catch (err) {
             throw new HttpException(404, err.message);

@@ -56,9 +56,11 @@ io.use(async (socket, next) => {
     }
   });
 const chatProController = require("./controllers/chatPro.controller");
+const clietServiceController = require("./controllers/clientService.controller")
 const sockets = require('./socket/socket')
 const onConnection = (socket) => {
     chatProController.socketConnect(io, socket);
+    clietServiceController.socketConnect(io, socket);
     sockets.connects(io, socket);
     console.log('User connect ' + socket.dataUser.userId)
     socket.on("disconnect", () => {

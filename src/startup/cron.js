@@ -96,17 +96,17 @@ module.exports = function executeTaskFromDatabase() {
 
 
 
-    cron.schedule("*/30 * * * *", async () => {
-        try {
-            const delete_file = await deleteFileBanner();
+    // cron.schedule("*/30 * * * *", async () => {
+    //     try {
+    //         // const delete_file = await deleteFileBanner();
 
-        } catch (err) {
-            console.log('Error delete file', err)
-        }
-    },
-        {
-            scheduled: true,
-            timezone: "Asia/Tashkent"
-        }
-    )
+    //     } catch (err) {
+    //         console.log('Error delete file', err)
+    //     }
+    // },
+    //     {
+    //         scheduled: true,
+    //         timezone: "Asia/Tashkent"
+    //     }
+    // )
 }

@@ -44,7 +44,6 @@ io.use(async (socket, next) => {
       if (socket.handshake.query.client_token) {
         const token_client = socket.handshake.query.client_token;
         const model = await ClientModel.findOne({ where: { token: token_client } });
-        console.log(model)
         obj.userId = model.id;
         obj.type = "Client";
         obj.userName = model.number;
@@ -61,7 +60,7 @@ const sockets = require('./socket/socket')
 const onConnection = (socket) => {
     chatProController.socketConnect(io, socket);
     sockets.connects(io, socket);
-    console.log('User connect ' + socket.dataUser)
+    console.log('User connect ' + socket.dataUser.type)
     socket.on("disconnect", () => {
       console.log('User disconnet')
     });

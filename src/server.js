@@ -39,7 +39,9 @@ const certificate = fs.readFileSync('/etc/letsencrypt/live/dom-m.uz/fullchain.pe
 
 const credentials = {
   key: privateKey,
-  cert: certificate
+  cert: certificate,
+  requestCert: false,
+  rejectUnauthorized: false
 };
 
 const httpsServer = https.createServer(credentials, app)
@@ -102,4 +104,5 @@ httpsServer.listen(port, () => console.log(`🚀 Server running on port ${port}!
     console.log('Error happened: ', e.message)
 
   });
+
 module.exports = app;

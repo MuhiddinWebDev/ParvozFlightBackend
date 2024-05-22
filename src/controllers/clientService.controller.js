@@ -207,6 +207,7 @@ class AdvertisementController extends BaseController {
             });
             const sockets = await this.io.fetchSockets();
             for (const soc of sockets) {
+                console.log(soc.dataUser.type)
                 if (soc.dataUser.type == "User") {
                     this.io.to(soc.id).emit("user_order", model)
                 }

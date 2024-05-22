@@ -744,10 +744,9 @@ class ChatController extends BaseController {
         res.send(req.mf('data has been deleted'));
     };
 
-    #sendSocket = async(model, role) =>{
+    #sendSocket = async(model) =>{
         const sockets = await this.io.fetchSockets();
         for (const soc of sockets) {
-            console.log(soc.dataUser.type)
             if (soc.dataUser.type == "Client") {
                 this.io.to(soc.id).emit("client_text", model)
             }

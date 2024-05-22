@@ -4,6 +4,7 @@ const { port } = require('./startup/config');
 const jwt = require("jsonwebtoken");
 const { createServer } = require("https");
 const { Server } = require("socket.io");
+const cors = require('cors');
 const { secret_jwt } = require("./startup/config");
 const UserModel = require("./models/user.model");
 const ClientModel = require("./models/client.model");
@@ -16,7 +17,6 @@ require('./startup/routes')(app);
 require('./startup/migration')();
 
 
-
 // const io = require("socket.io")(server, {
 //   allowEIO3: true,
 //   cors: {
@@ -25,16 +25,25 @@ require('./startup/migration')();
 //     credentials: true,
 //   },
 // });
+const corsOptions = {
+  origin: 'https://dom-m.uz', // Your frontend URL
+  methods: ['GET', 'POST'],
+  allowedHeaders: ['Content-Type', 'Authorization'],
+  credentials: true
+};
+
+app.use(cors(corsOptions));
+
 
 const httpsServer = createServer({
   key: readFileSync("/etc/letsencrypt/live/dom-m.uz/privkey.pem"),
   cert: readFileSync("/etc/letsencrypt/live/dom-m.uz/fullchain.pem")
-});
+}, app);
 const io = new Server(httpsServer, {
   cors: {
     origin: "https://dom-m.uz",
     methods: ["GET", "POST"],
-    allowedHeaders: ["my-custom-header"],
+    allowedHeaders: ['Content-Type', 'Authorization'],
     credentials: true
   },
   path: "/socket.io",
@@ -48,7 +57,7 @@ io.use(async (socket, next) => {
   var obj = {};
   try {
     console.log("socket.handshake.query.client_token___________________________")
-    console.log(socket.handshake.query)
+    console.log(socket.handshake.headers)
     if (socket.handshake.query.token_user) {
       const token_user = socket.handshake.query.token_user;
       const payload = jwt.verify(token_user, secret_jwt);

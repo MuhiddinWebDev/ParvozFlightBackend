@@ -1,14 +1,14 @@
 const express = require("express");
+const fs = require('fs');
+const https = require('https');
+const cors = require('cors');
+const { Server } = require("socket.io");
 const app = express();
 const { port } = require('./startup/config');
 const jwt = require("jsonwebtoken");
-const { createServer } = require("https");
-const { Server } = require("socket.io");
-const cors = require('cors');
 const { secret_jwt } = require("./startup/config");
 const UserModel = require("./models/user.model");
 const ClientModel = require("./models/client.model");
-const { readFileSync } = require('fs');
 require('./startup/cron')();
 require('./startup/logging')();
 require('./startup/db')();
@@ -34,11 +34,15 @@ const corsOptions = {
 
 app.use(cors(corsOptions));
 
+const privateKey = fs.readFileSync('/etc/letsencrypt/live/dom-m.uz/privkey.pem', 'utf8');
+const certificate = fs.readFileSync('/etc/letsencrypt/live/dom-m.uz/fullchain.pem', 'utf8');
 
-const httpsServer = createServer({
-  key: readFileSync("/etc/letsencrypt/live/dom-m.uz/privkey.pem"),
-  cert: readFileSync("/etc/letsencrypt/live/dom-m.uz/fullchain.pem")
-}, app);
+const credentials = {
+  key: privateKey,
+  cert: certificate
+};
+
+const httpsServer = https.createServer(credentials, app)
 const io = new Server(httpsServer, {
   cors: {
     origin: "https://dom-m.uz",
@@ -92,11 +96,7 @@ const onConnection = (socket) => {
 };
 
 io.on("connection", onConnection);
-// const server = app.listen(port, () => console.log(`🚀 Server running on port ${port}!`))
-//   .on('error', (e) => {
-//     console.log('Error happened: ', e.message)
 
-//   });
 httpsServer.listen(port, () => console.log(`🚀 Server running on port ${port}!`))
   .on('error', (e) => {
     console.log('Error happened: ', e.message)

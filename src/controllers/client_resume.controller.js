@@ -13,7 +13,7 @@ const sequelize = require('../db/db-sequelize');
 class ClientResumeController extends BaseController {
 
     getAll = async (req, res, next) => {
-        let { job_id, job_type_id, sex_id } = req.body;
+        let { job_id, job_type_id, sex_id, status } = req.body;
         let query = {};
         if (job_id) {
             query.job_id = job_id
@@ -24,6 +24,8 @@ class ClientResumeController extends BaseController {
         if (sex_id) {
             query.sex_id = sex_id
         }
+        query.status = status;
+
         let modelList = await ClientResumeModel.findAll({
             attributes: [
                 "surname", "name", "phone", "job_id", "job_type_id", "work_time", 'id', "salary",
@@ -137,7 +139,8 @@ class ClientResumeController extends BaseController {
             job_type_id,
             address_id,
             salary,
-            work_time
+            work_time,
+            status
         } = req.body;
         const model = await ClientResumeModel.findOne({ where: { id: req.params.id } });
 
@@ -154,6 +157,7 @@ class ClientResumeController extends BaseController {
         model.address_id = address_id;
         model.salary = salary;
         model.work_time = work_time;
+        model.status = status;
         model.save();
 
         res.send(model);

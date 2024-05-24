@@ -61,6 +61,11 @@ ClientResumeModel.init({
     type: DataTypes.STRING(10),
     allowNull: true,
   },
+  status: {
+    type: DataTypes.BOOLEAN,
+    allowNull: true,
+    defaultValue: true
+  },
 }, {
   sequelize,
   modelName: 'ClientResumeModel',

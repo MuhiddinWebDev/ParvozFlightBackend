@@ -11,5 +11,6 @@ exports.clientResumeSchemas = {
     address_id: Joi.number().required(),
     salary: Joi.number().required(),
     work_time: Joi.string().required().max(10),
+    status: Joi.boolean().required()
   }),
 };

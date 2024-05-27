@@ -384,7 +384,7 @@ class ReportController extends BaseController {
         }
         result.data = await ClietModel.findAll({
             attributes: [
-                'promocode','createdAt',
+                'promocode',
                 [sequelize.literal('COUNT(promocode)'), 'promocode_count']
             ],
             having: sequelize.literal('promocode_count > 0'),

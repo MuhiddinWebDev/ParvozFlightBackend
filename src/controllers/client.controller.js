@@ -138,8 +138,13 @@ class ClientController extends BaseController {
     if (!model) {
       throw new HttpException(404, req.mf("data not found"));
     }
+    let cod_x = await PromocodeModel.findOne({
+      where: { promocode: promocode }
+    })
+    if (!cod_x) {
+      throw new HttpException(404, req.mf("promocode not found"));
+    }
     const t = await sequelize.transaction();
-
     try {
 
       model.fullname = fullname;
@@ -222,7 +227,7 @@ class ClientController extends BaseController {
     let type = "login";
     let sendData = {
       check: true,
-      code:code,
+      code: code,
       isLogin: true
     }
     let message = {

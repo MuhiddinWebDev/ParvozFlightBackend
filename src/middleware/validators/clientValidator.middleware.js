@@ -20,6 +20,7 @@ exports.clientSchemas = {
     sex_id: Joi.number().allow(null),
     region_id: Joi.number().required(),
     address: Joi.string().allow('', null),
+    promocode: Joi.string().allow('', null),
     client_table: Joi.array().items(
       Joi.object().keys({
         file: Joi.string().required().max(200)

@@ -95,6 +95,10 @@ ClientModel.init(
       type: DataTypes.STRING(120),
       allowNull: true,
     },
+    promocode:{
+      type: DataTypes.STRING(256),
+      allowNull: true
+    }
   },
   {
     sequelize,

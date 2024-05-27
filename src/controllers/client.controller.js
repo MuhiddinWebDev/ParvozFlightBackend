@@ -1,5 +1,6 @@
 const ClientModel = require("../models/client.model");
 const ClientTableModel = require("../models/clientTable.model");
+const PromocodeModel = require("../models/promocode.model");
 const BonusModel = require("../models/bonus.model")
 const HttpException = require("../utils/HttpException.utils");
 const BaseController = require("./BaseController");
@@ -38,7 +39,7 @@ class ClientController extends BaseController {
     };
     let modelList = await ClientModel.findAll({
       attributes: [
-        'id', 'fullname', 'phone', 'bonus', 'age', 'sex_id', 'code', 'lang',
+        'id', 'fullname', 'phone', 'bonus', 'age', 'sex_id', 'code', 'lang', 'name',
         [sequelize.literal("CASE WHEN ClientModel.sex_id = 2 THEN 'Erkak'  ELSE 'Ayol' END"), 'sex_name'],
       ],
       where: query,
@@ -118,9 +119,19 @@ class ClientController extends BaseController {
     res.status(201).send(model);
   };
 
+  checkPromocode = async (req, res, next) => {
+    let code = req.query.promocode;
+    let model = await PromocodeModel.findOne({
+      where: { promocode: code }
+    })
+    if (!model) {
+      throw new HttpException(404, req.mf("promocode not found"));
+    }
+  }
+
   update = async (req, res, next) => {
     await this.hashPassword(req);
-    let { fullname, phone, password, age, sex_id, token, lang, client_table, region_id, address, name } = req.body;
+    let { fullname, phone, password, age, sex_id, token, lang, client_table, region_id, address, name, promocode } = req.body;
     const model = await ClientModel.findOne({ where: { id: req.params.id } });
 
     if (!model) {
@@ -140,6 +151,7 @@ class ClientController extends BaseController {
       model.region_id = region_id;
       model.address = address;
       model.token = token;
+      model.promocode = promocode;
       await model.save();
 
       this.#deleteClient(model.id, req);
@@ -201,7 +213,7 @@ class ClientController extends BaseController {
     // const phone1 = "71112222333";
     // const phone2 = "74445555666";
     let phone = req.body.phone;
-    
+
     let fcm = req.body.fcm;
     let model = await ClientModel.findOne({ where: { phone: phone } });
     let fcm_token = fcm;

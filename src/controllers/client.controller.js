@@ -141,7 +141,7 @@ class ClientController extends BaseController {
     let cod_x = await PromocodeModel.findOne({
       where: { promocode: promocode }
     })
-    if (!cod_x) {
+    if (!cod_x && promocode) {
       throw new HttpException(404, req.mf("promocode not found"));
     }
     const t = await sequelize.transaction();

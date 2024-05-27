@@ -34,6 +34,7 @@ const staticOrderRouter = require("../routes/static_order.route");
 const chatProRouter = require("../routes/chatPro.route");
 const clietJobRouter = require("../routes/clientJob.route");
 const promocodeRouter = require("../routes/promocode.route");
+const aboutUsRouter = require("../routes/aboutUs.route");
 
 const HttpException = require('../utils/HttpException.utils');
 
@@ -143,6 +144,7 @@ module.exports = async function (app) {
     app.use(`/api/v1/chat-pro`, chatProRouter);
     app.use(`/api/v1/client-job`, clietJobRouter);
     app.use(`/api/v1/promocode`, promocodeRouter);
+    app.use(`/api/v1/about-us`, aboutUsRouter);
     // 404 error
     app.all('*', (req, res, next) => {
         const err = new HttpException(404, req.mf('Endpoint not found'));

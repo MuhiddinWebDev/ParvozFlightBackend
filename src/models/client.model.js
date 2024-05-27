@@ -1,6 +1,7 @@
 const { DataTypes, Model } = require("sequelize");
 const sequelize = require("../db/db-sequelize");
-const ClientTableModel = require('./clientTable.model')
+const ClientTableModel = require('./clientTable.model');
+const PromocodeModel = require("./promocode.model")
 class ClientModel extends Model {
   toJSON() {
     let values = Object.assign({}, this.get());
@@ -80,7 +81,7 @@ ClientModel.init(
     password: {
       type: DataTypes.STRING(120),
       allowNull: true,
-      defaultValue:""
+      defaultValue: ""
     },
     sex_id: {
       type: DataTypes.INTEGER,
@@ -95,7 +96,7 @@ ClientModel.init(
       type: DataTypes.STRING(120),
       allowNull: true,
     },
-    promocode:{
+    promocode: {
       type: DataTypes.STRING(256),
       allowNull: true
     }
@@ -109,5 +110,6 @@ ClientModel.init(
   }
 );
 
-ClientModel.hasMany(ClientTableModel, { as: 'client_table', foreignKey: 'client_id' })
+ClientModel.hasMany(ClientTableModel, { as: 'client_table', foreignKey: 'client_id' });
+
 module.exports = ClientModel;

@@ -120,13 +120,14 @@ class ClientController extends BaseController {
   };
 
   checkPromocode = async (req, res, next) => {
-    let code = req.query.promocode;
+    let { promocode } = req.body;
     let model = await PromocodeModel.findOne({
-      where: { promocode: code }
+      where: { promocode: promocode }
     })
     if (!model) {
       throw new HttpException(404, req.mf("promocode not found"));
     }
+    res.send(model)
   }
 
   update = async (req, res, next) => {
@@ -219,32 +220,37 @@ class ClientController extends BaseController {
     let fcm_token = fcm;
     let title = "Ваш смс-код: " + code;
     let type = "login";
-    let data = {
-      check: false,
-      code: code
+    let sendData = {
+      check: true,
+      code:code,
+      isLogin: true
     }
+    let message = {
+      to: fcm_token,
+      notification: {
+        title: title,
+        type: type,
+      },
+    };
+
+    await this.notification(message);
     if (!model) {
-      data.check = false;
-      var message = {
-        to: fcm_token,
-        notification: {
-          title: title,
-          type: type,
-        },
-      };
+      sendData.check = false;
+      sendData.isLogin = false;
       await ClientModel.create({
         phone: phone,
         code: code,
         isLogin: false,
       })
-      await this.notification(message);
 
-      res.send(data);
+      res.send(sendData);
     } else {
+      sendData.check = true;
+      sendData.isLogin = true;
       model.code = code;
+      model.isLogin = true;
       await model.save();
-      data.check = true
-      res.send(data);
+      res.send(sendData);
     }
     // let text_phone = phone;
     // let result_ru = text_phone.indexOf("7");

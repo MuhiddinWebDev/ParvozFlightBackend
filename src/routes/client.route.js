@@ -44,6 +44,7 @@ router.get('/phone/:phone', auth(), awaitHandlerFactory(clientController.getByPh
 router.post('/phone', joiMiddleware(clientSchemas.checkPhone), awaitHandlerFactory(clientController.checkPhone));
 router.get('/get-client', clientAuth(), awaitHandlerFactory(clientController.getClient));
 router.post('/',  auth(), joiMiddleware(clientSchemas.create), awaitHandlerFactory(clientController.create));
+router.post('/promocode', awaitHandlerFactory(clientController.checkPromocode));
 router.patch('/id/:id', clientAuth(), joiMiddleware(clientSchemas.update), awaitHandlerFactory(clientController.update));
 router.patch('/update/id/:id', auth(), joiMiddleware(clientSchemas.update), awaitHandlerFactory(clientController.update));
 router.delete('/id/:id',  auth(), awaitHandlerFactory(clientController.delete));

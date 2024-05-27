@@ -1,5 +1,6 @@
 const OrderTable = require('../models/order.model');
 const ClietModel = require('../models/client.model');
+const PromocodeModel = require('../models/promocode.model')
 const UserModel = require('../models/user.model');
 const RoomTableModel = require('../models/roomTable.model');
 const WorkTableModel = require("../models/workTable.model");
@@ -34,7 +35,6 @@ class ReportController extends BaseController {
 
         res.send(result);
     };
-
 
     RoomReport = async (req, res, next) => {
         let currentUser = req.currentUser;
@@ -289,7 +289,7 @@ class ReportController extends BaseController {
         }
         result.data = await TicketModel.findAll({
             attributes: [
-                'id', 'date', 'end_date', 'status', 'company_name', 'deletedAt', 
+                'id', 'date', 'end_date', 'status', 'company_name', 'deletedAt',
                 [sequelize.literal("CASE WHEN TicketsModel.currency = 'UZS' THEN price ELSE 0 END"), 'price_uzs'],
                 [sequelize.literal("CASE WHEN TicketsModel.currency = 'RUB' THEN price ELSE 0 END"), 'price_rus'],
                 [sequelize.literal("CASE WHEN TicketsModel.currency = 'USD' THEN price ELSE 0 END"), 'price_usd'],
@@ -330,7 +330,7 @@ class ReportController extends BaseController {
             order: [['deletedAt', "ASC"]],
             paranoid: false,
         });
-        
+
 
         result.total_uzs = await TicketModel.findOne({
             attributes: [[sequelize.literal("SUM(CASE WHEN TicketsModel.currency = 'UZS' THEN price ELSE 0 END)"), 'price']],
@@ -367,6 +367,39 @@ class ReportController extends BaseController {
             paranoid: false,
         })
         res.send(result);
+    }
+
+    PromocodeReport = async (req, res, next) => {
+        let { promocode } = req.body;
+        let query = {}
+        if (promocode) {
+            query.promocode = promocode;
+        }
+        let result = {
+            data: [],
+            total_count: 0,
+        }
+        result.data = await ClietModel.findAll({
+            attributes: [
+                'promocode',
+                [sequelize.literal('COUNT(promocode)'), 'promocode_count']
+            ],
+            having: sequelize.literal('promocode_count > 0'),
+            group: ['promocode'],
+            where: query
+        })
+        for (let i = 0; i < result.data.length; i++) {
+            const element = result.data[i].dataValues;
+            if (element.promocode) {
+                let model = await PromocodeModel.findOne({ where: { promocode: element.promocode } });
+                element.promocode_by = {
+                    name: model.dataValues.name,
+                    phone: model.dataValues.phone,
+                }
+            }
+            result.total_count += element.promocode_count
+        }
+        res.send(result)
     }
 }
 

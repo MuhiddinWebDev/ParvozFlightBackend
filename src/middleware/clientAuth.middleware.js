@@ -6,13 +6,7 @@ const auth = () => {
         try {
 
             const token = req.headers.token;
-            
-
-            // if (!authHeader) {
-            //     throw new HttpException(401, req.mf('Access denied. No credentials sent!'));
-            // }
-
-            // Verify Token
+            console.log(token)
         
             const client = await ClientModel.findOne({ where: {token: token }});
          

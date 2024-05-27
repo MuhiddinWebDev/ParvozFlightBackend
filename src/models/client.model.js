@@ -1,12 +1,10 @@
 const { DataTypes, Model } = require("sequelize");
 const sequelize = require("../db/db-sequelize");
 const ClientTableModel = require('./clientTable.model');
-const PromocodeModel = require("./promocode.model")
 class ClientModel extends Model {
   toJSON() {
     let values = Object.assign({}, this.get());
     delete values.password;
-    delete values.createdAt;
     delete values.updatedAt;
     delete values.deletedAt;
     return values;

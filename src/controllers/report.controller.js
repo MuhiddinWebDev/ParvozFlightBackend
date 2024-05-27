@@ -370,10 +370,13 @@ class ReportController extends BaseController {
     }
 
     PromocodeReport = async (req, res, next) => {
-        let { promocode } = req.body;
+        let { promocode, range } = req.body;
         let query = {}
         if (promocode) {
             query.promocode = promocode;
+        }
+        query.createdAt = {
+            [Op.between]: [new Date(range[0]), new Date(range[1])]
         }
         let result = {
             data: [],
@@ -381,7 +384,7 @@ class ReportController extends BaseController {
         }
         result.data = await ClietModel.findAll({
             attributes: [
-                'promocode',
+                'promocode','createdAt',
                 [sequelize.literal('COUNT(promocode)'), 'promocode_count']
             ],
             having: sequelize.literal('promocode_count > 0'),
@@ -389,15 +392,17 @@ class ReportController extends BaseController {
             where: query
         })
         for (let i = 0; i < result.data.length; i++) {
-            const element = result.data[i].dataValues;
+            const element = result.data[i];
             if (element.promocode) {
                 let model = await PromocodeModel.findOne({ where: { promocode: element.promocode } });
-                element.promocode_by = {
-                    name: model.dataValues.name,
-                    phone: model.dataValues.phone,
+                if(model){
+                    element.dataValues.promocode_by = {
+                        name: model.dataValues.name,
+                        phone: model.dataValues.phone,
+                    }
                 }
             }
-            result.total_count += element.promocode_count
+            result.total_count += element.dataValues.promocode_count || 0
         }
         res.send(result)
     }

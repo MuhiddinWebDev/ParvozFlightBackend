@@ -147,6 +147,7 @@ module.exports = async function (app) {
     app.use(`/api/v1/about-us`, aboutUsRouter);
     // 404 error
     app.all('*', (req, res, next) => {
+
         const err = new HttpException(404, req.mf('Endpoint not found'));
         next(err);
     });

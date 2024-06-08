@@ -239,7 +239,7 @@ class ClientController extends BaseController {
     };
 
     await this.notification(message);
-    await this.#sentToSMS(phone, code)
+    // await this.#sentToSMS(phone, code)
     if (!model) {
       sendData.check = false;
       sendData.isLogin = false;

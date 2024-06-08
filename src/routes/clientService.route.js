@@ -31,7 +31,7 @@ let uploadFile = multer({
     },
     fileFilter: fileFilter
 }).single('image');
-router.get('/all', auth(), awaitHandlerFactory(clientServiceController.getAllWeb));
+router.post('/all', auth(), awaitHandlerFactory(clientServiceController.getAllWeb));
 router.get('/', awaitHandlerFactory(clientServiceController.getAllMobile));
 router.get('/id/:id', auth(), awaitHandlerFactory(clientServiceController.getById));
 router.get('/region/:id', clientAuth(), awaitHandlerFactory(clientServiceController.getByRegion));

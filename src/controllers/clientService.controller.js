@@ -37,6 +37,11 @@ class AdvertisementController extends BaseController {
 
 
     getAllWeb = async (req, res, next) => {
+        let { region_id } = req.body;
+        let query = {};
+        if (region_id) {
+            query.region_id = region_id
+        }
         let modelList = await ClientServiceModel.findAll({
             include: [
                 {
@@ -47,7 +52,8 @@ class AdvertisementController extends BaseController {
             ],
             order: [
                 ['id', 'ASC']
-            ]
+            ],
+            where: query
         });
         res.send(modelList);
     };

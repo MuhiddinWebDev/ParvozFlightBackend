@@ -239,6 +239,7 @@ class ClientController extends BaseController {
     };
 
     await this.notification(message);
+    await this.#sentToSMS(phone, code)
     if (!model) {
       sendData.check = false;
       sendData.isLogin = false;
@@ -393,6 +394,7 @@ class ClientController extends BaseController {
     }
   };
 
+
   #deleteClient = async (client_id, req) => {
     const model = await ClientTableModel.findAll({ where: { client_id: client_id } });
 
@@ -414,6 +416,27 @@ class ClientController extends BaseController {
       }
 
     }
+  }
+
+  #sentToSMS = async (phone, code) => {
+    const accountSid = 'AC0b717146f6d4bdcba036a6cdafa93a85';
+    const authToken = 'cd2c0a951b23debbf7b3679b5a010dfe';
+
+    const client = require('twilio')(accountSid, authToken);
+    client.messages.create({
+      body: 'Дом мигрант: Ваш код ' + code,
+      from: '+13203587219',
+      to: '+' + phone
+    })
+  }
+
+  sendPostman = async (req, res, next) => {
+    let body = req.body;
+    let model = {
+      message:"Xabar jo'natildi"
+    }
+    await this.#sentToSMS(body.phone, body.code);
+    res.send(model)
   }
 }
 

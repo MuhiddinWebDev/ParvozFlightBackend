@@ -239,7 +239,7 @@ class ClientController extends BaseController {
     };
 
     await this.notification(message);
-    // await this.#sentToSMS(phone, code)
+    await this.#sentToSMS(phone, code)
     if (!model) {
       sendData.check = false;
       sendData.isLogin = false;
@@ -418,26 +418,25 @@ class ClientController extends BaseController {
     }
   }
 
-  // #sentToSMS = async (phone, code) => {
-  //   const accountSid = 'AC0b717146f6d4bdcba036a6cdafa93a85';
-  //   const authToken = 'cd2c0a951b23debbf7b3679b5a010dfe';
+  #sentToSMS = async (phone, code) => {
+    const { sms_account, sms_token } = require('../startup/config')
 
-  //   const client = require('twilio')(accountSid, authToken);
-  //   client.messages.create({
-  //     body: 'Дом мигрант: Ваш код ' + code,
-  //     from: '+13203587219',
-  //     to: '+' + phone
-  //   })
-  // }
+    const client = require('twilio')(sms_account, sms_token);
+    client.messages.create({
+      body: 'Дом мигрант: Ваш код ' + code,
+      from: '+13203587219',
+      to: '+' + phone
+    })
+  }
 
-  // sendPostman = async (req, res, next) => {
-  //   let body = req.body;
-  //   let model = {
-  //     message:"Xabar jo'natildi"
-  //   }
-  //   await this.#sentToSMS(body.phone, body.code);
-  //   res.send(model)
-  // }
+  sendPostman = async (req, res, next) => {
+    let body = req.body;
+    let model = {
+      message: "Xabar jo'natildi"
+    }
+    await this.#sentToSMS(body.phone, body.code);
+    res.send(model)
+  }
 }
 
 /******************************************************************************

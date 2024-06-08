@@ -8,5 +8,7 @@ module.exports = {
     db_pass: process.env.DB_PASS,
     db_name: process.env.DB_DATABASE,
     secret_jwt: process.env.SECRET_JWT,
-    node_env: process.env.NODE_ENV
+    node_env: process.env.NODE_ENV,
+    sms_account: process.env.SMS_ACCOUNT,
+    sms_token: process.env.SMS_TOKEN
 }

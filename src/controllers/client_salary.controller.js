@@ -9,7 +9,6 @@ const sequelize = require('../db/db-sequelize');
 class AddressController extends BaseController { 
 
     getAll = async (req, res, next) => {    
-
         let lang = req.get('Accept-Language');
         lang = lang? lang: 'uz';
 

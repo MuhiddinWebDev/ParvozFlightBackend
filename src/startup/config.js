@@ -10,5 +10,6 @@ module.exports = {
     secret_jwt: process.env.SECRET_JWT,
     node_env: process.env.NODE_ENV,
     sms_account: process.env.SMS_ACCOUNT,
-    sms_token: process.env.SMS_TOKEN
+    sms_token: process.env.SMS_TOKEN,
+    sms_phone: process.env.SMS_PHONE
 }

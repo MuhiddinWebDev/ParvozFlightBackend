@@ -10,7 +10,8 @@ module.exports = {
     "host": process.env.HOST,
     "dialect": "mysql",
     "sms_account": process.env.SMS_ACCOUNT,
-    "sms_token":process.env.SMS_TOKEN
+    "sms_token":process.env.SMS_TOKEN,
+    "sms_phone":process.env.SMS_PHONE
   },
   "production": {
     "username": process.env.DB_USER,
@@ -20,6 +21,7 @@ module.exports = {
     "host": process.env.HOST,
     "dialect": "mysql",
     "sms_account": process.env.SMS_ACCOUNT,
-    "sms_token":process.env.SMS_TOKEN
+    "sms_token":process.env.SMS_TOKEN,
+    "sms_phone":process.env.SMS_PHONE
   },
 }

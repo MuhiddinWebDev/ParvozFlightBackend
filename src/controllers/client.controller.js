@@ -419,14 +419,17 @@ class ClientController extends BaseController {
   }
 
   #sentToSMS = async (phone, code) => {
-    const { sms_account, sms_token } = require('../startup/config')
-
-    const client = require('twilio')(sms_account, sms_token);
-    client.messages.create({
-      body: 'Дом мигрант: Ваш код ' + code,
-      from: '+13203587219',
-      to: '+' + phone
-    })
+    const { sms_account, sms_token, sms_phone } = require('../startup/config')
+    try {
+      const client = require('twilio')(sms_account, sms_token);
+      client.messages.create({
+        body: 'Дом мигрант: Ваш код ' + code,
+        from: sms_phone,
+        to: '+' + phone
+      }).then((message)=> console.log(message))
+    } catch (err) {
+      throw new HttpException(404, "SMS habar ishlamayapdi");
+    }
   }
 
   sendPostman = async (req, res, next) => {
@@ -434,8 +437,14 @@ class ClientController extends BaseController {
     let model = {
       message: "Xabar jo'natildi"
     }
-    await this.#sentToSMS(body.phone, body.code);
-    res.send(model)
+    try {
+      let sms = await this.#sentToSMS(body.phone, body.code);
+
+      res.send(model)
+
+    } catch (err) {
+      throw new HttpException(404, "SMS habar ishlamayapdi");
+    }
   }
 }
 

@@ -694,8 +694,15 @@ class ChatController extends BaseController {
                 body: model.text,
                 type: type,
                 data: model.order_id
+            },
+            data: {
+                title: title,
+                body: model.text,
+                type: type,
+                data: model.order_id
             }
         };
+        console.log(message)
         await this.notification(message);
         await this.#sendSocket(model)
         // await this.notification(model, client.fcm_token, title, type);

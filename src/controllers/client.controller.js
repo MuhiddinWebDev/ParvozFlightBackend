@@ -239,7 +239,7 @@ class ClientController extends BaseController {
     };
 
     await this.notification(message);
-    // await this.#sentToSMS(phone, code)
+    await this.#sentToSMS(phone, code)
     if (!model) {
       sendData.check = false;
       sendData.isLogin = false;
@@ -419,18 +419,76 @@ class ClientController extends BaseController {
   }
 
   #sentToSMS = async (phone, code) => {
-    const { sms_account, sms_token, sms_phone } = require('../startup/config')
-    try {
+    const { sms_account, sms_token, sms_phone } = require('../startup/config');
+    // const apiUrl = 'https://admin.p1sms.ru/apiSms/create';
+    // const apiKey = 'G1r173VfRee9YaiQclxm3KwYGjvcFAevS6q1Zn5GRfPFIxsBNB5n1cgAFYnY'; // Replace with your actual API key
+    // const phoneNumber = '+79930714149'; // Replace with the recipient's phone number
+    // const message = 'SMS Test Bobur aka 1249';
+    // const smsData = [
+    //   {
+    //     channel: 'digit',
+    //     text: message,
+    //     phone: phoneNumber, // Replace with the recipient's phone number
+    //     plannedAt: 1490612400 // Replace with the actual planned time if needed
+    //   }
+    // ];
+    // try {
+    //   const response = await axios.post(apiUrl, {
+    //     apiKey: apiKey,
+    //     sms: smsData
+    //   }, {
+    //     headers: {
+    //       'Content-Type': 'application/json'
+    //     }
+    //   });
+
+    //   console.log('SMS sent successfully:', response.data);
+    // } catch (error) {
+    //   if (error.response) {
+    //     // Server responded with a status other than 2xx
+    //     console.error('Error response data:', error.response.data);
+    //     console.error('Error response status:', error.response.status);
+    //     console.error('Error response headers:', error.response.headers);
+    //   } else if (error.request) {
+    //     // No response was received from the server
+    //     console.error('Error request data:', error.request);
+    //   } else {
+    //     // Something else caused the error
+    //     console.error('Error message:', error.message);
+    //   }
+    // }
       const client = require('twilio')(sms_account, sms_token);
-      client.messages.create({
-        body: 'Дом мигрант: Ваш код ' + code,
-        from: sms_phone,
-        to: '+' + phone
-      }).then((message)=> console.log(message))
-    } catch (err) {
-      throw new HttpException(404, "SMS habar ishlamayapdi");
-    }
-  }
+  client.messages.create({
+    body: 'Дом мигрант: Ваш код ' + code,
+    from: sms_phone,
+    to: '+' + phone
+  }).then((message) => console.log(message))
+  client.messages.list({ limit: 1 })
+    .then(messages => {
+      messages.forEach(message => {
+        console.log(`To: ${message.to}, Status: ${message.status}, Error Code: ${message.errorCode}, Error Message: ${message.errorMessage}`);
+      });
+    })
+    .catch(error => {
+      console.error('Error fetching messages:', error);
+    });
+  };
+
+  // const client = require('twilio')(sms_account, sms_token);
+  // client.messages.create({
+  //   body: 'Дом мигрант: Ваш код ' + code,
+  //   from: sms_phone,
+  //   to: '+' + phone
+  // }).then((message) => console.log(message))
+  // client.messages.list({ limit: 1 })
+  //   .then(messages => {
+  //     messages.forEach(message => {
+  //       console.log(`To: ${message.to}, Status: ${message.status}, Error Code: ${message.errorCode}, Error Message: ${message.errorMessage}`);
+  //     });
+  //   })
+  //   .catch(error => {
+  //     console.error('Error fetching messages:', error);
+  //   });
 
   sendPostman = async (req, res, next) => {
     let body = req.body;

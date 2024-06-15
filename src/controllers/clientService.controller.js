@@ -1,8 +1,9 @@
 const ClientServiceModel = require('../models/clientService.model');
 const ClientServiceChildModel = require("../models/client_service_child.model");
-const ClientServiceRegisterModel = require("../models/client_service_register.model")
-const StaticOrderModel = require("../models/static_order.model")
-const WorkAddressModel = require('../models/work_address.model')
+const ClientServiceRegisterModel = require("../models/client_service_register.model");
+const StaticOrderModel = require("../models/static_order.model");
+const WorkAddressModel = require('../models/work_address.model');
+const ServiceModel = require('../models/services.model')
 const HttpException = require('../utils/HttpException.utils');
 const BaseController = require('./BaseController');
 const sequelize = require('../db/db-sequelize');
@@ -22,7 +23,7 @@ class AdvertisementController extends BaseController {
 
         let modelList = await ClientServiceModel.findAll({
             attributes: [
-                "summa", "required", "id", 'disabled',
+                "summa", "required", "id", 'disabled', 'service_id',
                 [sequelize.literal(`title_${lang}`), 'title'],
             ],
             where: {
@@ -37,16 +38,24 @@ class AdvertisementController extends BaseController {
 
 
     getAllWeb = async (req, res, next) => {
-        let { region_id } = req.body;
+        let { region_id, service_id } = req.body;
         let query = {};
         if (region_id) {
             query.region_id = region_id
+        }
+        if(service_id){
+            query.service_id = service_id
         }
         let modelList = await ClientServiceModel.findAll({
             include: [
                 {
                     model: WorkAddressModel,
                     as: 'work_address',
+                    required: false
+                },
+                {
+                    model: ServiceModel,
+                    as: 'service_type',
                     required: false
                 }
             ],
@@ -77,19 +86,17 @@ class AdvertisementController extends BaseController {
     getByRegion = async (req, res, next) => {
         let lang = req.get('Accept-Language');
         lang = lang ? lang : 'uz';
-
+        let { region_id, service_id } = req.body;
+        let query = {};
+        query.status = true;
+        if (region_id) query.region_id = region_id;
+        if (service_id) query.service_id = service_id;
         let modelList = await ClientServiceModel.findAll({
             attributes: [
-                "summa", "required", "id", 'disabled',
+                "summa", "required", "id", 'disabled', 'service_id',
                 [sequelize.literal(`title_${lang}`), 'title'],
             ],
-            where: {
-                status: true,
-                region_id: req.params.id
-            },
-            order: [
-                ['id', 'DESC']
-            ],
+            where: query,
         });
         res.send(modelList);
     };
@@ -103,7 +110,8 @@ class AdvertisementController extends BaseController {
             summa,
             required,
             status,
-            region_id
+            region_id,
+            service_id
         } = req.body;
 
         const model = await ClientServiceModel.create({
@@ -114,7 +122,8 @@ class AdvertisementController extends BaseController {
             required,
             status,
             disabled: required,
-            region_id
+            region_id,
+            service_id
         });
 
         if (!model) {
@@ -126,7 +135,7 @@ class AdvertisementController extends BaseController {
 
     update = async (req, res, next) => {
 
-        let { title_uz, title_ru, title_ka, summa, required, status, region_id } = req.body;
+        let { title_uz, title_ru, title_ka, summa, required, status, region_id, service_id } = req.body;
         const model = await ClientServiceModel.findOne({ where: { id: req.params.id } });
 
         if (!model) {
@@ -141,6 +150,7 @@ class AdvertisementController extends BaseController {
         model.disabled = required;
         model.status = status;
         model.region_id = region_id;
+        model.service_id = service_id;
 
         model.save();
 

@@ -1,5 +1,6 @@
 const { DataTypes, Model } = require('sequelize');
-const WorkAddressModel = require('./work_address.model')
+const WorkAddressModel = require('./work_address.model');
+const ServiceModel = require('./services.model')
 const sequelize = require('../db/db-sequelize');
 class ClientServiceModel extends Model {
   toJSON() {
@@ -50,6 +51,10 @@ ClientServiceModel.init({
     type: DataTypes.INTEGER,
     allowNull: true
   },
+  service_id: {
+    type: DataTypes.INTEGER,
+    allowNull: true
+  },
 }, {
   sequelize,
   modelName: 'ClientServiceModel',
@@ -58,5 +63,6 @@ ClientServiceModel.init({
   paranoid: true,
 });
 
-ClientServiceModel.belongsTo(WorkAddressModel, { as: 'work_address', foreignKey: 'region_id' })
+ClientServiceModel.belongsTo(WorkAddressModel, { as: 'work_address', foreignKey: 'region_id' });
+ClientServiceModel.belongsTo(ServiceModel, { as: 'service_type', foreignKey: 'service_id' });
 module.exports = ClientServiceModel;

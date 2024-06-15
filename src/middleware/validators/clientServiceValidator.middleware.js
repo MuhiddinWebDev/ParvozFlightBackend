@@ -6,6 +6,7 @@ exports.clientServiceSchemas = {
     title_ru: Joi.string().required(),
     title_ka: Joi.string().required(),
     region_id: Joi.number().required(),
+    service_id: Joi.number().required(),
     summa: Joi.number().required(),
     required: Joi.required(),
     status: Joi.boolean()

@@ -253,6 +253,7 @@ class ClientController extends BaseController {
     } else {
       sendData.check = true;
       sendData.isLogin = true;
+      sendData.code = code;
       model.code = code;
       model.isLogin = true;
       await model.save();

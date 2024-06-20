@@ -98,6 +98,10 @@ class AdvertisementController extends BaseController {
             ],
             where: query,
         });
+       
+        if(!modelList){
+            modelList = []
+        }
         res.send(modelList);
     };
 

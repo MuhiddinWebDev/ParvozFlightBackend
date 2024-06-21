@@ -27,7 +27,6 @@ class ServicesController extends BaseController {
     let lang = req.get("Accept-Language");
     lang = lang ? lang : "uz";
     let body = req.body;
-    let client = req.currentClient;
 
     let query = {};
     query.status = "empty";
@@ -38,9 +37,6 @@ class ServicesController extends BaseController {
 
     if (body.parent_id) {
       query.parent_id = body.parent_id;
-    }
-    if (client) {
-      query.sex_id = { [Op.in]: [1, client.sex_id] };
     }
 
     const modelList = await RoomTableModel.findAll({
@@ -131,19 +127,19 @@ class ServicesController extends BaseController {
     if (filter.client_id) {
       query.client_id = filter.client_id;
     }
-    if(filter.status){
+    if (filter.status) {
       query.status = filter.status
     }
-    if(filter.sex_id){
+    if (filter.sex_id) {
       query.sex_id = filter.sex_id;
     }
-    if(filter.parent_id){
+    if (filter.parent_id) {
       query.parent_id = filter.parent_id;
     }
     let result = await RoomTableModel.findAll({
       attributes: [
         'id', 'parent_id', 'phone_number', 'price', 'status', 'comment_uz',
-        [sequelize.literal("CASE WHEN RoomTableModel.sex_id = 1 THEN 'Umumiy' WHEN RoomTableModel.sex_id = 2 THEN 'Erkak' ELSE 'Ayol' END"), 'sex_name']
+        [sequelize.literal("CASE WHEN RoomTableModel.sex_id = 1 THEN 'Kunlik' WHEN RoomTableModel.sex_id = 2 THEN 'Oylik' ELSE 'Uzoq muddatli' END"), 'sex_name']
       ],
       include: [
         {
@@ -165,7 +161,7 @@ class ServicesController extends BaseController {
         }
       ],
       where: query,
-      order:[['id', 'DESC']]
+      order: [['id', 'DESC']]
     })
 
     res.send(result);
@@ -617,31 +613,21 @@ class ServicesController extends BaseController {
   };
 
   #sendRoom = async (model) => {
-    let query = {};
-    if (model.sex_id != 1) {
-      query.sex_id = model.sex_id;
-    }
-    if (model.sex_id == 1) {
-      query.sex_id = { [Op.in]: [2, 3] };
-    }
+
     try {
       if (model.status == 'empty') {
-        let client = await ClientModel.findAll({
-          where: query,
-          raw: true
-        });
+        let client = await ClientModel.findAll();
 
         for (let i = 0; i < client.length; i++) {
           const element = client[i];
           let currentTitle = "";
           if (element.lang == 'uz') {
-            currentTitle = `Yangi kvatira.  ${(model.sex_id == 1 ? ' Hamma' : model.sex_id == 2 ? 'Erkaklar' : 'Ayollar') + ' uchun'} `
+            currentTitle = `Yangi kvatira`
           } else if (element.lang == 'ru') {
-            currentTitle = `Новая квартира. ${(model.sex_id == 1 ? ' Каждый' : model.sex_id == 2 ? 'Мужчины' : 'Женщины') + ' для'}`
+            currentTitle = `Новая квартира`
           } else if (element.lang == 'ka') {
-            currentTitle = `Квартираи нав. ${(model.sex_id == 1 ? ' Ҳама' : model.sex_id == 2 ? 'Мардон' : 'Духтарон') + ' барои'}`
+            currentTitle = `Квартираи нав.`
           }
-
           var message = {
             to: element.fcm_token,
             notification: {

@@ -86,11 +86,12 @@ class AdvertisementController extends BaseController {
     getByRegion = async (req, res, next) => {
         let lang = req.get('Accept-Language');
         lang = lang ? lang : 'uz';
+        let data = []
         let { region_id, service_id } = req.body;
         let query = {};
         query.status = true;
-        if (region_id) query.region_id = region_id;
-        if (service_id) query.service_id = service_id;
+        query.region_id = region_id;
+        query.service_id = service_id;
         let modelList = await ClientServiceModel.findAll({
             attributes: [
                 "summa", "required", "id", 'disabled', 'service_id',
@@ -100,9 +101,10 @@ class AdvertisementController extends BaseController {
         });
        
         if(!modelList){
-            modelList = []
+            res.send(data);
+        }else{
+            res.send(modelList);
         }
-        res.send(modelList);
     };
 
     create = async (req, res, next) => {

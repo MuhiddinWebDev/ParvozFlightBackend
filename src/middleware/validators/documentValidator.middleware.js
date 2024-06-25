@@ -8,6 +8,7 @@ exports.documentSchemas = {
     type: Joi.string().required(),
     file: Joi.string().allow("", null),
     url: Joi.string().allow("", null),
+    image: Joi.string().allow("", null),
     status: Joi.boolean()
   }),
 };

@@ -19,6 +19,7 @@ class AdvertisementController extends BaseController {
                 'type',
                 'file',
                 "url",
+                "image",
                 [sequelize.literal(`title_${lang}`), 'title'],
             ],
             where: {
@@ -27,7 +28,6 @@ class AdvertisementController extends BaseController {
             order: [
                 ['id', 'DESC']
             ],
-            limit: 4,
         });
         res.send(modelList);
     };
@@ -80,7 +80,8 @@ class AdvertisementController extends BaseController {
             file,
             status,
             type,
-            url
+            url,
+            image
         } = req.body;
 
         const model = await DocumentModel.create({
@@ -90,7 +91,8 @@ class AdvertisementController extends BaseController {
             file,
             status,
             type,
-            url
+            url,
+            image
         });
 
         if (!model) {
@@ -103,7 +105,7 @@ class AdvertisementController extends BaseController {
 
     update = async (req, res, next) => {
 
-        let { title_uz, title_ru, title_ka, type, file, status, url } = req.body;
+        let { title_uz, title_ru, title_ka, type, file, status, url, image } = req.body;
         const model = await DocumentModel.findOne({ where: { id: req.params.id } });
 
         if (!model) {
@@ -117,6 +119,7 @@ class AdvertisementController extends BaseController {
         model.status = status;
         model.type = type;
         model.url = url;
+        model.image = image;
         model.save();
 
         res.send(model);

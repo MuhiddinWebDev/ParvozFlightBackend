@@ -33,6 +33,10 @@ DocumentModel.init({
     type: DataTypes.STRING(256),
     allowNull: true,
   },
+  image: {
+    type: DataTypes.STRING(256),
+    allowNull: true,
+  },
   type: {
     type: DataTypes.STRING(256),
     allowNull: true,

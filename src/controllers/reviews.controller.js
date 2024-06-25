@@ -19,10 +19,10 @@ class ReviewsController extends BaseController {
             attributes: [
                 'id', 'rating', 'image',
                 [ sequelize.literal(`name_${lang}`), 'name' ],
-                [ sequelize.literal(`comment_${lang}`), 'comment' ]
+                [ sequelize.literal(`comment_${lang}`), 'comment']
             ],
             order: [    
-                ['id', 'ASC']
+                ['id', 'DESC']
             ]
         });
         res.send(modelList);

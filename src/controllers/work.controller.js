@@ -667,7 +667,32 @@ class WorkController extends BaseController {
     if (model.sex_id != 1) {
       query.sex_id = model.sex_id;
     }
-
+    let workData = {
+      new_uz: 'Yangi ish',
+      new_ru: 'Новая работа',
+      new_ka: 'Кори нав',
+      couse_uz: 'uchun',
+      couse_ru: 'Для',
+      couse_ka: 'Барои',
+      salary_uz: "Ish haqi: ",
+      salary_ru: "Зарплата ",
+      salary_ka: 'Маош ',
+      from_uz: " dan ",
+      from_ru: 'от: ',
+      from_ka: 'аз: ',
+      to_uz: ' gacha ',
+      to_ru: ' до: ',
+      to_ka: ' то: ',
+      sex_uz_1: 'Hamma',
+      sex_uz_2: 'Erkaklar',
+      sex_uz_3: 'Ayollar',
+      sex_ru_1: 'Все',
+      sex_ru_2: 'мужчины',
+      sex_ru_3: 'женщины',
+      sex_ka_1: 'ҳама',
+      sex_ka_2: 'мардон',
+      sex_ka_3: 'занон',
+    }
     query.age = { [Op.between]: [start_birth.getTime() / 1000, end_birth.getTime() / 1000] };
 
     if (model.status == 'active') {
@@ -675,17 +700,18 @@ class WorkController extends BaseController {
         where: query,
         raw: true
       });
-      for (let i = 0; i < client.length; i++) {
-        const element = client[i];
-        let currentTitle = "";
 
-        if (element.lang == 'uz') {
-          currentTitle = `Yangi ish.  ${model.title_uz} ${(model.sex_id == 1 ? ' Hamma' : model.sex_id == 2 ? 'Erkak' : 'Ayol') + ' uchun'} Yosh ${model.start_age} dan ${model.end_age} gacha`
-        } else if (element.lang == 'ru') {
-          currentTitle = `Новая работа. ${model.title_ru} ${(model.sex_id == 1 ? ' Каждый' : model.sex_id == 2 ? 'Мужской' : 'Женский') + ' для'} Лет от ${model.start_age} до ${model.end_age}`
-        } else if (element.lang == 'ka') {
-          currentTitle = `Кори нав. ${model.title_ka} ${(model.sex_id == 1 ? ' Ҳама' : model.sex_id == 2 ? 'Мард' : 'Зан') + ' барои'} Синну сол аз ${model.start_age} то ${model.end_age}`
-        }
+      for (let i = 0; i < client.length; i++) {
+        let element = client[i];
+        let lang = element.lang;
+        console.log(element)
+        let currentTitle = `${workData['new_' + lang]} ${model.id}: ${model['title_' + lang]}
+${lang == 'uz' ? workData['sex_' + lang + '_' + element.sex_id] + ' ' + workData['couse_' + lang] :  workData['couse_' + lang] + ' ' + workData['sex_' + lang + '_' + element.sex_id]}
+${lang == 'uz' ? workData['salary_' + lang] + element.from_price + workData['from_' + lang]  + element.to_price + workData['to_' + lang] :
+          workData['salary_' + lang] + workData['from_' + lang] + model.from_price  + workData['to_' + lang] + model.to_price}
+        `;
+        console.log(currentTitle)
+
         var message = {
           to: element.fcm_token,
           notification: {

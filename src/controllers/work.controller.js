@@ -505,6 +505,8 @@ class WorkController extends BaseController {
             comment_ru: element.comment_ru,
             comment_ka: element.comment_ka,
             image: element.image,
+            lat: element.lat,
+            long: element.long,
             from_price: element.from_price,
             to_price: element.to_price,
             phone: element.phone,

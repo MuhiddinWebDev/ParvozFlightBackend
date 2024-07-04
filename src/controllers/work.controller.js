@@ -659,8 +659,8 @@ class WorkController extends BaseController {
   #senWork = async (model) => {
     let query = {};
     const date_birth = new Date();
-    const end_birth = new Date(date_birth.getFullYear() - model.start_age, 0, 1);
-    const start_birth = new Date(date_birth.getFullYear() - model.end_age, 0, 1);
+    // const end_birth = new Date(date_birth.getFullYear() - model.start_age, 0, 1);
+    // const start_birth = new Date(date_birth.getFullYear() - model.end_age, 0, 1);
     if (model.sex_id == 1) {
       query.sex_id = { [Op.in]: [2, 3] };
     }
@@ -693,7 +693,6 @@ class WorkController extends BaseController {
       sex_ka_2: 'мардон',
       sex_ka_3: 'занон',
     }
-    query.age = { [Op.between]: [start_birth.getTime() / 1000, end_birth.getTime() / 1000] };
 
     if (model.status == 'active') {
       let client = await ClientModel.findAll({
@@ -704,13 +703,11 @@ class WorkController extends BaseController {
       for (let i = 0; i < client.length; i++) {
         let element = client[i];
         let lang = element.lang;
-        console.log(element)
         let currentTitle = `${workData['new_' + lang]} ${model.id}: ${model['title_' + lang]}
-${lang == 'uz' ? workData['sex_' + lang + '_' + element.sex_id] + ' ' + workData['couse_' + lang] :  workData['couse_' + lang] + ' ' + workData['sex_' + lang + '_' + element.sex_id]}
-${lang == 'uz' ? workData['salary_' + lang] + element.from_price + workData['from_' + lang]  + element.to_price + workData['to_' + lang] :
-          workData['salary_' + lang] + workData['from_' + lang] + model.from_price  + workData['to_' + lang] + model.to_price}
+${lang == 'uz' ? workData['sex_' + lang + '_' + element.sex_id] + ' ' + workData['couse_' + lang] : workData['couse_' + lang] + ' ' + workData['sex_' + lang + '_' + element.sex_id]}
+${lang == 'uz' ? workData['salary_' + lang] + element.from_price + workData['from_' + lang] + element.to_price + workData['to_' + lang] :
+            workData['salary_' + lang] + workData['from_' + lang] + model.from_price + workData['to_' + lang] + model.to_price}
         `;
-        console.log(currentTitle)
 
         var message = {
           to: element.fcm_token,

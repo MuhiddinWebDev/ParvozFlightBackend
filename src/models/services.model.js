@@ -2,6 +2,7 @@ const { DataTypes, Model } = require('sequelize');
 const sequelize = require('../db/db-sequelize');
 const ServicesStepsTableModel = require('../models/servicesStepsTable.model');
 const ServiceCategoryModel = require('../models/serviceCategory.model');
+const ServicesCommentModel = require("../models/servicesComment.model")
 class ServicesModel extends Model { }
 
 ServicesModel.init({
@@ -41,6 +42,18 @@ ServicesModel.init({
     allowNull: false,
     unique: true
   },
+  title_uz: {
+    type: DataTypes.STRING(256),
+    allowNull: true,
+  },
+  title_ru: {
+    type: DataTypes.STRING(256),
+    allowNull: true,
+  },
+  title_ka: {
+    type: DataTypes.STRING(256),
+    allowNull: true,
+  },
   average_date: {
     type: DataTypes.VIRTUAL,
     allowNull: true,
@@ -58,6 +71,10 @@ ServicesModel.init({
     allowNull: false,
   },
   icon: {
+    type: DataTypes.STRING(128),
+    allowNull: false,
+  },
+  comment_icon: {
     type: DataTypes.STRING(128),
     allowNull: false,
   },
@@ -96,6 +113,7 @@ ServicesModel.init({
 });
 
 
+ServicesModel.hasMany(ServicesCommentModel, { as: 'service_comment', foreignKey: 'service_id' });
 ServicesModel.hasMany(ServicesStepsTableModel, { as: 'services_steps_table', foreignKey: 'parent_id' });
 ServicesModel.belongsTo(ServiceCategoryModel, { as: 'service_category', foreignKey: 'category_id' });
 

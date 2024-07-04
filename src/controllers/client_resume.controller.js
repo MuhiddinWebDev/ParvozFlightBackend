@@ -65,10 +65,33 @@ class ClientResumeController extends BaseController {
         res.send(modelList);
     };
 
-
     getById = async (req, res, next) => {
+        let lang = req.get('Accept-Language');
+        lang = lang? lang: 'uz';
+
         const resume = await ClientResumeModel.findOne({
-            where: { id: req.params.id }
+            where: { id: req.params.id },
+            include: [
+
+                {
+                    model: AddressModel,
+                    as: 'address',
+                    attributes: ['name_' + lang],
+                    required: false
+                },
+                {
+                    model: ClientJobModel,
+                    as: 'job',
+                    attributes: ['name_' + lang],
+                    required: false
+                },
+                {
+                    model: ClientJobChildModel,
+                    as: 'job_child',
+                    attributes: ['name_' + lang],
+                    required: false
+                }
+            ]
         });
 
         if (!resume) {
@@ -79,8 +102,32 @@ class ClientResumeController extends BaseController {
     };
 
     getOwnClient = async (req, res, next) => {
+        let lang = req.get('Accept-Language');
+        lang = lang? lang: 'uz';
+
         const currentClient = req.currentClient.id;
-        const resume = await ClientResumeModel.findOne({
+        const resume = await ClientResumeModel.findAll({
+            include: [
+
+                {
+                    model: AddressModel,
+                    as: 'address',
+                    attributes: ['name_' + lang],
+                    required: false
+                },
+                {
+                    model: ClientJobModel,
+                    as: 'job',
+                    attributes: ['name_' + lang],
+                    required: false
+                },
+                {
+                    model: ClientJobChildModel,
+                    as: 'job_child',
+                    attributes: ['name_' + lang],
+                    required: false
+                }
+            ],
             where: { client_id: currentClient },
             order: [['id', 'DESC']]
         });

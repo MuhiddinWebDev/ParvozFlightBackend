@@ -24,7 +24,6 @@ class ServicesController extends BaseController {
                 'id', 'icon', 'summa', 'comment_icon',
                 [sequelize.literal(`name_${lang}`), 'name'],
                 [sequelize.literal(`average_date_${lang}`), 'average_date'],
-                [sequelize.literal(`comment_${lang}`), 'comment'],
             ],
             include: [
                 {
@@ -86,7 +85,6 @@ class ServicesController extends BaseController {
                 'id', 'icon', 'summa', 'comment_icon',
                 [sequelize.literal(`name_${lang}`), 'name'],
                 [sequelize.literal(`average_date_${lang}`), 'average_date'],
-                [sequelize.literal(`comment_${lang}`), 'comment'],
             ],
             include: [
                 {
@@ -400,6 +398,10 @@ class ServicesController extends BaseController {
 
         try {
             await model.destroy({ force: true });
+            await ServicesCommentModel.destroy({
+                where: { service_id: req.params.id },
+                force: true
+            })
         } catch (error) {
             await model.destroy();
         }
@@ -428,6 +430,7 @@ class ServicesController extends BaseController {
                 where: { parent_id: parent_id },
                 force: true
             }, { transaction: t });
+           
             // for (let i = 0; i < stepsModel.length; i++) {
 
             //     await StepsFieldsTableModel.destroy({

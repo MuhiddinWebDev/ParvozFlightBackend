@@ -23,18 +23,19 @@ class ServicesController extends BaseController {
             attributes: [
                 'id', 'icon', 'summa', 'comment_icon',
                 [sequelize.literal(`name_${lang}`), 'name'],
+                [sequelize.literal(`title_${lang}`), 'title'],
                 [sequelize.literal(`average_date_${lang}`), 'average_date'],
             ],
-            include: [
-                {
-                    model: ServicesCommentModel,
-                    as: 'service_comment',
-                    attributes: ['icon',
-                        [sequelize.literal(`comment_${lang}`), 'comment'],
-                    ],
-                    required: false,
-                }
-            ],
+            // include: [
+            //     {
+            //         model: ServicesCommentModel,
+            //         as: 'service_comment',
+            //         attributes: ['icon',
+            //             [sequelize.literal(`service_comment.comment_${lang}`), 'comment'],
+            //         ],
+            //         required: false,
+            //     }
+            // ],
             order: [
                 ['id', 'ASC']
             ]
@@ -76,7 +77,7 @@ class ServicesController extends BaseController {
 
 
     getDetail = async (req, res, next) => {
-
+    
         let lang = req.get('Accept-Language');
         lang = lang ? lang : 'uz';
 
@@ -84,6 +85,7 @@ class ServicesController extends BaseController {
             attributes: [
                 'id', 'icon', 'summa', 'comment_icon',
                 [sequelize.literal(`name_${lang}`), 'name'],
+                [sequelize.literal(`title_${lang}`), 'title'],
                 [sequelize.literal(`average_date_${lang}`), 'average_date'],
             ],
             include: [
@@ -91,7 +93,7 @@ class ServicesController extends BaseController {
                     model: ServicesCommentModel,
                     as: 'service_comment',
                     attributes: ['icon',
-                        [sequelize.literal(`comment_${lang}`), 'comment'],
+                        [sequelize.literal(`service_comment.comment_${lang}`), 'comment'],
                     ],
                     required: false,
                 }

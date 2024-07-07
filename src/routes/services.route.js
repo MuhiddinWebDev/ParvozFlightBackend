@@ -40,13 +40,13 @@ let upload = multer({
     fileFilter: fileFilter
 }).single('icon');
 
-router.get('/', clientAuth(), awaitHandlerFactory(servicesController.getAll));
-router.get('/all',  auth(), awaitHandlerFactory(servicesController.getAllWeb));
-router.get('/detail/:id', clientAuth(), awaitHandlerFactory(servicesController.getDetail));
-router.get('/id/:id',  auth(), awaitHandlerFactory(servicesController.getById));
-router.post('/', auth(), joiMiddleware(servicesSchemas), awaitHandlerFactory(servicesController.create));
-router.patch('/id/:id', upload,  auth(), joiMiddleware(servicesSchemas), awaitHandlerFactory(servicesController.update));
-router.delete('/id/:id',  auth(), awaitHandlerFactory(servicesController.delete));
+router.get('/', awaitHandlerFactory(servicesController.getAll));
+router.get('/all', awaitHandlerFactory(servicesController.getAllWeb));
+router.get('/detail/:id', awaitHandlerFactory(servicesController.getDetail));
+router.get('/id/:id', awaitHandlerFactory(servicesController.getById));
+router.post('/', joiMiddleware(servicesSchemas), awaitHandlerFactory(servicesController.create));
+router.patch('/id/:id', upload, joiMiddleware(servicesSchemas), awaitHandlerFactory(servicesController.update));
+router.delete('/id/:id', awaitHandlerFactory(servicesController.delete));
 router.post('/upload', upload, awaitHandlerFactory(servicesController.uploadFile));
 
 module.exports = router;

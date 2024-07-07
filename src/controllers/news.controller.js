@@ -1,10 +1,11 @@
 const NewsModel = require('../models/news.model');
+const ClientModel = require('../models/client.model')
+
 const HttpException = require('../utils/HttpException.utils');
 const BaseController = require('./BaseController');
 const { Op } = require('sequelize');
 const sequelize = require('../db/db-sequelize');
 const fs = require('fs');
-const { date } = require('joi');
 /******************************************************************************
  *                              User Controller
  ******************************************************************************/
@@ -16,7 +17,7 @@ class AdvertisementController extends BaseController {
 
         let modelList = await NewsModel.findAll({
             attributes: [
-                'id', 'network', 'image', 'datetime','type','video',
+                'id', 'network', 'image', 'datetime', 'type', 'video',
                 [sequelize.literal(`text_${lang}`), 'text'],
             ],
             where: {
@@ -97,7 +98,7 @@ class AdvertisementController extends BaseController {
         if (!model) {
             throw new HttpException(500, req.mf('Something went wrong'));
         }
-
+        await this.#sendNotifaction(model)
         res.send(model);
     };
 
@@ -120,8 +121,9 @@ class AdvertisementController extends BaseController {
         model.status = status;
         model.datetime = format_date;
         model.network = network;
-      
+
         model.save();
+        await this.#sendNotifaction(model)
 
         res.send(model);
     };
@@ -146,6 +148,40 @@ class AdvertisementController extends BaseController {
         res.send(req.mf('data has been deleted'));
     };
 
+    #sendNotifaction = async (model) => {
+        // let base_url = 'https://api.dom-m.uz/api/v1/uploads/image/';D
+        let base_url = model.type == 'image' ? 'http://192.168.88.114:5010/api/v1/uploads/image/' : ''
+        try {
+            let client = await ClientModel.findAll({
+                raw: true
+            });
+
+            for (let i = 0; i < client.length; i++) {
+                let element = client[i];
+                if(element.fcm_token){
+                    let lang = element.lang;
+                    let currentTitle =  model['text_' + lang];
+                    let image = base_url + model.image;
+                    let message = {
+                        to: element.fcm_token,
+                        notification: {
+                            title: currentTitle,
+                            body: image,
+                            type: "news",
+                        },
+                        data: {
+                            title: currentTitle,
+                            body: model.id,
+                            type: "news",
+                        },
+                    };
+                    await this.notification(message);
+                }
+            }
+        } catch (err) {
+
+        }
+    }
 
 }
 

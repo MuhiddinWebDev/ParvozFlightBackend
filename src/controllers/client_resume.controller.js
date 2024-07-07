@@ -67,7 +67,7 @@ class ClientResumeController extends BaseController {
 
     getById = async (req, res, next) => {
         let lang = req.get('Accept-Language');
-        lang = lang? lang: 'uz';
+        lang = lang ? lang : 'uz';
 
         const resume = await ClientResumeModel.findOne({
             where: { id: req.params.id },
@@ -103,28 +103,52 @@ class ClientResumeController extends BaseController {
 
     getOwnClient = async (req, res, next) => {
         let lang = req.get('Accept-Language');
-        lang = lang? lang: 'uz';
-
+        lang = lang ? lang : 'uz';
+        let sexName = [
+            {
+                id: 2,
+                name_uz: 'Erkak',
+                name_ru: 'Мужской',
+                name_ka: 'Мужской',
+            },
+            {
+                id: 3,
+                name_uz: 'Ayol',
+                name_ru: 'Девушка',
+                name_ka: 'Девушка',
+            }
+        ]
         const currentClient = req.currentClient.id;
         const resume = await ClientResumeModel.findAll({
+            attributes: [
+                'surname',
+                'name',
+                'sex_id',
+                'phone',
+                'salary',
+                'work_time',
+                [sequelize.literal(`address.name_${lang}`), 'address_name'],
+                [sequelize.literal(`job.name_${lang}`), 'job_name'],
+                [sequelize.literal(`job_child.name_${lang}`), 'job_child_name'],
+            ],
             include: [
 
                 {
                     model: AddressModel,
                     as: 'address',
-                    attributes: ['name_' + lang],
+                    attributes: [],
                     required: false
                 },
                 {
                     model: ClientJobModel,
                     as: 'job',
-                    attributes: ['name_' + lang],
+                    attributes: [],
                     required: false
                 },
                 {
                     model: ClientJobChildModel,
                     as: 'job_child',
-                    attributes: ['name_' + lang],
+                    attributes: [],
                     required: false
                 }
             ],
@@ -136,7 +160,17 @@ class ClientResumeController extends BaseController {
             throw new HttpException(404, req.mf('data not found'));
         }
 
-        res.send(resume);
+        const mappedResume = resume.map(item => {
+            const sex = sexName.find(sexItem => sexItem.id === item.sex_id);
+            const sexNameTranslated = sex ? sex[`name_${lang}`] : null;
+
+            return {
+                ...item.get({ plain: true }),
+                sex_name: sexNameTranslated
+            };
+        });
+
+        res.send(mappedResume);
     }
 
     create = async (req, res, next) => {

@@ -14,7 +14,7 @@ class AdvertisementController extends BaseController {
     getAllMobile = async (req, res, next) => {
         let lang = req.get('Accept-Language');
         lang = lang ? lang : 'uz';
-
+        
         let modelList = await NewsModel.findAll({
             attributes: [
                 'id', 'network', 'image', 'datetime', 'type', 'video',

@@ -21,6 +21,7 @@ class BaseController {
     notification = (message) => {
         fcm.send(message, function (err, response) {
             if (err) {
+                console.log('Test')
                 console.log("Something has gone wrong!" + err);
                 console.log("Respponse:! " + response);
             }

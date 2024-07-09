@@ -198,7 +198,7 @@ class ServicesController extends BaseController {
             if (!model) {
                 throw new HttpException(500, req.mf('Something went wrong'));
             }
-            await this.#addRemoveComment(model.id, service_comment, false)
+            await this.#addRemoveComment(model.dataValues.id, service_comment, false)
             // for (let i = 0; i < services_steps_table.length; i++) {
             //     let step_status = "waiting";
             //     let step_active = false;
@@ -240,33 +240,33 @@ class ServicesController extends BaseController {
             //     }
             // }
             await t.commit();
-            const modelx = await ServicesModel.findOne({
-                where: { id: model.id },
-                include: [
-                    {
-                        model: ServicesStepsTableModel,
-                        as: 'services_steps_table',
-                        required: false,
-                        include: [
-                            {
-                                model: StepsFieldsTableModel,
-                                as: 'steps_fields_table',
-                                required: false
+            // const modelx = await ServicesModel.findOne({
+            //     where: { id: model.id },
+            //     include: [
+            //         {
+            //             model: ServicesStepsTableModel,
+            //             as: 'services_steps_table',
+            //             required: false,
+            //             include: [
+            //                 {
+            //                     model: StepsFieldsTableModel,
+            //                     as: 'steps_fields_table',
+            //                     required: false
 
-                            }
-                        ],
+            //                 }
+            //             ],
 
-                    },
-                    {
-                        model: ServiceCategoryModel,
-                        as: 'service_category',
-                        required: false,
-                        attributes: ['id', 'k_name_uz']
-                    }
-                ],
-            });
+            //         },
+            //         {
+            //             model: ServiceCategoryModel,
+            //             as: 'service_category',
+            //             required: false,
+            //             attributes: ['id', 'k_name_uz']
+            //         }
+            //     ],
+            // });
 
-            res.send(modelx);
+            res.send(model);
         } catch (error) {
             await t.rollback();
             throw new HttpException(500, error.message);
@@ -307,7 +307,7 @@ class ServicesController extends BaseController {
             await model.save();
 
             await this.#deleteRelated(model.id);
-            await this.#addRemoveComment(model.id, service_comment, true)
+            await this.#addRemoveComment(model.dataValues.id, service_comment, true)
 
 
             // for (let i = 0; i < services_steps_table.length; i++) {

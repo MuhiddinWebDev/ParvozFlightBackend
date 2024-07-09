@@ -3,6 +3,7 @@ const HttpException = require('../utils/HttpException.utils');
 
 var FCM = require('fcm-node');
 var serverKey = 'AAAAQ9Vgmt4:APA91bErHb6mfOo1b-vU-hwVn_EAgqs4roasCZy0bmG4sDpLobG5qHKIk5b3G71RcZq_9cc8Zl6GjSSptAVBNMiWB3_kJiisdpoYC8zGYSQd0Lzg3kPkOd12G1ojQ8ZNrB7QW6NE5SQs';
+// var new_se_key = "BFi00plE6qt0qEokvYjq6xW8uhxVMoV1ugSOL-qWRfeLy_-emiPzjEZ5m4GK95pqdu87jQYtZWEKQAOo36j_lSw"
 var fcm = new FCM(serverKey);
 
 var axios = require('axios');
@@ -24,11 +25,11 @@ class BaseController {
                 console.log("Respponse:! " + response);
             }
         });
-        
+
     }
 
     sendSmsToLogin = (data) => {
-        
+
         var config = {
             method: 'post',
             url: 'https://yboburzhon@bk.ru:8afKebWawXU6BVX8bcZVweCBx-ArZVEM@gate.smsaero.ru/v2/sms/send',

@@ -149,30 +149,33 @@ class AdvertisementController extends BaseController {
     };
 
     #sendNotifaction = async (model) => {
-        // let base_url = 'https://api.dom-m.uz/api/v1/uploads/image/';D
-        let base_url = model.type == 'image' ? 'http://192.168.88.114:5010/api/v1/uploads/image/' : ''
         try {
             let client = await ClientModel.findAll({
-                raw: true
             });
-
             for (let i = 0; i < client.length; i++) {
                 let element = client[i];
-                if(element.fcm_token){
+                if (element.fcm_token) {
                     let lang = element.lang;
-                    let currentTitle =  model['text_' + lang];
-                    let image = base_url + model.image;
+                    let currentTitle = model['text_' + lang];
                     let message = {
                         to: element.fcm_token,
                         notification: {
                             title: currentTitle,
-                            body: image,
-                            type: "news",
+                            body: {
+                                id: model.id,
+                                type: "news"
+                            },
                         },
                         data: {
-                            title: currentTitle,
-                            body: model.id,
                             type: "news",
+                            body: {
+                                id: model.id,
+                                type: "news"
+                            },
+                        },
+                        body: {
+                            id: model.id,
+                            type: "news"
                         },
                     };
                     await this.notification(message);

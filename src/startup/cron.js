@@ -67,32 +67,32 @@ module.exports = function executeTaskFromDatabase() {
         return 'Data has been deleted'; // Return a value instead of sending the response directly
     }
 
-    async function deleteFileBanner() {
-        const image_path = "./uploads/banner";
-        try {
-            const files = await fs.promises.readdir(image_path);
+    // async function deleteFileBanner() {
+    //     const image_path = "./uploads/banner";
+    //     try {
+    //         const files = await fs.promises.readdir(image_path);
 
-            const bannerPromises = files.map(async (file) => {
-                const banner = await BannerModel.findOne({
-                    where: { image: file }
-                });
-                return banner;
-            });
-            const banners = await Promise.all(bannerPromises);
-            const filesToDelete = files.filter((file, index) => !banners[index]);
+    //         const bannerPromises = files.map(async (file) => {
+    //             const banner = await BannerModel.findOne({
+    //                 where: { image: file }
+    //             });
+    //             return banner;
+    //         });
+    //         const banners = await Promise.all(bannerPromises);
+    //         const filesToDelete = files.filter((file, index) => !banners[index]);
 
-            for (const file of filesToDelete) {
-                try {
-                    await fs.unlink(`${image_path}/${file}`);
-                    console.log(`Deleted file: ${file}`);
-                } catch (err) {
-                    console.error(`Error deleting file: ${file}`, err);
-                }
-            }
-        } catch (err) {
-            console.error('Error reading folder:', err);
-        }
-    }
+    //         for (const file of filesToDelete) {
+    //             try {
+    //                 await fs.unlink(`${image_path}/${file}`);
+    //                 console.log(`Deleted file: ${file}`);
+    //             } catch (err) {
+    //                 console.error(`Error deleting file: ${file}`, err);
+    //             }
+    //         }
+    //     } catch (err) {
+    //         console.error('Error reading folder:', err);
+    //     }
+    // }
 
 
 

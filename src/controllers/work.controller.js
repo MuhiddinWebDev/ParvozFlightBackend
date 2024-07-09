@@ -704,22 +704,26 @@ class WorkController extends BaseController {
         let element = client[i];
         let lang = element.lang;
         let currentTitle = `${workData['new_' + lang]} ${model.id}: ${model['title_' + lang]}
-${lang == 'uz' ? workData['sex_' + lang + '_' + element.sex_id] + ' ' + workData['couse_' + lang] : workData['couse_' + lang] + ' ' + workData['sex_' + lang + '_' + element.sex_id]}
-${lang == 'uz' ? workData['salary_' + lang] + element.from_price + workData['from_' + lang] + element.to_price + workData['to_' + lang] :
-            workData['salary_' + lang] + workData['from_' + lang] + model.from_price + workData['to_' + lang] + model.to_price}
+        ${lang == 'uz' ? workData['sex_' + lang + '_' + element.sex_id] + ' ' + workData['couse_' + lang] : workData['couse_' + lang] + ' ' + workData['sex_' + lang + '_' + element.sex_id]}
+        ${lang == 'uz' ? workData['salary_' + lang] + element.from_price + workData['from_' + lang] + element.to_price + workData['to_' + lang] :
+        workData['salary_' + lang] + workData['from_' + lang] + model.from_price + workData['to_' + lang] + model.to_price}
         `;
 
-        var message = {
+        let message = {
           to: element.fcm_token,
           notification: {
             title: currentTitle,
-            body: model.id,
-            type: "work",
+            body: {
+              id: model.id,
+              type: "work"
+            },
           },
           data: {
-            title: currentTitle,
-            body: model.id,
             type: "work",
+          },
+          body: {
+            id: model.id,
+            type: "work"
           },
         };
         await this.notification(message);

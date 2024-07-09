@@ -353,15 +353,23 @@ class ChatController extends BaseController {
 
             let fcm_token = client.fcm_token;
             let title = "Sizga yangi ovozli xabar keldi";
-            let type = "chat";
-            var message = {
+            let message = {
                 to: fcm_token,
                 notification: {
                     title: title,
-                    body: file,
-                    type: type,
-                    data: order.id
-                }
+                    body: {
+                        id: order_id,
+                        type: "chat",
+                        text: file
+                    },
+                    data: order_id
+                },
+                data: {
+                    type: "chat",
+                    data: order_id,
+                    text: file
+                },
+
             };
             await this.notification(message);
         } else {
@@ -462,15 +470,23 @@ class ChatController extends BaseController {
 
             let fcm_token = client.fcm_token;
             let title = "Sizga yangi faylli xabar keldi";
-            let type = "chat";
-            var message = {
+            let message = {
                 to: fcm_token,
                 notification: {
                     title: title,
-                    body: file,
-                    type: type,
-                    data: order.id
-                }
+                    body: {
+                        id: order_id,
+                        type: "chat",
+                        text: file
+                    },
+                    data: order_id
+                },
+                data: {
+                    type: "chat",
+                    data: order_id,
+                    text: file
+                },
+
             };
             await this.notification(message);
         } else {
@@ -571,15 +587,22 @@ class ChatController extends BaseController {
 
             let fcm_token = client.fcm_token;
             let title = "Sizga yangi rasmli xabar keldi";
-            let type = "chat";
-            var message = {
+            let message = {
                 to: fcm_token,
                 notification: {
                     title: title,
-                    body: file,
-                    type: type,
-                    data: order.id
-                }
+                    body: {
+                        id: order_id,
+                        type: "chat",
+                        text: file
+                    },
+                    data: order_id
+                },
+                data: {
+                    type: "chat",
+                    data: order_id,
+                    text: file
+                },
             };
             await this.notification(message);
         } else {
@@ -639,7 +662,6 @@ class ChatController extends BaseController {
         } = req.body;
 
         let datetime = Math.floor(new Date().getTime())
-        // datetime = datetime * 1000;
 
         const chats = await ChatProModel.findAll({
             where: {
@@ -686,21 +708,22 @@ class ChatController extends BaseController {
         }
         const fcm_token = client.fcm_token;
         const title = "Sizga yangi xabar keldi";
-        const type = "chat";
-        var message = {
+        let message = {
             to: fcm_token,
             notification: {
                 title: title,
-                body: model.text,
-                type: type,
-                data: model.order_id
+                body: {
+                    id: order_id,
+                    type: "chat",
+                    text: text
+                },
+                data: order_id
             },
             data: {
-                title: title,
-                body: model.text,
-                type: type,
-                data: model.order_id
-            }
+                type: "chat",
+                data: order_id,
+                text: text
+            },
         };
         await this.notification(message);
         await this.#sendSocket(model)
@@ -762,7 +785,7 @@ class ChatController extends BaseController {
         }
     }
 
-   
+
 }
 
 

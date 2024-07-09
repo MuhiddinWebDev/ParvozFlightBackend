@@ -628,16 +628,20 @@ class ServicesController extends BaseController {
           } else if (element.lang == 'ka') {
             currentTitle = `Квартираи нав.`
           }
-          var message = {
+          let message = {
             to: element.fcm_token,
             notification: {
               title: currentTitle,
-              body: model.id,
-              type: "room"
+              body: {
+                id: model.id,
+                type: "room"
+              },
             },
             data: {
-              title: currentTitle,
-              body: model.id,
+              type: "room",
+            },
+            body: {
+              id: model.id,
               type: "room"
             },
           };

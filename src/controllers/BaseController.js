@@ -19,6 +19,7 @@ class BaseController {
 
     // Notification for client
     notification = (message) => {
+        
         fcm.send(message, function (err, response) {
             if (err) {
                 console.log("Something has gone wrong!" + err);

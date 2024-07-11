@@ -6,6 +6,8 @@ const BaseController = require('./BaseController');
 const { Op } = require('sequelize');
 const sequelize = require('../db/db-sequelize');
 const fs = require('fs');
+const { body } = require('express-validator');
+const moment = require('moment')
 /******************************************************************************
  *                              User Controller
  ******************************************************************************/
@@ -14,7 +16,7 @@ class AdvertisementController extends BaseController {
     getAllMobile = async (req, res, next) => {
         let lang = req.get('Accept-Language');
         lang = lang ? lang : 'uz';
-        
+
         let modelList = await NewsModel.findAll({
             attributes: [
                 'id', 'network', 'image', 'datetime', 'type', 'video',
@@ -123,7 +125,7 @@ class AdvertisementController extends BaseController {
         model.network = network;
 
         model.save();
-        await this.#sendNotifaction(model)
+        // await this.#sendNotifaction(model)
 
         res.send(model);
     };
@@ -150,8 +152,10 @@ class AdvertisementController extends BaseController {
 
     #sendNotifaction = async (model) => {
         try {
-            let client = await ClientModel.findAll({
-            });
+            let client = await ClientModel.findAll();
+            // let base_url = "http://192.168.88.114:5010/api/v1/uploads/image/";
+            let base_url = "https://api.dom-m.uz/api/v1/uploads/image/";
+            let image = base_url + model.image;
             for (let i = 0; i < client.length; i++) {
                 let element = client[i];
                 if (element.fcm_token) {
@@ -161,21 +165,14 @@ class AdvertisementController extends BaseController {
                         to: element.fcm_token,
                         notification: {
                             title: currentTitle,
-                            body: {
-                                id: model.id,
-                                type: "news"
-                            },
+                            body: `${moment(model.datetime * 1000).format('DD.MM.YYYY')}`,
+                            type: "news",
+                            data: model.id
                         },
                         data: {
-                            type: "news",
-                            body: {
-                                id: model.id,
-                                type: "news"
-                            },
-                        },
-                        body: {
-                            id: model.id,
-                            type: "news"
+                            payload: "news",
+                            groupKey: model.id,
+                            bigPicture: model.image ? image : null
                         },
                     };
                     await this.notification(message);

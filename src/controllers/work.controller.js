@@ -8,7 +8,7 @@ const sequelize = require("../db/db-sequelize");
 const { Op } = require("sequelize");
 const moment = require("moment");
 const fs = require("fs");
-const { query } = require("express-validator");
+const { query, body } = require("express-validator");
 /******************************************************************************
  *                              Work Controller
  ******************************************************************************/
@@ -94,8 +94,6 @@ class WorkController extends BaseController {
     if (body.parent_id) {
       query.parent_id = body.parent_id;
     }
-
-
 
     const work = await WorkTableModel.findAll({
       attributes: [
@@ -667,6 +665,9 @@ class WorkController extends BaseController {
     if (model.sex_id != 1) {
       query.sex_id = model.sex_id;
     }
+    let address = await AddressModel.findOne({
+      where: { id: model.address_id }
+    })
     let workData = {
       new_uz: 'Yangi ish',
       new_ru: 'Новая работа',
@@ -693,6 +694,9 @@ class WorkController extends BaseController {
       sex_ka_2: 'мардон',
       sex_ka_3: 'занон',
     }
+    // let base_url = "http://192.168.88.114:5010/api/v1/uploads/work/";
+    // let base_url = "https://api.dom-m.uz/api/v1/uploads/work/";
+    // let image = base_url + model.image
 
     if (model.status == 'active') {
       let client = await ClientModel.findAll({
@@ -705,27 +709,25 @@ class WorkController extends BaseController {
         let lang = element.lang;
         let currentTitle = `${workData['new_' + lang]} ${model.id}: ${model['title_' + lang]}
         ${lang == 'uz' ? workData['sex_' + lang + '_' + element.sex_id] + ' ' + workData['couse_' + lang] : workData['couse_' + lang] + ' ' + workData['sex_' + lang + '_' + element.sex_id]}
-        ${lang == 'uz' ? workData['salary_' + lang] + element.from_price + workData['from_' + lang] + element.to_price + workData['to_' + lang] :
-        workData['salary_' + lang] + workData['from_' + lang] + model.from_price + workData['to_' + lang] + model.to_price}
+        ${lang == 'uz' ? workData['salary_' + lang] + model.from_price + workData['from_' + lang] + model.to_price + workData['to_' + lang] :
+            workData['salary_' + lang] + workData['from_' + lang] + model.from_price + workData['to_' + lang] + model.to_price}
         `;
 
         let message = {
           to: element.fcm_token,
           notification: {
             title: currentTitle,
-            body: {
-              id: model.id,
-              type: "work"
-            },
+            type: "work",
+            data: model.id,
+            body: `${address ? address.dataValues['name_' + lang] : ''}`
           },
           data: {
-            type: "work",
+            payload: "work",
+            groupKey: model.id,
           },
-          body: {
-            id: model.id,
-            type: "work"
-          },
+
         };
+        console.log(message)
         await this.notification(message);
       }
 

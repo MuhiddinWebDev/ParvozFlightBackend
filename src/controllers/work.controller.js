@@ -696,7 +696,7 @@ class WorkController extends BaseController {
     }
     // let base_url = "http://192.168.88.114:5010/api/v1/uploads/work/";
     // let base_url = "https://api.dom-m.uz/api/v1/uploads/work/";
-    // let image = base_url + model.image
+    let image = "https://i.ibb.co/zPVL5Nt/photo-2024-07-11-15-10-40.jpg"
 
     if (model.status == 'active') {
       let client = await ClientModel.findAll({
@@ -724,6 +724,7 @@ class WorkController extends BaseController {
           data: {
             payload: "work",
             groupKey: model.id,
+            bigPicture: image
           },
 
         };

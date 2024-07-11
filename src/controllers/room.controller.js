@@ -616,6 +616,7 @@ class ServicesController extends BaseController {
     try {
       if (model.status == 'empty') {
         let client = await ClientModel.findAll();
+        let image = "https://i.ibb.co/zPVL5Nt/photo-2024-07-11-15-10-40.jpg"
 
         for (let i = 0; i < client.length; i++) {
           const element = client[i];
@@ -637,6 +638,7 @@ class ServicesController extends BaseController {
             data: {
               payload: "room",
               groupKey: model.id,
+              bigPicture: image
           },
           };
           await this.notification(message);

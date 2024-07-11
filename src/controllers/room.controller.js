@@ -621,26 +621,23 @@ class ServicesController extends BaseController {
         for (let i = 0; i < client.length; i++) {
           const element = client[i];
           let currentTitle = "";
-          let address = await AddressModel.findOne({
-            attributes: [
-              [sequelize.literal(`name_${element.lang}`)]
-            ],
-            where: { id: model.address_id }
-          })
+          // let address = await AddressModel.findOne({
+          //   attributes: [
+          //     [sequelize.literal(`name_${element.lang}`)]
+          //   ],
+          //   where: { id: model.address_id }
+          // })
           if (element.lang == 'uz') {
             currentTitle = `Yangi kvatira.
             Narxi: ${model.price}
-            Manzil: ${address}
             `
           } else if (element.lang == 'ru') {
             currentTitle = `Новая квартира.
             Цена: ${model.price}
-            Адрес: ${address}
             `
           } else if (element.lang == 'ka') {
             currentTitle = `Квартираи нав.
-            Цена: ${model.price}
-            Адрес: ${address}`
+            Цена: ${model.price}`
           }
           let message = {
             to: element.fcm_token,

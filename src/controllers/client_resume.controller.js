@@ -76,19 +76,19 @@ class ClientResumeController extends BaseController {
                 {
                     model: AddressModel,
                     as: 'address',
-                    attributes: ['name_' + lang],
+                    attributes: ['name_uz'],
                     required: false
                 },
                 {
                     model: ClientJobModel,
                     as: 'job',
-                    attributes: ['name_' + lang],
+                    attributes: ['name_uz'],
                     required: false
                 },
                 {
                     model: ClientJobChildModel,
                     as: 'job_child',
-                    attributes: ['name_' + lang],
+                    attributes: ['name_uz'],
                     required: false
                 }
             ]

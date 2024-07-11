@@ -76,25 +76,19 @@ class ClientResumeController extends BaseController {
                 {
                     model: AddressModel,
                     as: 'address',
-                    attributes: [
-                        [sequelize.literal(`address.name_${lang}`), 'name'],
-                    ],
+                    attributes: ['name_uz'],
                     required: false
                 },
                 {
                     model: ClientJobModel,
                     as: 'job',
-                    attributes: [
-                        [sequelize.literal(`job.name_${lang}`), 'name'],
-                    ],
+                    attributes: ['name_uz'],
                     required: false
                 },
                 {
                     model: ClientJobChildModel,
                     as: 'job_child',
-                    attributes: [
-                        [sequelize.literal(`job_child.name_${lang}`), 'name'],
-                    ],
+                    attributes: ['name_uz'],
                     required: false
                 }
             ]

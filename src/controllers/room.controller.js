@@ -8,6 +8,7 @@ const BaseController = require("./BaseController");
 const sequelize = require("../db/db-sequelize");
 const fs = require("fs");
 const { Op } = require("sequelize");
+const { body } = require("express-validator");
 /******************************************************************************
  *                              Services Controller
  ******************************************************************************/
@@ -617,16 +618,29 @@ class ServicesController extends BaseController {
       if (model.status == 'empty') {
         let client = await ClientModel.findAll();
         let image = "https://i.ibb.co/zPVL5Nt/photo-2024-07-11-15-10-40.jpg"
-
         for (let i = 0; i < client.length; i++) {
           const element = client[i];
           let currentTitle = "";
+          let address = await AddressModel.findOne({
+            attributes: [
+              [sequelize.literal(`name_${element.lang}`)]
+            ],
+            where: { id: model.address_id }
+          })
           if (element.lang == 'uz') {
-            currentTitle = `Yangi kvatira`
+            currentTitle = `Yangi kvatira.
+            Narxi: ${model.price}
+            Manzil: ${address}
+            `
           } else if (element.lang == 'ru') {
-            currentTitle = `Новая квартира`
+            currentTitle = `Новая квартира.
+            Цена: ${model.price}
+            Адрес: ${address}
+            `
           } else if (element.lang == 'ka') {
-            currentTitle = `Квартираи нав.`
+            currentTitle = `Квартираи нав.
+            Цена: ${model.price}
+            Адрес: ${address}`
           }
           let message = {
             to: element.fcm_token,
@@ -639,7 +653,7 @@ class ServicesController extends BaseController {
               payload: "room",
               groupKey: model.id,
               bigPicture: image
-          },
+            },
           };
           await this.notification(message);
         }

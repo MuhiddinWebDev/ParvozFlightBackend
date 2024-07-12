@@ -38,8 +38,10 @@ class ServicesController extends BaseController {
     if (body.parent_id) {
       query.parent_id = body.parent_id;
     }
+    console.log("query______________-")
+    console.log(query)
     const modelList = await RoomTableModel.findAll({
-      // where: query,
+      where: query,
       attributes: [
         "id",
         "parent_id",

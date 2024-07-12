@@ -165,8 +165,8 @@ class AdvertisementController extends BaseController {
     #sendNotifaction = async (model) => {
         try {
             let client = await ClientModel.findAll();
-            let base_url = "http://192.168.88.114:5010/api/v1/uploads/image/";
-            // let base_url = "https://api.dom-m.uz/api/v1/uploads/image/";
+            // let base_url = "http://192.168.88.114:5010/api/v1/uploads/image/";
+            let base_url = "https://api.dom-m.uz/api/v1/uploads/image/";
             let image = base_url + model.image;
             for (let i = 0; i < client.length; i++) {
                 let element = client[i];

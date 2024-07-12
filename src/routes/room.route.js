@@ -49,6 +49,7 @@ router.get('/table/id/:id', auth(), awaitHandlerFactory(roomController.getByIdTa
 router.post('/deteil-web', auth(), awaitHandlerFactory(roomController.getDetail));
 router.post('/deteil', awaitHandlerFactory(roomController.getDetail));
 router.get('/id/:id', auth(), awaitHandlerFactory(roomController.getById));
+router.get('/send-mobile/:id', auth(), awaitHandlerFactory(roomController.sendMobilNotifaction));
 router.post('/',  auth(), upload, joiMiddleware(roomSchemas.room), awaitHandlerFactory(roomController.create));
 router.patch('/id/:id', upload,  auth(), joiMiddleware(roomSchemas.room), awaitHandlerFactory(roomController.update));
 router.post('/table',  auth(), upload, joiMiddleware(roomSchemas.roomTable), awaitHandlerFactory(roomController.createTable));

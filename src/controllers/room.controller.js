@@ -114,6 +114,21 @@ class ServicesController extends BaseController {
     res.send(service);
   };
 
+  sendMobilNotifaction = async (req, res, next) => {
+    let model = await RoomTableModel.findOne({ where: { id: req.params.id } });
+    try {
+      let message = {
+        text: "Barch mijozlarga yuborildi"
+      }
+      await this.#sendRoom(model.dataValues);
+
+      res.send(message)
+
+    } catch (err) {
+      console.log(err)
+    }
+  }
+
   getAllWebTable = async (req, res, next) => {
     let filter = req.body;
     let currentUser = req.currentUser;
@@ -359,8 +374,6 @@ class ServicesController extends BaseController {
           },
         ],
       });
-      this.#sendRoom(model_table.dataValues)
-
       res.send(modelx);
     } catch (error) {
       await t.rollback();
@@ -433,8 +446,6 @@ class ServicesController extends BaseController {
           },
         ],
       });
-
-      this.#sendRoom(model_table.dataValues)
 
       res.send(modelx);
     } catch (error) {
@@ -511,8 +522,6 @@ class ServicesController extends BaseController {
           },
         ],
       });
-      this.#sendRoom(model_table.dataValues)
-
       res.send(modelx);
     } catch (error) {
       await t.rollback();
@@ -621,29 +630,33 @@ class ServicesController extends BaseController {
         for (let i = 0; i < client.length; i++) {
           const element = client[i];
           let currentTitle = "";
-          // let address = await AddressModel.findOne({
-          //   attributes: [
-          //     [sequelize.literal(`name_${element.lang}`)]
-          //   ],
-          //   where: { id: model.address_id }
-          // })
+          let formtLang = ""
+          let address = await AddressModel.findOne({
+            attributes: [
+              [sequelize.literal(`name_${element.lang}`), 'name']
+            ],
+            where: { id: model.address_id }
+          })
+
           if (element.lang == 'uz') {
-            currentTitle = `Yangi kvatira.
-            Narxi: ${model.price}
+            formtLang = "Manzil: "
+            currentTitle = `Yangi kvatira.Narxi: ${model.price}
             `
           } else if (element.lang == 'ru') {
-            currentTitle = `Новая квартира.
-            Цена: ${model.price}
+            formtLang = "Адрес: "
+            currentTitle = `Новая квартира. Цена: ${model.price}
             `
           } else if (element.lang == 'ka') {
-            currentTitle = `Квартираи нав.
-            Цена: ${model.price}`
+            formtLang = "Адрес: "
+            currentTitle = `Квартираи нав. Цена: ${model.price}`
           }
+          let fullAddress = formtLang + address.dataValues.name;
           let message = {
             to: element.fcm_token,
             notification: {
               title: currentTitle,
               type: "room",
+              body: fullAddress,
               data: model.id
             },
             data: {

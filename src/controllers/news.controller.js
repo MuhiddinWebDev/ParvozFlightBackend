@@ -57,6 +57,20 @@ class AdvertisementController extends BaseController {
         }
     };
 
+    sendMobilNotifaction = async (req, res, next) => {
+        let model = await NewsModel.findOne({ where: { id: req.params.id } });
+        try {
+            let message = {
+                text: "Barch mijozlarga yuborildi"
+            }
+            await this.#sendNotifaction(model.dataValues);
+
+            res.send(message)
+
+        } catch (err) {
+            console.log(err)
+        }
+    }
 
     getById = async (req, res, next) => {
         const model = await NewsModel.findOne({
@@ -100,7 +114,6 @@ class AdvertisementController extends BaseController {
         if (!model) {
             throw new HttpException(500, req.mf('Something went wrong'));
         }
-        await this.#sendNotifaction(model)
         res.send(model);
     };
 
@@ -125,7 +138,6 @@ class AdvertisementController extends BaseController {
         model.network = network;
 
         model.save();
-        // await this.#sendNotifaction(model)
 
         res.send(model);
     };
@@ -153,8 +165,8 @@ class AdvertisementController extends BaseController {
     #sendNotifaction = async (model) => {
         try {
             let client = await ClientModel.findAll();
-            // let base_url = "http://192.168.88.114:5010/api/v1/uploads/image/";
-            let base_url = "https://api.dom-m.uz/api/v1/uploads/image/";
+            let base_url = "http://192.168.88.114:5010/api/v1/uploads/image/";
+            // let base_url = "https://api.dom-m.uz/api/v1/uploads/image/";
             let image = base_url + model.image;
             for (let i = 0; i < client.length; i++) {
                 let element = client[i];

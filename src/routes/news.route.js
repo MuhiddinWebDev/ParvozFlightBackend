@@ -23,9 +23,9 @@ const storage = multer.diskStorage({
 const fileFilter = (req, file, cb) => {
     console.log('file mime type => ', file.mimetype);
     console.log('extra name => ', path.extname(file.originalname));
-    if(file.mimetype == 'image/jpeg' || file.mimetype == 'image/png'){
+    if (file.mimetype == 'image/jpeg' || file.mimetype == 'image/png') {
         cb(null, true);
-    }else{
+    } else {
         cb(null, false);
     }
 }
@@ -41,6 +41,7 @@ let uploadFile = multer({
 router.get('/all', auth(), awaitHandlerFactory(newsController.getAllWeb));
 router.get('/', awaitHandlerFactory(newsController.getAllMobile));
 router.get('/id/:id', auth(), awaitHandlerFactory(newsController.getById));
+router.get('/send-mobile/:id', auth(), awaitHandlerFactory(newsController.sendMobilNotifaction));
 router.post('/', auth(), joiMiddleware(newSchemas.create), awaitHandlerFactory(newsController.create));
 router.patch('/id/:id', auth(), joiMiddleware(newSchemas.create), awaitHandlerFactory(newsController.update));
 router.delete('/id/:id', auth(), awaitHandlerFactory(newsController.delete));

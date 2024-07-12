@@ -9,6 +9,7 @@ const { Op } = require("sequelize");
 const moment = require("moment");
 const fs = require("fs");
 const { query, body } = require("express-validator");
+const { resolveSoa } = require("dns");
 /******************************************************************************
  *                              Work Controller
  ******************************************************************************/
@@ -579,7 +580,6 @@ class WorkController extends BaseController {
         where: { id: model.id },
       });
 
-      await this.#senWork(model.dataValues)
       res.send(modelx);
     } catch (error) {
       await t.rollback();
@@ -652,13 +652,26 @@ class WorkController extends BaseController {
     res.send(req.mf("data has been deleted"));
   };
 
+  sendMobilNotifaction = async (req, res, next) => {
+    let model = await WorkTableModel.findOne({ where: { id: req.params.id } });
+    try {
+      let message = {
+        text: "Barch mijozlarga yuborildi"
+      }
+      await this.#senWork(model.dataValues);
+
+      res.send(message)
+
+    } catch (err) {
+      console.log(err)
+    }
+  }
 
 
   #senWork = async (model) => {
     let query = {};
     const date_birth = new Date();
-    // const end_birth = new Date(date_birth.getFullYear() - model.start_age, 0, 1);
-    // const start_birth = new Date(date_birth.getFullYear() - model.end_age, 0, 1);
+    
     if (model.sex_id == 1) {
       query.sex_id = { [Op.in]: [2, 3] };
     }
@@ -694,8 +707,7 @@ class WorkController extends BaseController {
       sex_ka_2: 'мардон',
       sex_ka_3: 'занон',
     }
-    // let base_url = "http://192.168.88.114:5010/api/v1/uploads/work/";
-    // let base_url = "https://api.dom-m.uz/api/v1/uploads/work/";
+    
     let image = "https://i.ibb.co/zPVL5Nt/photo-2024-07-11-15-10-40.jpg"
 
     if (model.status == 'active') {
@@ -724,11 +736,10 @@ class WorkController extends BaseController {
           data: {
             payload: "work",
             groupKey: model.id,
-            bigPicture: image
+            bigPicture: null
           },
 
         };
-        console.log(message)
         await this.notification(message);
       }
 

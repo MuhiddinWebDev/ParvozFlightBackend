@@ -197,13 +197,21 @@ class WorkController extends BaseController {
     let filter = req.body;
     const currentUser = req.currentUser;
     let query = {}
+
     if (currentUser.role == 'User') {
       query.user_id = currentUser.id;
     }
+
     if (filter.user_id) {
       query.user_id = filter.user_id;
     }
 
+    if (filter.client_id) {
+      query.client_id = filter.client_id
+    }
+    if (filter.status) {
+      query.status = filter.status
+    }
     let sql = `
         SELECT 
             w.id AS cat_id, w.title_uz AS cat_name,
@@ -223,23 +231,27 @@ class WorkController extends BaseController {
         LEFT JOIN address ON wt.address_id = address.id
         LEFT JOIN client ON wt.client_id = client.id
         LEFT JOIN user ON wt.user_id = user.id
-        `;
-    if (filter.status || query.user_id || filter.client_id) {
+    `;
+    if (query.status || query.user_id || query.client_id) {
       sql += " WHERE ";
-      if (filter.status) {
-        sql += ` wt.status = '${filter.status}' `
+      if (query.status) {
+        sql += ` wt.status = '${query.status}' `;
       }
-      if (filter.status && query.user_id) {
-        sql += ` AND `
+      if (query.status && (query.user_id || query.client_id)) {
+        sql += ` AND `;
       }
       if (query.user_id) {
-        sql += ` wt.user_id = ${query.user_id} OR wt.client_id IS NOT NULL  `
+        sql += ` (wt.user_id = ${query.user_id} OR wt.client_id IS NOT NULL) `;
       }
-      if (filter.client_id) {
-        sql += `wt.client_id = ${filter.client_id}`
+      if (query.user_id && query.client_id) {
+        sql += ` AND `;
+      }
+      if (query.client_id) {
+        sql += ` wt.client_id = ${query.client_id} `;
       }
     }
     sql += " ORDER BY wt.createdAt DESC";
+
     let result = await sequelize.query(sql, {
       type: sequelize.QueryTypes.SELECT,
       raw: true,
@@ -260,7 +272,6 @@ class WorkController extends BaseController {
     ];
     result.forEach((row) => {
       let sexObject = sex_model.find((sex) => sex.id === row.sex_id);
-
       if (sexObject) {
         row.sex_name = sexObject.name_uz;
       }
@@ -272,6 +283,7 @@ class WorkController extends BaseController {
 
     res.send(result);
   };
+
 
   getByIdProduct = async (req, res, next) => {
     let product_id = req.params.id;
@@ -671,7 +683,7 @@ class WorkController extends BaseController {
   #senWork = async (model) => {
     let query = {};
     const date_birth = new Date();
-    
+
     if (model.sex_id == 1) {
       query.sex_id = { [Op.in]: [2, 3] };
     }
@@ -707,7 +719,7 @@ class WorkController extends BaseController {
       sex_ka_2: 'мардон',
       sex_ka_3: 'занон',
     }
-    
+
     let image = "https://i.ibb.co/zPVL5Nt/photo-2024-07-11-15-10-40.jpg"
 
     if (model.status == 'active') {

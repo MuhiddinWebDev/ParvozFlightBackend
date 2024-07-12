@@ -8,7 +8,6 @@ const BaseController = require("./BaseController");
 const sequelize = require("../db/db-sequelize");
 const fs = require("fs");
 const { Op } = require("sequelize");
-const { body } = require("express-validator");
 /******************************************************************************
  *                              Services Controller
  ******************************************************************************/

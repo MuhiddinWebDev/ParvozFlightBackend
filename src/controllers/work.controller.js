@@ -1,4 +1,5 @@
 const WorkModel = require("../models/work.model");
+const UserModel = require("../models/user.model");
 const WorkTableModel = require("../models/workTable.model");
 const ClientModel = require('../models/client.model')
 const AddressModel = require("../models/address.model");
@@ -6,10 +7,6 @@ const HttpException = require("../utils/HttpException.utils");
 const BaseController = require("./BaseController");
 const sequelize = require("../db/db-sequelize");
 const { Op } = require("sequelize");
-const moment = require("moment");
-const fs = require("fs");
-const { query, body } = require("express-validator");
-const { resolveSoa } = require("dns");
 /******************************************************************************
  *                              Work Controller
  ******************************************************************************/
@@ -196,7 +193,7 @@ class WorkController extends BaseController {
   getAllWebProduct = async (req, res, next) => {
     let filter = req.body;
     const currentUser = req.currentUser;
-    let query = {}
+    let query = {};
 
     if (currentUser.role == 'User') {
       query.user_id = currentUser.id;
@@ -210,80 +207,185 @@ class WorkController extends BaseController {
       query.client_id = filter.client_id
     }
     if (filter.status) {
-      query.status = filter.status
-    }
-    let sql = `
-        SELECT 
-            w.id AS cat_id, w.title_uz AS cat_name,
-            wt.id, wt.parent_id, 
-            wt.sex_id, wt.start_age, wt.end_age, wt.end_date,
-            wt.title_uz AS title, 
-            wt.from_price, wt.to_price, wt.phone, 
-            wt.comment_uz AS comment, 
-            wt.image, wt.status, 
-            wt.price_type_uz AS price_type,
-            wt.create_at, wt.address_id,
-            address.name_uz as address_name,
-            wt.lat, wt.long, wt.finished,
-            user.fullname as user_name, client.fullname as client_name
-        FROM work_table wt 
-        LEFT JOIN works w ON w.id = wt.parent_id
-        LEFT JOIN address ON wt.address_id = address.id
-        LEFT JOIN client ON wt.client_id = client.id
-        LEFT JOIN user ON wt.user_id = user.id
-    `;
-    if (query.status || query.user_id || query.client_id) {
-      sql += " WHERE ";
-      if (query.status) {
-        sql += ` wt.status = '${query.status}' `;
-      }
-      if (query.status && (query.user_id || query.client_id)) {
-        sql += ` AND `;
-      }
-      if (query.user_id) {
-        sql += ` (wt.user_id = ${query.user_id} OR wt.client_id IS NOT NULL) `;
-      }
-      if (query.user_id && query.client_id) {
-        sql += ` AND `;
-      }
-      if (query.client_id) {
-        sql += ` wt.client_id = ${query.client_id} `;
-      }
-    }
-    sql += " ORDER BY wt.createdAt DESC";
 
-    let result = await sequelize.query(sql, {
-      type: sequelize.QueryTypes.SELECT,
-      raw: true,
-    });
-    let sex_model = [
-      {
-        id: 1,
-        name_uz: "Umumiy",
-      },
-      {
-        id: 2,
-        name_uz: "Erkak",
-      },
-      {
-        id: 3,
-        name_uz: "Ayol",
-      },
-    ];
-    result.forEach((row) => {
-      let sexObject = sex_model.find((sex) => sex.id === row.sex_id);
-      if (sexObject) {
-        row.sex_name = sexObject.name_uz;
+      if (filter.status == 'yes' || filter.status == 'no') {
+        query.finished = filter.status;
+      } else {
+        query.status = filter.status;
       }
-    });
-
-    if (!result) {
-      throw new HttpException(404, req.mf("data not found"));
     }
+    if (filter.address_id) {
+      query.address_id = filter.address_id
+    }
+    if (filter.parent_id) {
+      query.parent_id = filter.parent_id
+    }
+    let result = await WorkTableModel.findAll({
+      attributes: [
+        'user_id', 'client_id',
+        'image', 'create_at', 'from_price',
+        'to_price', 'phone', 'comment_uz',
+        'finished', 'status', 'price_type_uz',
+        'parent_id', 'start_age', 'end_age', 'end_date', 'id',
+        'address_id',
+        [sequelize.literal('WorkTableModel.title_uz'), 'title'],
+        [sequelize.literal('user.fullname'), 'user_name'],
+        [sequelize.literal('address.name_uz'), 'address_name'],
+        [sequelize.literal('client.fullname'), 'client_fullname'],
+        [sequelize.literal('client.name'), 'client_name'],
+        [sequelize.literal('work.title_uz'), 'work_title'],
+        [sequelize.literal('work.id'), 'cat_id'],
+        [sequelize.literal("CASE WHEN WorkTableModel.sex_id = 1 THEN 'Umumiy' WHEN WorkTableModel.sex_id = 2 THEN 'Erkak' ELSE 'Ayol' END"), 'sex_name']
+      ],
+      include: [
+        {
+          model: UserModel,
+          as: 'user',
+          attributes: [],
+          required: false,
+        },
+        {
+          model: WorkModel,
+          as: 'work',
+          attributes: [],
+          required: false
+        },
+        {
+          model: AddressModel,
+          as: 'address',
+          attributes: [],
+          required: false
+        },
+        {
+          model: ClientModel,
+          as: 'client',
+          attributes: [],
+          required: false,
+        }
+      ],
+      where: query
+    })
+    // let sql = `
+    //     SELECT 
+    //         w.id AS cat_id, w.title_uz AS cat_name,
+    //         wt.id, wt.parent_id, 
+    //         wt.sex_id, wt.start_age, wt.end_age, wt.end_date,
+    //         wt.title_uz AS title, 
+    //         wt.from_price, wt.to_price, wt.phone, 
+    //         wt.comment_uz AS comment, 
+    //         wt.image, wt.status, 
+    //         wt.price_type_uz AS price_type,
+    //         wt.create_at, wt.address_id,
+    //         address.name_uz as address_name,
+    //         wt.lat, wt.long, wt.finished,
+    //         user.fullname as user_name, client.fullname as client_name
+    //     FROM work_table wt 
+    //     LEFT JOIN works w ON w.id = wt.parent_id
+    //     LEFT JOIN address ON wt.address_id = address.id
+    //     LEFT JOIN client ON wt.client_id = client.id
+    //     LEFT JOIN user ON wt.user_id = user.id
+    // `;
+    // if (query.status || query.user_id || query.client_id) {
+    //   sql += " WHERE ";
+    //   if (query.status) {
+    //     sql += ` wt.status = '${query.status}' `;
+    //   }
+    //   if (query.status && (query.user_id || query.client_id)) {
+    //     sql += ` AND `;
+    //   }
+    //   if (query.user_id) {
+    //     sql += ` (wt.user_id = ${query.user_id} OR wt.client_id IS NOT NULL) `;
+    //   }
+    //   if (query.user_id && query.client_id) {
+    //     sql += ` AND `;
+    //   }
+    //   if (query.finished) {
+    //     console.log('text_____________________--')
+    //     sql += ` AND wt.finished = ${query.finished} `;
+    //   }
+    //   if (query.client_id) {
+    //     sql += ` wt.client_id = ${query.client_id} `;
+    //   }
+    // }
+    // sql += " ORDER BY wt.createdAt DESC";
+
+    // let result = await sequelize.query(sql, {
+    //   type: sequelize.QueryTypes.SELECT,
+    //   raw: true,
+    // });
+    // let sex_model = [
+    //   {
+    //     id: 1,
+    //     name_uz: "Umumiy",
+    //   },
+    //   {
+    //     id: 2,
+    //     name_uz: "Erkak",
+    //   },
+    //   {
+    //     id: 3,
+    //     name_uz: "Ayol",
+    //   },
+    // ];
+    // result.forEach((row) => {
+    //   let sexObject = sex_model.find((sex) => sex.id === row.sex_id);
+    //   if (sexObject) {
+    //     row.sex_name = sexObject.name_uz;
+    //   }
+    // });
+
+    // if (!result) {
+    //   throw new HttpException(404, req.mf("data not found"));
+    // }
 
     res.send(result);
   };
 
+  testWorkTable = async (req, res, next) => {
+    let model = await WorkTableModel.findAll({
+      attributes: [
+        'image', 'create_at', 'from_price',
+        'to_price', 'phone', 'comment_uz',
+        'finished', 'status', 'price_type_uz',
+        'parent_id', 'start_age', 'end_age', 'end_date', 'id',
+        [sequelize.literal('WorkTableModel.title_uz'), 'title'],
+        [sequelize.literal('user.fullname'), 'user_name'],
+        [sequelize.literal('address.name_uz'), 'address_name'],
+        [sequelize.literal('client.fullname'), 'client_fullname'],
+        [sequelize.literal('client.name'), 'client_name'],
+        [sequelize.literal('work.title_uz'), 'work_title'],
+        [sequelize.literal('work.id'), 'cat_id'],
+        [sequelize.literal("CASE WHEN WorkTableModel.sex_id = 1 THEN 'Umumiy' WHEN WorkTableModel.sex_id = 2 THEN 'Erkak' ELSE 'Ayol' END"), 'sex_name']
+      ],
+      include: [
+        {
+          model: UserModel,
+          as: 'user',
+          attributes: [],
+          required: false
+        },
+        {
+          model: WorkModel,
+          as: 'work',
+          attributes: [],
+          required: false
+        },
+        {
+          model: AddressModel,
+          as: 'address',
+          attributes: [],
+          required: false
+        },
+        {
+          model: ClientModel,
+          as: 'client',
+          attributes: [],
+          required: false
+        }
+      ]
+    })
+    res.send(model)
+  }
 
   getByIdProduct = async (req, res, next) => {
     let product_id = req.params.id;
@@ -422,7 +524,6 @@ class WorkController extends BaseController {
     let { ...work_table } = req.body;
     const currentClient = req.currentClient;
     let t = await sequelize.transaction();
-
     try {
       const model = await WorkTableModel.create(
         {
@@ -500,6 +601,7 @@ class WorkController extends BaseController {
     }
 
     let t = await sequelize.transaction();
+
     try {
       await this.#deleteRelated(model.id);
 
@@ -559,7 +661,9 @@ class WorkController extends BaseController {
       throw new HttpException(404, req.mf("data not found"));
     }
     let t = await sequelize.transaction();
-
+    let currentDay = new Date().getTime() / 1000;
+    let oldDay = work_table.end_date / 1000;
+    let allowChange = currentDay < oldDay
     try {
       model.address_id = work_table.address_id;
       model.parent_id = work_table.parent_id;
@@ -583,6 +687,7 @@ class WorkController extends BaseController {
       model.end_date = work_table.end_date / 1000;
       model.start_age = work_table.start_age;
       model.end_age = work_table.end_age;
+      model.finished = allowChange ? 'no' : 'yes'
       await model.save();
 
 

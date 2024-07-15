@@ -687,7 +687,7 @@ class WorkController extends BaseController {
       model.end_date = work_table.end_date / 1000;
       model.start_age = work_table.start_age;
       model.end_age = work_table.end_age;
-      model.finished = allowChange ? 'no' : 'yes'
+      model.finished = allowChange ? 'no' : 'yes';
       await model.save();
 
 

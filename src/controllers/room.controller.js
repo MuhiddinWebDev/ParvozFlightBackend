@@ -152,9 +152,12 @@ class ServicesController extends BaseController {
     if (filter.parent_id) {
       query.parent_id = filter.parent_id;
     }
+    if(filter.address_id){
+      query.address_id = filter.address_id;
+    }
     let result = await RoomTableModel.findAll({
       attributes: [
-        'id', 'parent_id', 'phone_number', 'price', 'status', 'comment_uz',
+        'id', 'parent_id', 'phone_number', 'price', 'status', 'comment_uz','address_id',
         [sequelize.literal("CASE WHEN RoomTableModel.sex_id = 1 THEN 'Kunlik' WHEN RoomTableModel.sex_id = 2 THEN 'Oylik' ELSE 'Uzoq muddatli' END"), 'sex_name']
       ],
       include: [

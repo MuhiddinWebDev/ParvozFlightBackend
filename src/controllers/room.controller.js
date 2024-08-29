@@ -38,8 +38,6 @@ class ServicesController extends BaseController {
     if (body.parent_id) {
       query.parent_id = body.parent_id;
     }
-    console.log("query______________-")
-    console.log(query)
     const modelList = await RoomTableModel.findAll({
       where: query,
       attributes: [
@@ -52,6 +50,7 @@ class ServicesController extends BaseController {
         "lat",
         "long",
         "sex_id",
+        "createdAt",
         [sequelize.literal(`comment_${lang}`), "comment"],
       ],
       include: [
@@ -152,12 +151,12 @@ class ServicesController extends BaseController {
     if (filter.parent_id) {
       query.parent_id = filter.parent_id;
     }
-    if(filter.address_id){
+    if (filter.address_id) {
       query.address_id = filter.address_id;
     }
     let result = await RoomTableModel.findAll({
       attributes: [
-        'id', 'parent_id', 'phone_number', 'price', 'status', 'comment_uz','address_id',
+        'id', 'parent_id', 'phone_number', 'price', 'status', 'comment_uz', 'address_id', 'createdAt',
         [sequelize.literal("CASE WHEN RoomTableModel.sex_id = 1 THEN 'Kunlik' WHEN RoomTableModel.sex_id = 2 THEN 'Oylik' ELSE 'Uzoq muddatli' END"), 'sex_name']
       ],
       include: [
@@ -194,7 +193,7 @@ class ServicesController extends BaseController {
             r.name_uz AS name_uz, r.name_ru AS name_ru, r.name_ka AS name_ka,
             rt.price, rt.phone_number, 
             rt.comment_uz, rt.comment_ru, rt.comment_ka, 
-            rt.area, rt.status, rt.lat, rt.long, rt.address_id, rt.sex_id
+            rt.area, rt.status, rt.lat, rt.long, rt.address_id, rt.sex_id, rt.createdAt
         FROM room_table rt 
         LEFT JOIN room r ON rt.parent_id = r.id WHERE rt.id = :room_id
         ORDER BY rt.id DESC `;

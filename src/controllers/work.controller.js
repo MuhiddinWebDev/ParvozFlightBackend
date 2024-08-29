@@ -523,6 +523,7 @@ class WorkController extends BaseController {
   createWork = async (req, res, next) => {
     let { ...work_table } = req.body;
     const currentClient = req.currentClient;
+    const currenDate = new Date().getTime();
     let t = await sequelize.transaction();
     try {
       const model = await WorkTableModel.create(
@@ -546,7 +547,7 @@ class WorkController extends BaseController {
           price_type_ru: work_table.price_type_ru,
           price_type_ka: work_table.price_type_ka,
           sex_id: work_table.sex_id,
-          end_date: new Date(work_table.end_date).getTime() / 1000,
+          end_date: (currenDate + 86400) / 1000,
           start_age: work_table.start_age,
           end_age: work_table.end_age,
           client_id: currentClient.id,
@@ -787,17 +788,17 @@ class WorkController extends BaseController {
 
   #senWork = async (model) => {
     let query = {};
-    const date_birth = new Date();
 
     if (model.sex_id == 1) {
       query.sex_id = { [Op.in]: [2, 3] };
-    }
-    if (model.sex_id != 1) {
+    } else {
       query.sex_id = model.sex_id;
     }
+
     let address = await AddressModel.findOne({
       where: { id: model.address_id }
-    })
+    });
+
     let workData = {
       new_uz: 'Yangi ish',
       new_ru: 'Новая работа',
@@ -823,24 +824,38 @@ class WorkController extends BaseController {
       sex_ka_1: 'ҳама',
       sex_ka_2: 'мардон',
       sex_ka_3: 'занон',
-    }
-
-    let image = "https://i.ibb.co/zPVL5Nt/photo-2024-07-11-15-10-40.jpg"
+      addres_uz:'Manzil',
+      addres_ru:'Адрес',
+      addres_ka:'Адрес',
+    };
 
     if (model.status == 'active') {
-      let client = await ClientModel.findAll({
+      let clients = await ClientModel.findAll({
         where: query,
         raw: true
       });
-
-      for (let i = 0; i < client.length; i++) {
-        let element = client[i];
+      for (let i = 0; i < clients.length; i++) {
+        let element = clients[i];
         let lang = element.lang;
-        let currentTitle = `${workData['new_' + lang]} ${model.id}: ${model['title_' + lang]}
-        ${lang == 'uz' ? workData['sex_' + lang + '_' + element.sex_id] + ' ' + workData['couse_' + lang] : workData['couse_' + lang] + ' ' + workData['sex_' + lang + '_' + element.sex_id]}
-        ${lang == 'uz' ? workData['salary_' + lang] + model.from_price + workData['from_' + lang] + model.to_price + workData['to_' + lang] :
-            workData['salary_' + lang] + workData['from_' + lang] + model.from_price + workData['to_' + lang] + model.to_price}
-        `;
+        // Construct the title
+        let currentTitle = `${workData['new_' + lang]} ${model['title_' + lang]}`;
+
+        // Construct the body
+        let currentBody = "";
+
+        // Add the address if available
+        // if (address) {
+        //   currentBody += `\n`+ `;
+        // }
+        if(lang != 'uz'){
+          currentBody = `${workData['couse_' + lang]} ${workData['sex_' + lang + '_' + element.sex_id]}
+          ${workData['salary_' + lang]}${workData['from_' + lang]}${model.from_price} ${workData['to_' + lang]}${model.to_price}
+          ${workData['addres_' + lang]} ${address.dataValues['name_' + lang]}`;
+        }else{
+          currentBody = `${workData['sex_' + lang + '_' + element.sex_id]} ${workData['couse_' + lang]} 
+          ${workData['salary_' + lang]} ${model.from_price} ${workData['from_' + lang]}  ${model.to_price} ${workData['to_' + lang]}
+          ${workData['addres_' + lang]} ${address.dataValues['name_' + lang]}`;
+        }
 
         let message = {
           to: element.fcm_token,
@@ -848,20 +863,20 @@ class WorkController extends BaseController {
             title: currentTitle,
             type: "work",
             data: model.id,
-            body: `${address ? address.dataValues['name_' + lang] : ''}`
+            body: currentBody
           },
           data: {
             payload: "work",
             groupKey: model.id,
             bigPicture: null
-          },
-
+          }
         };
+
+        console.log(message);
         await this.notification(message);
       }
-
-
     }
+
   }
 
 

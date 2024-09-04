@@ -12,6 +12,13 @@ class LinksController extends BaseController {
         res.send(modelList);
     };
 
+    getLast = async (req, res, next) => {
+        let model = await LinksModel.findOne({
+            
+        });
+        res.send(model);
+    };
+
     getById = async (req, res, next) => {
         const user = await LinksModel.findOne({
             where: { id: req.params.id }

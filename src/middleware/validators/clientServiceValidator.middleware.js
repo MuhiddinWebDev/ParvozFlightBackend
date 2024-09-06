@@ -15,8 +15,8 @@ exports.clientServiceSchemas = {
     client_service: Joi.array().required(),
     total_sum: Joi.number().required(),
     region_id: Joi.number().required(),
-    migrant_carta: Joi.string().required(),
-    passport: Joi.string().required(),
-    phone:Joi.string().required()
+    migrant_carta: Joi.string().required().allow(null),
+    passport: Joi.string().required().allow(null),
+    phone:Joi.string().required().allow(null)
   })
 };

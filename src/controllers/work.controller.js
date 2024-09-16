@@ -72,7 +72,7 @@ class WorkController extends BaseController {
 
     const date_birth = new Date();
     const client_age = new Date(client.age * 1000);
-    let result_age = date_birth.getFullYear() - client_age.getFullYear()
+    // let result_age = date_birth.getFullYear() - client_age.getFullYear()
 
 
     if (client.sex_id) {
@@ -80,10 +80,10 @@ class WorkController extends BaseController {
     }
 
 
-    if (result_age) {
-      query.start_age = { [Op.lte]: result_age };
-      query.end_age = { [Op.gte]: result_age };
-    }
+    // if (result_age) {
+    //   query.start_age = { [Op.lte]: result_age };
+    //   query.end_age = { [Op.gte]: result_age };
+    // }
 
     if (body.address_id) {
       query.address_id = body.address_id;

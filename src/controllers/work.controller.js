@@ -92,8 +92,7 @@ class WorkController extends BaseController {
     if (body.parent_id) {
       query.parent_id = body.parent_id;
     }
-    console.log("work filter____________________")
-    console.log(query)
+
     const work = await WorkTableModel.findAll({
       attributes: [
         "id",

@@ -1,6 +1,6 @@
-const Joi = require('joi'); 
+const Joi = require('joi');
 
-exports.clientResumeSchemas = { 
+exports.clientResumeSchemas = {
   model: Joi.object({
     surname: Joi.string().required(),
     name: Joi.string().required(),
@@ -11,6 +11,7 @@ exports.clientResumeSchemas = {
     address_id: Joi.number().required(),
     salary: Joi.number().required(),
     work_time: Joi.string().required().max(10),
+    work_time: Joi.string().allow(null, ""),
     status: Joi.boolean().required()
   }),
 };

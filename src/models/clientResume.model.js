@@ -61,6 +61,10 @@ ClientResumeModel.init({
     type: DataTypes.STRING(10),
     allowNull: true,
   },
+  comment: {
+    type: DataTypes.TEXT,
+    allowNull: true,
+  },
   status: {
     type: DataTypes.BOOLEAN,
     allowNull: true,

@@ -28,7 +28,7 @@ class ClientResumeController extends BaseController {
 
         let modelList = await ClientResumeModel.findAll({
             attributes: [
-                "surname", "name", "phone", "job_id", "job_type_id", "work_time", 'id', "salary",
+                "surname", "name", "phone", "job_id", "job_type_id", "work_time", 'id', "salary", "comment",
                 [sequelize.literal(`CASE WHEN client.sex_id = 2 THEN 'Erkak' WHEN client.sex_id = 3 THEN 'Ayol' END`), 'sex_type']
             ],
             include: [
@@ -127,6 +127,7 @@ class ClientResumeController extends BaseController {
                 'phone',
                 'salary',
                 'work_time',
+                "comment",
                 [sequelize.literal(`address.name_${lang}`), 'address_name'],
                 [sequelize.literal(`job.name_${lang}`), 'job_name'],
                 [sequelize.literal(`job_child.name_${lang}`), 'job_child_name'],
@@ -185,7 +186,8 @@ class ClientResumeController extends BaseController {
             job_type_id,
             address_id,
             salary,
-            work_time
+            work_time,
+            comment
         } = req.body;
 
         const model = await ClientResumeModel.create({
@@ -198,6 +200,7 @@ class ClientResumeController extends BaseController {
             address_id: address_id,
             salary: salary,
             work_time: work_time,
+            comment: comment,
             client_id: currentClient
         });
 
@@ -221,6 +224,7 @@ class ClientResumeController extends BaseController {
             address_id,
             salary,
             work_time,
+            comment,
             status
         } = req.body;
         const model = await ClientResumeModel.findOne({ where: { id: req.params.id } });
@@ -239,6 +243,7 @@ class ClientResumeController extends BaseController {
         model.salary = salary;
         model.work_time = work_time;
         model.status = status;
+        model.comment = comment;
         model.save();
 
         res.send(model);

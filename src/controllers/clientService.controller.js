@@ -197,6 +197,7 @@ class AdvertisementController extends BaseController {
     orderByClient = async (req, res, next) => {
         const currentClient = req.currentClient;
         const { client_service, region_id, total_sum, passport, migrant_carta, phone } = req.body;
+        console.log(req.body)
         try {
             let model = await StaticOrderModel.create({
                 client_id: currentClient.id,
@@ -227,13 +228,12 @@ class AdvertisementController extends BaseController {
                     })
                 }
             });
-            const sockets = await this.io.fetchSockets();
-            for (const soc of sockets) {
-                console.log(soc.dataUser.type)
-                if (soc.dataUser.type == "User") {
-                    this.io.to(soc.id).emit("user_order", model)
-                }
-            }
+            // const sockets = await this.io.fetchSockets();
+            // for (const soc of sockets) {
+            //     if (soc.dataUser.type == "User") {
+            //         this.io.to(soc.id).emit("user_order", model)
+            //     }
+            // }
             res.send(model)
         } catch (err) {
             throw new HttpException(404, err.message);

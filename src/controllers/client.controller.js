@@ -20,12 +20,21 @@ class ClientController extends BaseController {
 
   getAll = async (req, res, next) => {
     const filter = req.query;
-    let query = {};
+    let query = {
+      [Op.and]: [] // Ensure we use AND to combine conditions
+    };
+
+    // If text is provided, add it to the query
     if (filter.text) {
-      query = {
+      query[Op.and].push({
         [Op.or]: [
           {
             fullname: {
+              [Op.substring]: filter.text
+            }
+          },
+          {
+            name: {
               [Op.substring]: filter.text
             }
           },
@@ -35,8 +44,21 @@ class ClientController extends BaseController {
             }
           },
         ]
-      }
-    };
+      });
+    }
+
+    // If sex_id is provided, add it to the query
+    if (filter.sex_id) {
+      query[Op.and].push({
+        sex_id: parseInt(filter.sex_id)
+      });
+    }
+
+    // If no filters are provided, ensure query is set correctly
+    if (query[Op.and].length === 0) {
+      query = {}; // Reset query to return all results when no filters are applied
+    }
+
     let modelList = await ClientModel.findAll({
       attributes: [
         'id', 'fullname', 'phone', 'bonus', 'age', 'sex_id', 'code', 'lang', 'name',
@@ -45,7 +67,9 @@ class ClientController extends BaseController {
       where: query,
       order: [["id", "DESC"]],
     });
+
     res.send(modelList);
+
   };
 
   getById = async (req, res, next) => {
@@ -458,21 +482,21 @@ class ClientController extends BaseController {
     //     console.error('Error message:', error.message);
     //   }
     // }
-      const client = require('twilio')(sms_account, sms_token);
-  client.messages.create({
-    body: 'Дом мигрант: Ваш код ' + code,
-    from: sms_phone,
-    to: '+' + phone
-  }).then((message) => console.log(message))
-  client.messages.list({ limit: 1 })
-    .then(messages => {
-      messages.forEach(message => {
-        console.log(`To: ${message.to}, Status: ${message.status}, Error Code: ${message.errorCode}, Error Message: ${message.errorMessage}`);
+    const client = require('twilio')(sms_account, sms_token);
+    client.messages.create({
+      body: 'Дом мигрант: Ваш код ' + code,
+      from: sms_phone,
+      to: '+' + phone
+    }).then((message) => console.log(message))
+    client.messages.list({ limit: 1 })
+      .then(messages => {
+        messages.forEach(message => {
+          console.log(`To: ${message.to}, Status: ${message.status}, Error Code: ${message.errorCode}, Error Message: ${message.errorMessage}`);
+        });
+      })
+      .catch(error => {
+        console.error('Error fetching messages:', error);
       });
-    })
-    .catch(error => {
-      console.error('Error fetching messages:', error);
-    });
   };
 
   // const client = require('twilio')(sms_account, sms_token);

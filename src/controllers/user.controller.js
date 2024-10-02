@@ -8,7 +8,6 @@ const { secret_jwt } = require("../startup/config");
 const BaseController = require("./BaseController");
 const { MyUser, MainUser } = require("../utils/userRoles.utils");
 const { Op } = require("sequelize");
-const moment = require("moment");
 /******************************************************************************
  *                              User Controller
  ******************************************************************************/
@@ -17,6 +16,7 @@ class UserController extends BaseController {
     let modelList = await UserModel.findAll({
       where: {
         id: { [Op.ne]: MyUser },
+        deleted: false
       },
       order: [
         ["fullname", "ASC"],
@@ -176,18 +176,17 @@ class UserController extends BaseController {
   delete = async (req, res, next) => {
     const model = await UserModel.findOne({ where: { id: req.params.id } });
 
-    if (!model) {
-      throw new HttpException(404, req.mf("data not found"));
-    }
-
-    if (model.id === MainUser) {
-      throw new HttpException(400, req.mf("This item cannot be deleted"));
-    }
-
     try {
-      await model.destroy({ force: true });
+      if (!model) {
+        throw new HttpException(404, req.mf("data not found"));
+      }
+
+      if (model.id === MainUser) {
+        throw new HttpException(400, req.mf("This item cannot be deleted"));
+      }
+      model.deleted = !model.deleted;
     } catch (error) {
-      await model.destroy();
+      model.deleted = false;
     }
 
     res.send(req.mf("data has been deleted"));
@@ -210,13 +209,18 @@ class UserController extends BaseController {
         req.mf("Foydalnuvchi nomi yoki parol xato !!!")
       );
     }
-
     const isMatch = await bcrypt.compare(pass, user.password);
 
     if (!isMatch) {
       throw new HttpException(
         401,
         req.mf("Foydalnuvchi nomi yoki parol xato !!!")
+      );
+    }
+    if (user.deleted) {
+      throw new HttpException(
+        401,
+        req.mf("Foydalanuvchi topilmadi")
       );
     }
 

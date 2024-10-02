@@ -46,6 +46,11 @@ UserModel.init({
     token: {
         type: DataTypes.VIRTUAL,
     },
+    deleted: {
+        type: DataTypes.BOOLEAN,
+        allowNull: true,
+        defaultValue: false
+    },
 }, {
     sequelize,
     modelName: 'UserModel',

@@ -76,23 +76,24 @@ class TicketsController extends BaseController {
     getAllMobil = async (req, res, next) => {    
 
         let lang = req.get('Accept-Language');
-        lang = lang? lang: 'uz';
+        lang = lang ? lang: 'uz';
         const transport_id = req.query.transport_id;
         const from_id = req.query.from_id;
         const to_id = req.query.to_id;
         let query = {};
         query.client_id = 0;
         const cur_client_id = req.currentClient.id;
-        if(transport_id > 0){
+        if(!transport_id){
             query.transport_id = transport_id;
         }
-        if(from_id > 0){
+        if(!from_id){
             query.from_id = from_id;
         }
-        if(to_id > 0){
+        if(!to_id){
             query.to_id = to_id;
         }
         
+
         let modelList = await TicketsModel.findAll({
             where: query,
             attributes: ['id', 'date', 'price', 'end_date', 'comment', 'operator_comment', 'status', 'image', 'company_name', 'currency', 'phone', 'whatsapp'],

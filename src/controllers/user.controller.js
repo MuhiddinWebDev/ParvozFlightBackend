@@ -235,9 +235,11 @@ class UserController extends BaseController {
 
   // hash password if it exists
   hashPassword = async (req) => {
+
     if (req.body.password) {
       req.body.password = await bcrypt.hash(req.body.password, 8);
     }
+    
   };
 
   #del_user_table = async (user_id) => {

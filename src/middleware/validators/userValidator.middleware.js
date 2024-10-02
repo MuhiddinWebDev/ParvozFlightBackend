@@ -4,8 +4,8 @@ const Role = require('../../utils/userRoles.utils');
 exports.userSchemas = {
   create: Joi.object({
     username: Joi.string().required().min(3).max(25),
-    phone: Joi.string().required().min(7).max(20),
-    fullname: Joi.string().required().min(3).max(50),
+    phone: Joi.string().required().max(20),
+    fullname: Joi.string().required().max(50),
     role: Joi.string().valid(Role.Admin, Role.User, Role.Programmer).required(),
     password: Joi.string().min(3).required().label('Password'),
     all_page: Joi.boolean().required(),

@@ -6,7 +6,7 @@ const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
 const { secret_jwt } = require("../startup/config");
 const BaseController = require("./BaseController");
-const { MyUser, MainUser } = require("../utils/userRoles.utils");
+const { MyUser, MainUser, Programmer } = require("../utils/userRoles.utils");
 const { Op } = require("sequelize");
 /******************************************************************************
  *                              User Controller
@@ -114,7 +114,6 @@ class UserController extends BaseController {
   };
 
   create = async (req, res, next) => {
-    this.checkValidation(req);
     await this.hashPassword(req);
     let { username, fullname, password, role, phone, all_page, user_table } = req.body;
     const model = await UserModel.create({
@@ -132,8 +131,6 @@ class UserController extends BaseController {
 
     await UserTableModel.bulkCreate(filter_table);
 
-
-    // }
     if (!model) {
       throw new HttpException(500, req.mf("Something went wrong"));
     }
@@ -176,15 +173,16 @@ class UserController extends BaseController {
   delete = async (req, res, next) => {
     const model = await UserModel.findOne({ where: { id: req.params.id } });
 
-    try {
-      if (!model) {
-        throw new HttpException(404, req.mf("data not found"));
-      }
+    if (!model) {
+      throw new HttpException(404, req.mf("data not found"));
+    }
 
-      if (model.id === MainUser) {
-        throw new HttpException(400, req.mf("This item cannot be deleted"));
-      }
+    if (model.id === MainUser) {
+      throw new HttpException(404, req.mf("O'chirish mumkin emas"));
+    }
+    try {
       model.deleted = !model.deleted;
+      await model.save()
     } catch (error) {
       model.deleted = false;
     }
@@ -235,11 +233,9 @@ class UserController extends BaseController {
 
   // hash password if it exists
   hashPassword = async (req) => {
-
     if (req.body.password) {
       req.body.password = await bcrypt.hash(req.body.password, 8);
     }
-    
   };
 
   #del_user_table = async (user_id) => {

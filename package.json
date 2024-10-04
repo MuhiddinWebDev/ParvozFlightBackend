@@ -75,6 +75,7 @@
     "express-validator": "^6.6.0",
     "fcm": "^1.0.3",
     "fcm-node": "^1.6.1",
+    "firebase-admin": "^12.6.0",
     "html-webpack-plugin": "^5.3.2",
     "http-proxy-middleware": "^3.0.0",
     "https": "^1.0.0",

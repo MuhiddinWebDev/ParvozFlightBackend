@@ -872,7 +872,6 @@ class WorkController extends BaseController {
           }
         };
 
-        console.log(message);
         await this.notification(message);
       }
     }

@@ -1,12 +1,14 @@
 const { validationResult } = require('express-validator');
 const HttpException = require('../utils/HttpException.utils');
 
-var FCM = require('fcm-node');
-var serverKey = 'AAAAQ9Vgmt4:APA91bErHb6mfOo1b-vU-hwVn_EAgqs4roasCZy0bmG4sDpLobG5qHKIk5b3G71RcZq_9cc8Zl6GjSSptAVBNMiWB3_kJiisdpoYC8zGYSQd0Lzg3kPkOd12G1ojQ8ZNrB7QW6NE5SQs';
-// var new_se_key = "BFi00plE6qt0qEokvYjq6xW8uhxVMoV1ugSOL-qWRfeLy_-emiPzjEZ5m4GK95pqdu87jQYtZWEKQAOo36j_lSw"
-var fcm = new FCM(serverKey);
-
 var axios = require('axios');
+
+const serviceAccount = require("../../parvoz-flight-firebase.json");
+const admin = require('firebase-admin');
+admin.initializeApp({
+    credential: admin.credential.cert(serviceAccount),
+    databaseURL: `https://${serviceAccount.project_id}.firebaseio.com`
+});
 
 class BaseController {
     checkValidation = (req) => {
@@ -19,12 +21,25 @@ class BaseController {
 
     // Notification for client
     notification = (message) => {
-        fcm.send(message, function (err, response) {
-            if (err) {
-                console.log("Something has gone wrong!" + err);
-                console.log("Respponse:! " + response);
-            }
-        });
+        let s = {
+            notification: {
+                title: message.notification.title,
+                body: message.notification.body
+            },
+            token: message.to, // tokens should be an array of device tokens
+        };
+        try {
+            admin.messaging().send(s)
+                .then((response) => { 
+                    console.log(response);
+                })
+                .catch((error) => { 
+                    console.log("error_____________--");
+                    console.log(error);
+                });
+        } catch (e) { 
+            console.log(e);
+        }
     }
 
 

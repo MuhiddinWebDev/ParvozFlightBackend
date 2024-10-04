@@ -26,7 +26,7 @@ class BaseController {
                 title: message.notification.title,
                 body: message.notification.body
             },
-            token: message.to, // tokens should be an array of device tokens
+            token: message.to, 
         };
         try {
             admin.messaging().send(s)
